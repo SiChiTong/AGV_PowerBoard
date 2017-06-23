@@ -105,13 +105,13 @@ OSStatus select_multi_channel( mico_adc_t adc )
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_SWITCH_SEL2 );
     MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_SWITCH_SEL3 );
     break;
-  case MICO_ADC_5V_C:
+  case MICO_ADC_5V_V:
     MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_SWITCH_SEL0 );
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_SWITCH_SEL1 );
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_SWITCH_SEL2 );
     MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_SWITCH_SEL3 );
     break;
-  case MICO_ADC_BAT_C:
+  case MICO_ADC_BAT_V:
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_SWITCH_SEL0 );
     MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_SWITCH_SEL1 );
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_SWITCH_SEL2 );

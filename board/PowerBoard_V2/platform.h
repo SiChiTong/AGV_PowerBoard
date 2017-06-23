@@ -103,18 +103,7 @@ POWERBOARD V1.2 platform pin definitions ...
 #define HW_V2_1
 
 typedef enum
-{
-#if 0
-    MICO_GPIO_SYS_LED,
-    MICO_GPIO_SWITCH,
-    MICO_GPIO_UART1_TX,
-    MICO_GPIO_UART1_RX,
-    MICO_GPIO_UART2_TX,
-    MICO_GPIO_UART2_RX,
-    MICO_GPIO_UART3_TX,
-    MICO_GPIO_UART3_RX,
-#endif
-    
+{    
     MICO_GPIO_CAN_RX,
     MICO_GPIO_CAN_TX,
     MICO_GPIO_CAN_STB,
@@ -135,98 +124,6 @@ typedef enum
     
     MICO_GPIO_I2C_SCL,
     MICO_GPIO_I2C_SDA,
-    
-#if 0
-    
-    MICO_GPIO_CAN_RX,
-    MICO_GPIO_CAN_TX,
-    MICO_GPIO_CAN_STB,
-
-    MICO_GPIO_SPI_NSS,
-    MICO_GPIO_SPI_SCK,
-    MICO_GPIO_SPI_MISO,
-    MICO_GPIO_SPI_MOSI,
-  
-    MICO_GPIO_I2C_SCL,
-    MICO_GPIO_I2C_SDA,
-    
-    MICO_GPIO_UART3_TX,
-    MICO_GPIO_UART3_RX,
-    MICO_GPIO_UART2_TX,
-    MICO_GPIO_UART2_RX,
-  
-    MICO_GPIO_UART1_TX,
-    MICO_GPIO_UART1_RX,
-    
-    
-    MICO_GPIO_SYS_LED,
-    MICO_GPIO_PWRKEY,
-    
-    MICO_GPIO_MOTOR_EN,
-    MICO_GPIO_SENSOR_EN,
-    MICO_GPIO_LEDS_EN,
-    MICO_GPIO_AIUI_EN,
-    MICO_GPIO_5V_RES_EN,
-    MICO_GPIO_PAD_EN,
-    MICO_GPIO_12V_ROUTER_EN,
-    MICO_GPIO_2_1_PA_EN,
-    MICO_GPIO_DYP_EN,
-    MICO_GPIO_X86_EN,
-    MICO_GPIO_NV_EN,
-    MICO_GPIO_DLP_EN,
-    MICO_GPIO_12V_RES_EN,
-    MICO_GPIO_PRINTER_EN,
-    MICO_GPIO_24V_RES_EN,
-    MICO_GPIO_BAT_NV_EN,
-    MICO_GPIO_5V_ROUTER_EN,
-    //MICO_GPIO_5V_EN,
-    //MICO_GPIO_12V_EN,
-    //MICO_GPIO_24V_EN,
-  
-    MICO_GPIO_CHARGE_ADC,
-    MICO_GPIO_BATIN_ADC,
-    MICO_GPIO_VBUS_ADC,
-    MICO_GPIO_BAT_MOTOR_ADC,
-    MICO_GPIO_SWITCH_ADC,
-    MICO_GPIO_2_1_PA_ADC,
-    MICO_GPIO_PAD_ADC,
-    MICO_GPIO_PRINTER_ADC,
-    MICO_GPIO_X86_ADC,
-    MICO_GPIO_5V_RES1_ADC,
-    MICO_GPIO_12V_RES2_ADC,
-    MICO_GPIO_BAT_NV_ADC,
-    MICO_GPIO_12V_NV_ADC,
-    MICO_GPIO_ROUTER_ADC,
-    MICO_GPIO_DYP_ADC,
-    MICO_GPIO_SENSOR_ADC,
-    MICO_GPIO_DLP_ADC,
-    MICO_GPIO_IRLED_ADC,
-    MICO_GPIO_LEDS_ADC,
-    MICO_GPIO_MOTOR_ADC,
-    MICO_GPIO_24V_RES1_ADC,
-  
-    MICO_GPIO_PWR_NV,
-    MICO_GPIO_PWR_DLP,
-    MICO_GPIO_PWR_PAD,
-    MICO_GPIO_PWR_X86,
-    MICO_GPIO_PWR_RES,
-  
-
-  
-    MICO_GPIO_LED_PWM,
-
-    MICO_GPIO_RECHARGE_LED,    
-    MICO_GPIO_IRLED_PWM,
-    
-
-    MICO_GPIO_CHARGE_IN,
-    MICO_GPIO_RECHARGE_IN,
-    
-
-  
-    MICO_GPIO_ID1,
-    MICO_GPIO_ID2,
-#endif
     
 ///////////////////////////////////////////////////////////////   
     
@@ -278,12 +175,7 @@ typedef enum
     MICO_GPIO_LED_4,//new
     MICO_GPIO_LED_5,//new
     MICO_GPIO_LED_6,//new
-    
-    
 
-
-  
-  
     MICO_GPIO_CHARGE_ADC,           //new     
     MICO_GPIO_BATIN_ADC,            //new
     MICO_GPIO_VBUS_ADC,             //new
@@ -296,11 +188,7 @@ typedef enum
     MICO_GPIO_12V_NV_ADC,           //new
     MICO_GPIO_IRLED_ADC,            //new
     MICO_GPIO_MOTOR_ADC,            //new
-    
-    
-    
-    
-      
+
     MICO_GPIO_MULTI_CHANNEL_ADC,    //new
     MICO_GPIO_VSYS_24V_NV_ADC,      //new
     MICO_GPIO_48V_EXTEND_ADC,       //new
@@ -423,8 +311,8 @@ typedef enum
     MICO_ADC_5V_ALL_C,          //6
     MICO_ADC_24V_V,             //7
     MICO_ADC_12V_V,             //8
-    MICO_ADC_5V_C,              //9
-    MICO_ADC_BAT_C,             //10
+    MICO_ADC_5V_V,              //9
+    MICO_ADC_BAT_V,             //10
     MICO_ADC_5V_SENSOR_BOARD_C, //11
     MICO_ADC_5V_ROUTER_C,       //12
 #endif  

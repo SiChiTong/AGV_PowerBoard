@@ -67,6 +67,7 @@ int main( void )
   os_PowerBoard_log( "System clock = %d Hz",HAL_RCC_GetHCLKFreq() );
 
   bsp_Init();
+  init_platform();
   Platform_Init();
   SerialLeds_Init();
   VolDetect_Init();
@@ -78,14 +79,15 @@ int main( void )
     PowerOnDevices();
   }
   
- 
+  //PowerOnDevices();
   for(;;)
   {
     Platform_Tick();
     protocol_period();
     VolDetect_Tick();
     can_protocol_period();
-    Main_Menu();  
+    Main_Menu(); 
+    
 #ifdef MIKE_TEST
     test_power_tick();
 #endif

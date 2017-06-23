@@ -82,9 +82,6 @@ const platform_gpio_t platform_gpio_pins[] =
     [MICO_GPIO_CAN_TX]            = { GPIOA, 12 },
     [MICO_GPIO_CAN_STB]           = { GPIOD,  3 },
 
-    [MICO_GPIO_CHARGE_IN]         = { GPIOB,  5 },
-    [MICO_GPIO_RECHARGE_IN]       = { GPIOB,  6 },
-
     [MICO_GPIO_UART3_TX]          = { GPIOB, 10 },
     [MICO_GPIO_UART3_RX]          = { GPIOB, 11 },
     
@@ -94,68 +91,6 @@ const platform_gpio_t platform_gpio_pins[] =
     [MICO_GPIO_UART1_TX]          = { GPIOA,  9 },
     [MICO_GPIO_UART1_RX]          = { GPIOA, 10 },
 //////////////////////////////////////////////
-    
-#if 0  
-    [MICO_GPIO_ID1]               = { GPIOE,  0 },
-    [MICO_GPIO_ID2]               = { GPIOE,  1 },
-    
-    [MICO_GPIO_SYS_LED]           = { GPIOC,  9 },
-    [MICO_GPIO_PWRKEY]            = { GPIOD,  4 },
-
-    [MICO_GPIO_MOTOR_EN]          = { GPIOE,  2 },
-    [MICO_GPIO_SENSOR_EN]         = { GPIOE,  3 },
-    [MICO_GPIO_LEDS_EN]           = { GPIOE,  4 },
-    [MICO_GPIO_AIUI_EN]           = { GPIOE,  5 },
-    [MICO_GPIO_5V_RES_EN]         = { GPIOE,  6 },
-    [MICO_GPIO_PAD_EN]            = { GPIOF,  0 },
-    [MICO_GPIO_12V_ROUTER_EN]     = { GPIOF,  1 },
-    //[MICO_GPIO_2_1_PA_EN]         = { GPIOF,  2 },
-    [MICO_GPIO_DYP_EN]            = { GPIOF,  3 },
-    //[MICO_GPIO_X86_EN]            = { GPIOF,  4 },
-    [MICO_GPIO_NV_EN]             = { GPIOF,  5 },
-    [MICO_GPIO_DLP_EN]            = { GPIOG,  2 },
-    [MICO_GPIO_12V_RES_EN]        = { GPIOG,  3 },
-    [MICO_GPIO_PRINTER_EN]        = { GPIOG,  4 },
-    [MICO_GPIO_24V_RES_EN]        = { GPIOG,  5 },
-    [MICO_GPIO_BAT_NV_EN]         = { GPIOG,  6 },
-    [MICO_GPIO_5V_ROUTER_EN]      = { GPIOG,  7 },
-    //[MICO_GPIO_5V_EN]             = { GPIOE,  7 },
-    //[MICO_GPIO_12V_EN]            = { GPIOE,  8 },
-    //[MICO_GPIO_24V_EN]            = { GPIOE,  9 },
-
-    [MICO_GPIO_CHARGE_ADC]        = { GPIOF,  6 },
-    [MICO_GPIO_BATIN_ADC]         = { GPIOF,  7 },
-    [MICO_GPIO_VBUS_ADC]          = { GPIOF,  8 },
-    [MICO_GPIO_BAT_MOTOR_ADC]     = { GPIOF,  9 },
-    [MICO_GPIO_SWITCH_ADC]        = { GPIOF, 10 },
-    [MICO_GPIO_2_1_PA_ADC]        = { GPIOC,  0 },
-    [MICO_GPIO_PAD_ADC]           = { GPIOC,  1 },
-    [MICO_GPIO_PRINTER_ADC]       = { GPIOC,  2 },
-    [MICO_GPIO_X86_ADC]           = { GPIOC,  3 },
-    [MICO_GPIO_5V_RES1_ADC]       = { GPIOA,  0 },
-    [MICO_GPIO_12V_RES2_ADC]      = { GPIOA,  1 },
-    [MICO_GPIO_BAT_NV_ADC]        = { GPIOA,  2 },
-    [MICO_GPIO_12V_NV_ADC]        = { GPIOA,  3 },
-    [MICO_GPIO_ROUTER_ADC]        = { GPIOA,  4 },
-    [MICO_GPIO_DYP_ADC]           = { GPIOA,  5 },
-    [MICO_GPIO_SENSOR_ADC]        = { GPIOA,  6 },
-    [MICO_GPIO_DLP_ADC]           = { GPIOA,  7 },
-    [MICO_GPIO_IRLED_ADC]         = { GPIOC,  4 },
-    [MICO_GPIO_LEDS_ADC]          = { GPIOC,  5 },
-    [MICO_GPIO_MOTOR_ADC]         = { GPIOB,  0 },
-    [MICO_GPIO_24V_RES1_ADC]      = { GPIOB,  1 },
-
-    [MICO_GPIO_PWR_NV]            = { GPIOF, 13 },
-    [MICO_GPIO_PWR_DLP]           = { GPIOF, 14 },
-    [MICO_GPIO_PWR_PAD]           = { GPIOF, 15 },
-    [MICO_GPIO_PWR_X86]           = { GPIOG,  0 },
-    [MICO_GPIO_PWR_RES]           = { GPIOG,  1 },
-
-    [MICO_GPIO_LED_PWM]           = { GPIOC, 6  },
-
-    [MICO_GPIO_RECHARGE_LED]      = { GPIOC,  8 }, 
-    //[MICO_GPIO_IRLED_PWM]         = { GPIOA,  8 },
-#endif   
 
 
 
@@ -646,7 +581,7 @@ void init_platform( void )
   //  Initialise switch
   pin_config.gpio_speed = GPIO_SPEED_MEDIUM;
   pin_config.gpio_mode = GPIO_MODE_IT_RISING_FALLING;
-  pin_config.gpio_pull = GPIO_PULLDOWN;
+  pin_config.gpio_pull = GPIO_PULLUP;//GPIO_NOPULL;//GPIO_PULLDOWN;
   MicoGpioInitialize( MICO_GPIO_PWRKEY, &pin_config );
   MicoGpioEnableIRQ( MICO_GPIO_PWRKEY , IRQ_TRIGGER_BOTH_EDGES, _switch_irq_handler, NULL);
 }

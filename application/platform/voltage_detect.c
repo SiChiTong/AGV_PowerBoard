@@ -745,6 +745,8 @@ struct convert_adc_data convert_data[] = {
     .err_channel        = 0x16,
     .fault_bit_mask_num = CHARGE_CURRENTS_FAULT_BIT_MASK_NUM, 
   },
+  
+  
 #if 0
   [ADC_MULTI_CHANNEL] = 
   {
@@ -759,10 +761,12 @@ struct convert_adc_data convert_data[] = {
     .fault_bit_mask_num = BATIN_CURRENTS_FAULT_BIT_MASK_NUM, 
   },
 #endif
+  
+  
   [TEMP_24V_TS] = 
   {
     .adc_type           = MICO_ADC_24V_TS,
-    .convert_type       = CONVERT_TYPE_VOLTAGE,
+    .convert_type       = CONVERT_TYPE_TEMP,
     .isNeedDelay        = 'Y',
     .convert_factor     = 1,
     .threshold_low      = 0,
@@ -774,7 +778,7 @@ struct convert_adc_data convert_data[] = {
   [TEMP_12V_TS] = 
   {
     .adc_type           = MICO_ADC_12V_TS ,
-    .convert_type       = CONVERT_TYPE_VOLTAGE,
+    .convert_type       = CONVERT_TYPE_TEMP,
     .isNeedDelay        = 'Y',
     .convert_factor     = 1,
     .threshold_low      = 0,
@@ -786,7 +790,7 @@ struct convert_adc_data convert_data[] = {
   [TEMP_5V_TS] = 
   {
     .adc_type           = MICO_ADC_5V_TS,
-    .convert_type       = CONVERT_TYPE_VOLTAGE,
+    .convert_type       = CONVERT_TYPE_TEMP,
     .isNeedDelay        = 'Y',
     .convert_factor     = 1,
     .threshold_low      = 0,
@@ -798,7 +802,7 @@ struct convert_adc_data convert_data[] = {
   [TEMP_AIR_TS] = 
   {
     .adc_type           = MICO_ADC_AIR_TS,
-    .convert_type       = CONVERT_TYPE_CURRENTS,
+    .convert_type       = CONVERT_TYPE_TEMP,
     .isNeedDelay        = 'Y',
     .convert_factor     = 5,
     .threshold_low      = 0,
@@ -834,7 +838,7 @@ struct convert_adc_data convert_data[] = {
   [CURRENTS_5V_ALL] = 
   {
     .adc_type           = MICO_ADC_5V_ALL_C,
-    .convert_type       = CONVERT_TYPE_TEMP,
+    .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'Y',
     .convert_factor     = 1,
     .threshold_low      = 0,
@@ -846,9 +850,9 @@ struct convert_adc_data convert_data[] = {
   [VOLTAGE_24V] = 
   {
     .adc_type           = MICO_ADC_24V_V,
-    .convert_type       = CONVERT_TYPE_TEMP,
+    .convert_type       = CONVERT_TYPE_VOLTAGE,
     .isNeedDelay        = 'Y',
-    .convert_factor     = 1,
+    .convert_factor     = 11,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -858,9 +862,9 @@ struct convert_adc_data convert_data[] = {
   [VOLTAGE_12V] = 
   {
     .adc_type           = MICO_ADC_12V_V,
-    .convert_type       = CONVERT_TYPE_TEMP,
+    .convert_type       = CONVERT_TYPE_VOLTAGE,
     .isNeedDelay        = 'Y',
-    .convert_factor     = 1,
+    .convert_factor     = 11,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -869,10 +873,10 @@ struct convert_adc_data convert_data[] = {
   },
   [VOLTAGE_5V] = 
   {
-    .adc_type           = MICO_ADC_5V_C,
+    .adc_type           = MICO_ADC_5V_V,
     .convert_type       = CONVERT_TYPE_VOLTAGE,
     .isNeedDelay        = 'Y',
-    .convert_factor     = 1,
+    .convert_factor     = 2,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -881,10 +885,10 @@ struct convert_adc_data convert_data[] = {
   },  
   [VOLTAGE_BAT] = 
   {
-    .adc_type           = MICO_ADC_BAT_C,
+    .adc_type           = MICO_ADC_BAT_V,
     .convert_type       = CONVERT_TYPE_VOLTAGE,
     .isNeedDelay        = 'Y',
-    .convert_factor     = 11,
+    .convert_factor     = 21,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -962,6 +966,7 @@ static uint16_t processChannelsData( adc_channel_t type )
   {
     select_multi_channel( pConvertAdcData->adc_type );
     HAL_Delay(1);//10ms
+    //delay_us(10000);
   }
   
   readData = (uint16_t)(read_channel_values_mV( pConvertAdcData->adc_type ) * pConvertAdcData->convert_factor );
@@ -1040,7 +1045,7 @@ static void computeVoltage( void )
     sample_index = TEMP_AIR_TS;
   break;
   case TEMP_AIR_TS:
-    voltageConvert->air_temp = processChannelsData( TEMP_AIR_TS );
+    voltageConvert->air_temp = get_ntc_temp_from_voltage(processChannelsData( TEMP_AIR_TS ));
     sample_index = CURRENTS_24V_ALL;
   break;
   case CURRENTS_24V_ALL:
@@ -1053,6 +1058,10 @@ static void computeVoltage( void )
   break;
   case CURRENTS_5V_ALL:
     voltageConvert->_5V_all_currents = processChannelsData( CURRENTS_5V_ALL );
+    sample_index = VOLTAGE_24V;
+  break;
+  case VOLTAGE_24V:
+    voltageConvert->_24V_voltage = processChannelsData( VOLTAGE_24V ) ;
     sample_index = VOLTAGE_12V;
   break;
   case VOLTAGE_12V:
@@ -1202,7 +1211,8 @@ void VolDetect_Tick( void )
       {
         boardStatus->sysStatus &= ~STATE_IS_LOW_POWER;
       }
-         
+ 
+#ifdef NOT_USE_TMP
       if( voltageConvert->bat_voltage < VBAT_POWER_OFF_LEVEL )
       {
         if( lowVoltageStartTime == 0)
@@ -1222,6 +1232,7 @@ void VolDetect_Tick( void )
           lowVoltageStartTime = 0;
         }
       }
+#endif
     }
 }
 

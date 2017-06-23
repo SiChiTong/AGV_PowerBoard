@@ -289,82 +289,7 @@ static void Switch_Tick( void )
 
 static void ControlSignal_Tick( void )
 {
-/* dlp */
-  if( (NO == DLP_ControlSignal->isDeviceProcessOver) && (DLP_ControlSignal->setControlSigal != NULL) )
-  {
-    if( (DEVICE_POWER_OFF == DLP_ControlSignal->deviceOnOff) && (DLP_ControlSignal->startTime != 0) )
-    {
-      switch( DLP_ControlSignal->period )
-      {
-      case SIGNAL_DELAY:
-        if( os_get_time() - DLP_ControlSignal->startTime >= DLP_POWER_ON_DELAY_TIME )
-        {
-          DLP_ControlSignal->startTime = os_get_time();
-          DLP_ControlSignal->setControlSigal(POWER_CON_DLP, CONTROL_HOLD);
-          DLP_ControlSignal->period = SIGNAL_HOLD;
-          platform_log("dlp boot signal hold on");
-        }
-        break;
-      case SIGNAL_HOLD:
-        if( os_get_time() - DLP_ControlSignal->startTime >= DLP_POWER_ON_HOLD_TIME )
-        {
-          DLP_ControlSignal->startTime = os_get_time();
-          DLP_ControlSignal->setControlSigal(POWER_CON_DLP, CONTROL_RELEASE);
-          DLP_ControlSignal->period = SIGNAL_REALSE;
-          platform_log("dlp boot signal hold off");
-        }
-        break;
-      case SIGNAL_REALSE:
-        if( os_get_time() - DLP_ControlSignal->startTime >= DLP_POWER_ON_PROCESSING_TIME )
-        {
-          DLP_ControlSignal->startTime = 0;
-          DLP_ControlSignal->period = SIGNAL_DELAY;
-          DLP_ControlSignal->deviceOnOff = DEVICE_POWER_ON;
-          DLP_ControlSignal->isDeviceProcessOver = YES;
-          platform_log("dlp boot have powered on");
-        }
-        break;
-      default: 
-        break;       
-      }
-    }
-    else if( (DEVICE_POWER_ON == DLP_ControlSignal->deviceOnOff) && (DLP_ControlSignal->startTime != 0) )
-    {
-      switch( DLP_ControlSignal->period )
-      {
-      case SIGNAL_DELAY:
-        if( os_get_time() - DLP_ControlSignal->startTime >= DLP_POWER_OFF_DELAY_TIME )
-        {
-          DLP_ControlSignal->startTime = os_get_time();
-          DLP_ControlSignal->setControlSigal(POWER_CON_DLP, CONTROL_HOLD);
-          DLP_ControlSignal->period = SIGNAL_HOLD;
-          platform_log("dlp shutdown signal hold on");
-        }
-        break;
-      case SIGNAL_HOLD:
-        if( os_get_time() - DLP_ControlSignal->startTime >= DLP_POWER_OFF_HOLD_TIME )
-        {
-          DLP_ControlSignal->startTime = os_get_time();
-          DLP_ControlSignal->setControlSigal(POWER_CON_DLP, CONTROL_RELEASE);
-          DLP_ControlSignal->period = SIGNAL_REALSE;
-          platform_log("dlp shutdown signal hold off");
-        }
-        break;
-      case SIGNAL_REALSE:
-        if( os_get_time() - DLP_ControlSignal->startTime >= DLP_POWER_OFF_PROCESSING_TIME )
-        {
-          DLP_ControlSignal->startTime = 0;
-          DLP_ControlSignal->period = SIGNAL_DELAY;
-          DLP_ControlSignal->deviceOnOff = DEVICE_POWER_OFF;
-          DLP_ControlSignal->isDeviceProcessOver = YES;
-          platform_log("dlp shutdown have powered off");
-        }
-        break;
-      default:
-        break;       
-      }
-    }
-  }
+
 /* pad */
   if( (NO == PAD_ControlSignal->isDeviceProcessOver) && (PAD_ControlSignal->setControlSigal != NULL) )
   {
@@ -441,6 +366,7 @@ static void ControlSignal_Tick( void )
       }
     }
   }
+#if 1
 /*  nv */
   if( (DEVICE_POWER_OFF == NV_ControlSignal->deviceOnOff) && (NV_ControlSignal->startTime != 0) )
   {
@@ -456,38 +382,7 @@ static void ControlSignal_Tick( void )
         platform_log("NV boot signal hold on");
       }
       break;
-#if 0
-    case SIGNAL_HOLD_TMP1:
-      if( os_get_time() - NV_ControlSignal->startTime >= NV_POWER_ON_HOLD_TMP1_TIME )
-      {
-        NV_ControlSignal->startTime = os_get_time();
-        NV_ControlSignal->setControlSigal(POWER_CON_NV, CONTROL_RELEASE);
-        NV_ControlSignal->setControlSigal(POWER_CON_RES, CONTROL_RELEASE);//joy test
-        NV_ControlSignal->period = SIGNAL_REALSE_TMP;
-        platform_log("NV boot signal hold off");
-      }
-      break;
-    case SIGNAL_REALSE_TMP:
-      if( os_get_time() - NV_ControlSignal->startTime >= NV_POWER_ON_RELASE_TMP_TIME )
-      {
-        NV_ControlSignal->startTime = os_get_time();
-        NV_ControlSignal->setControlSigal(POWER_CON_NV, CONTROL_HOLD);
-        NV_ControlSignal->setControlSigal(POWER_CON_RES, CONTROL_HOLD);//joy test
-        NV_ControlSignal->period = SIGNAL_HOLD_TMP2;
-        platform_log("NV boot signal hold on2");
-      }
-      break;
-    case SIGNAL_HOLD_TMP2:
-      if( os_get_time() - NV_ControlSignal->startTime >= NV_POWER_ON_HOLD_TMP2_TIME )
-      {
-        NV_ControlSignal->startTime = os_get_time();
-        NV_ControlSignal->setControlSigal(POWER_CON_NV, CONTROL_RELEASE);
-        NV_ControlSignal->setControlSigal(POWER_CON_RES, CONTROL_RELEASE);//joy test
-        NV_ControlSignal->period = SIGNAL_REALSE;
-        platform_log("NV boot signal hold off");
-      }
-      break;
-#else
+
     case SIGNAL_HOLD:
       if( os_get_time() - NV_ControlSignal->startTime >= NV_POWER_ON_HOLD_TIME )
       {
@@ -498,7 +393,7 @@ static void ControlSignal_Tick( void )
         platform_log("NV boot signal hold off");
       }
       break;
-#endif
+
     case SIGNAL_REALSE:
       if( os_get_time() - NV_ControlSignal->startTime >= NV_POWER_ON_PROCESSING_TMP_TIME )
       {
@@ -620,9 +515,6 @@ static void ControlSignal_Tick( void )
           X86_ControlSignal->deviceOnOff = DEVICE_POWER_OFF;
           X86_ControlSignal->isDeviceProcessOver = YES;
           platform_log("x86 shutdown have powered off");
-#ifdef JOY_TEST
-          boardStatus->setPowerOnoff(POWER_ALL, POWER_OFF);
-#endif
         }
         break;
       default:
@@ -630,6 +522,7 @@ static void ControlSignal_Tick( void )
       }
     }
   }
+#endif
 }
 
 static void BoardStatus_Tick( void )
@@ -762,7 +655,7 @@ void bsp_Init( void )
 {
   board_gpios_init();
   charger_detect_init();
-//  key_switch_init();
+  //key_switch_init();
 }
 
 void key_switch_interrupt_cb( void )
