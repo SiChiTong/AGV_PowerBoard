@@ -1565,9 +1565,12 @@ static uint32_t    indicatorFreshCount = 0;
 
 color_t charge_color[] = 
 {
-    [RED_C]       = {255, 0  , 0  },
-    [GREEN_C]     = {0  , 255, 0  },
-    [BLUE_C]      = {0  , 0  , 255},
+    [0]       = {255, 0  , 0  },//RED_C
+    [1]     = {0  , 255, 0  },//GREEN_C
+    [2]    = {255, 165, 0  },//ORANGE_C
+    [3]     = {255, 255, 255},//WHITE_C
+    [4]      = {0  , 255, 255},//CYAN_C
+  
 };
 color_t  led_color[] = 
 {
@@ -1597,7 +1600,7 @@ one_wire_led_para_t one_wire_led[] =
     {
         .gpio               = MICO_GPIO_FRONT_LEFT_LED,
         .color              = &led_color[ORANGE_C],
-        .charge_color_num   = 3,
+        .charge_color_num   = 4,
         .period             = 300,
         .data_buf           = front_left_buff,
         .led_num            = FRONT_LEFT_LED_NUM,
@@ -1607,7 +1610,7 @@ one_wire_led_para_t one_wire_led[] =
     {
         .gpio               = MICO_GPIO_BACK_RIGHT_LED,
         .color              = &led_color[WHITE_C],
-        .charge_color_num   = 3,
+        .charge_color_num   = 5,
         .period             = 400,
         .data_buf           = back_right_buff,
         .led_num            = BACK_RIGHT_LED_NUM,
@@ -1617,7 +1620,7 @@ one_wire_led_para_t one_wire_led[] =
     {
         .gpio               = MICO_GPIO_BACK_LEFT_LED,
         .color              = &led_color[CYAN_C],
-        .charge_color_num   = 3,
+        .charge_color_num   = 2,
         .period             = 500,
         .data_buf           = back_left_buff,
         .led_num            = BACK_LEFT_LED_NUM,
@@ -1755,7 +1758,7 @@ void serialLedsTick( void )
   }
 #endif
 
-    uint8_t is_charging = false;
+    uint8_t is_charging = true;
     for(uint8_t i = FRONT_LEFT_LED; i < LED_NONE; i++)
     {
         if(os_get_time() - one_wire_led[i].start_time >= one_wire_led[i].period/SYSTICK_PERIOD)
