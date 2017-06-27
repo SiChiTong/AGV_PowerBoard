@@ -668,6 +668,7 @@ void Main_Menu(void)
     else if( strcmp(cmdname, "SHOW") == 0 || strcmp(cmdname, "A") == 0 )
     {
       voltageDebug.printType = PRINT_NO;
+#if 0
       printf("\r\nadc sequence num: (mV)\r\n");
       printf("1: _5V_reserve1_currents\r\n");
       printf("2: _12V_reserve2_currents\r\n");
@@ -705,6 +706,7 @@ void Main_Menu(void)
       printf("33: _24V_regulator_temp\r\n");
       printf("34: aiui_currents\r\n");
       printf("35: _5V_router_currents\r\n");
+#endif
       break;
     }
     else if(strcmp(cmdname, "VOL") == 0 || strcmp(cmdname, "B") == 0)	{

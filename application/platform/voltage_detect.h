@@ -85,8 +85,7 @@ typedef struct _VoltageData_t {
   uint16_t              ir_led_currents;
   
   uint16_t              _5V_leds_currents;
-  
-  
+    
   uint16_t              recharge_currents;
   uint16_t              _24V_extend_currents;
   uint16_t              charge_currents;
@@ -107,12 +106,11 @@ typedef struct _VoltageData_t {
   uint16_t              _24V_voltage;
   
   uint16_t              _12V_voltage;
-  int16_t               _5V_voltage;
-  int32_t               bat_voltage;
-  int16_t               sensor_board_currents;
+  uint16_t               _5V_voltage;
+  uint16_t               bat_voltage;
+  uint16_t               sensor_board_currents;
   
   int16_t               _5V_router_currents;
- 
 } voltageData_t;
 #pragma pack()
 

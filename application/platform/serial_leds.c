@@ -192,30 +192,7 @@ OSStatus SerialLeds_Init( void )
   serial_leds_log("serial leds init success!");
   return err;
 }
-#if 0
-static void write_0(void)
-{
-        LED = 1;
-	delay_300ns();
-        LED = 0;
-        delay_300ns();
-        delay_600ns();
-}
 
-static void write_1(void)
-{
-        LED = 1;
-	delay_600ns();
-        LED = 0;
-        delay_600ns();
-}
-
-static void write_RESET(void)
-{
-	LED = 0;
-	delay_us(80);	
-}
-#else
 extern const platform_gpio_t            platform_gpio_pins[];
 static void write_0(void)
 {
@@ -241,7 +218,6 @@ static void write_RESET(void)
     LedOutputLow((mico_gpio_t)MICO_GPIO_FRONT_LEFT_LED);
     delay_us(80);	
 }
-#endif
 
 static void write_24bit(uint32_t word)
 {
@@ -907,20 +883,15 @@ void stopDanceLedsMode( void )
   serial_leds_log("lights stop dance mode");
 }
 
-
-
-
+#if 0
 /////////////********Front Left LED**********///////////////////////
 
 void FrontLeftWriteColor(uint8_t R, uint8_t G, uint8_t B)
 //void FrontLeftWriteColor(Color_t color)
 {
-    
-    //uint32_t word = (color.g<<16) | (color.r<<8) | color.b;
     uint32_t word = (G<<16) | (R<<8) | B;
     
-    uint8_t i = FRONT_LEFT_LED_NUM;
-	
+    uint8_t i = FRONT_LEFT_LED_NUM;	
 
 	while(i--)
 	{
@@ -937,8 +908,7 @@ static void FrontLeftWrite_0(void)
 }
 
 static void FrontLeftWrite_1(void)
-{
-        
+{        
     LedOutputHigh((mico_gpio_t)MICO_GPIO_FRONT_LEFT_LED);
     delay_600ns();
 
@@ -972,7 +942,6 @@ static void FrontLeftWrite_24bit(uint32_t word)
 		}			
 		
 		RGB <<= 1;
-
 	}
 }
 static void FrontLeftSendData(void)
@@ -986,19 +955,14 @@ static void FrontLeftSendData(void)
 }
 
 
-
 //////////////********Front Right LED*********/////////////
 
 void FrontRightWriteColor(uint8_t R, uint8_t G, uint8_t B)
 {
     
     uint32_t word = (G<<16) | (R<<8) | B;
-    //R = (word >> 8) & 0xff;
-    //G = (word >> 16) & 0xff;
-    //B = (word >> 0) & 0xff;
     
-    uint8_t i = FRONT_RIGHT_LED_NUM;
-	
+    uint8_t i = FRONT_RIGHT_LED_NUM;	
 
 	while(i--)
 	{
@@ -1039,7 +1003,6 @@ static void FrontRightWrite_24bit(uint32_t word)
 	
 	for(i=0;i<24;i++)
 	{
-
 		if((RGB & 0x800000) == 0)
 		{
 			FrontRightWrite_0();
@@ -1050,7 +1013,6 @@ static void FrontRightWrite_24bit(uint32_t word)
 		}			
 		
 		RGB <<= 1;
-
 	}
 }
 static void FrontRightSendData(void)
@@ -1595,4 +1557,263 @@ void serialLedsTick( void )
     }
     
 }
+#else
+
+
+
+static uint32_t    indicatorFreshCount = 0;
+
+color_t charge_color[] = 
+{
+    [RED_C]       = {255, 0  , 0  },
+    [GREEN_C]     = {0  , 255, 0  },
+    [BLUE_C]      = {0  , 0  , 255},
+};
+color_t  led_color[] = 
+{
+  [RED_C]       = {255, 0  , 0  },
+  [GREEN_C]     = {0  , 255, 0  },
+  [BLUE_C]      = {0  , 0  , 255},
+  [ORANGE_C]    = {255, 165, 0  },
+  [WHITE_C]     = {255, 255, 255},
+  [CYAN_C]      = {0  , 255, 255},
+  [GOLD_C]      = {255, 215, 0  },
+  [NONE_C]      = {0  , 0  , 0  },
+};
+extern const platform_gpio_t            platform_gpio_pins[];
+one_wire_led_para_t one_wire_led[] = 
+{
+  [FRONT_RIGHT_LED] = 
+    {
+        .gpio               = MICO_GPIO_FRONT_RIGHT_LED,
+        .color              = &led_color[GREEN_C],
+        .charge_color_num   = 3,
+        .period             = 200,
+        .data_buf           = front_right_buff,
+        .led_num            = FRONT_RIGHT_LED_NUM,
+        .start_time         = 0,
+    },
+  [FRONT_LEFT_LED] = 
+    {
+        .gpio               = MICO_GPIO_FRONT_LEFT_LED,
+        .color              = &led_color[ORANGE_C],
+        .charge_color_num   = 3,
+        .period             = 300,
+        .data_buf           = front_left_buff,
+        .led_num            = FRONT_LEFT_LED_NUM,
+        .start_time         = 0,
+    },
+  [BACK_RIGHT_LED] = 
+    {
+        .gpio               = MICO_GPIO_BACK_RIGHT_LED,
+        .color              = &led_color[WHITE_C],
+        .charge_color_num   = 3,
+        .period             = 400,
+        .data_buf           = back_right_buff,
+        .led_num            = BACK_RIGHT_LED_NUM,
+        .start_time         = 0,
+    },
+  [BACK_LEFT_LED] = 
+    {
+        .gpio               = MICO_GPIO_BACK_LEFT_LED,
+        .color              = &led_color[CYAN_C],
+        .charge_color_num   = 3,
+        .period             = 500,
+        .data_buf           = back_left_buff,
+        .led_num            = BACK_LEFT_LED_NUM,
+        .start_time         = 0,
+    },
+  [LEFT_EYE_LED] = 
+    {
+        .gpio               = MICO_GPIO_LEFT_EYE_LED,
+        .color              = &led_color[GOLD_C],
+        .charge_color_num   = 3,
+        .period             = 600,
+        .data_buf           = left_eye_buff,
+        .led_num            = LEFT_EYE_LED_NUM,
+        .start_time         = 0,
+    },
+  [RIGHT_EYE_LED] = 
+    {
+        .gpio               = MICO_GPIO_RIGHT_EYE_LED,
+        .color              = &led_color[RED_C],
+        .charge_color_num   = 3,
+        .period             = 700,
+        .data_buf           = right_eye_buff,
+        .led_num            = RIGHT_EYE_LED_NUM,
+        .start_time         = 0,
+    },
+};
+
+inline void Write_0(mico_gpio_t gpio)
+{
+    LedOutputHigh(gpio);
+    delay_300ns();
+    LedOutputLow(gpio);
+    delay_300ns();
+    delay_600ns();
+}
+
+inline void Write_1(mico_gpio_t gpio)
+{
+        
+    LedOutputHigh(gpio);
+    delay_600ns();
+
+    LedOutputLow(gpio);
+    delay_600ns();
+}
+
+
+void Write24bit(mico_gpio_t gpio, uint32_t word)
+{
+    uint8_t i;
+	uint8_t R;
+	uint8_t G;
+	uint8_t B;
+	uint32_t RGB;
+	
+	R = (word >> 8) & 0xff;
+	G = (word >> 16) & 0xff;
+	B = (word >> 0) & 0xff;
+	
+	RGB = (R << 16)|(G << 8)|(B << 0);
+	
+	for(i=0;i<24;i++)
+	{
+
+		if((RGB & 0x800000) == 0)
+		{
+			Write_0(gpio);
+		}
+		else
+		{
+			Write_1(gpio);
+		}			
+		
+		RGB <<= 1;
+
+	}
+}
+	
+void SendData(one_wire_led_t led)
+{
+    uint8_t i = one_wire_led[led].led_num;
+    
+    while(i--)
+	{
+        Write24bit(one_wire_led[led].gpio, one_wire_led[led].data_buf[i] );
+	}
+    
+}
+
+#define LIGHTNESS   20
+static void WriteColor(one_wire_led_t led, color_t *color)
+{
+    
+    uint32_t word = ((color->r/LIGHTNESS)<<16) | ((color->g/LIGHTNESS)<<8) | color->b/LIGHTNESS;
+    //word = word/LIGHTNESS;
+    uint8_t i = one_wire_led[led].led_num;
+	
+
+	while(i--)
+	{
+        one_wire_led[led].data_buf[i] = word;	
+	}
+}
+// period: 10ms
+void serialLedsTick( void )
+{
+#if 0
+  indicatorFreshCount ++;
+  if( indicatorFreshCount > 50 )
+  {
+    indicatorFreshCount = 0;
+    MicoGpioOutputTrigger( MICO_GPIO_SYS_LED );
+  }
+
+//  if( (DEVICES_ON == boardStatus->devicesOnOff) || (NO == boardStatus->isPowerOnFinish)\
+    || (NO == boardStatus->isPowerOffFinish) )
+  if( serial_leds != NULL && STATE_POWER_OFF != (boardStatus->sysStatus & STATE_RUN_BITS) && !boardStatus->isUpgrading )
+  {
+    tickTimerCount ++;
+    if( START_DANCE == pSongLightsRhythmRoutine->danceFlag )
+    {
+      pSongLightsRhythmRoutine->isNeedChangeStyleThenChange(pSongLightsRhythmRoutine->RhythmControl);
+    }
+    if( tickTimerCount >= serial_leds->leds_effect->freshTime/SERIAL_LEDS_PERIOD )
+    {
+      tickTimerCount = 0;
+      if( serial_leds->leds_effect->freshSerialLedshandle != NULL )
+      {
+        serial_leds->leds_effect->freshSerialLedshandle();
+      }
+      DISABLE_INTERRUPTS();
+      send_data();
+      ENABLE_INTERRUPTS();
+    }
+  }
+#endif
+
+    uint8_t is_charging = false;
+    for(uint8_t i = FRONT_LEFT_LED; i < LED_NONE; i++)
+    {
+        if(os_get_time() - one_wire_led[i].start_time >= one_wire_led[i].period/SYSTICK_PERIOD)
+        {
+            one_wire_led[i].tick++;
+            one_wire_led[i].start_time = os_get_time();
+        }
+        
+        if(is_charging == true)
+        //if(0)//charging
+        {
+            if(one_wire_led[i].charge_color_num <= sizeof(charge_color)/sizeof(charge_color[0]))
+            {
+                if((i != RIGHT_EYE_LED) && (i != LEFT_EYE_LED))
+                {
+                    WriteColor((one_wire_led_t)i, &charge_color[one_wire_led[i].tick % one_wire_led[i].charge_color_num]);
+                    
+                    DISABLE_INTERRUPTS();
+                    SendData((one_wire_led_t)i);      
+                    ENABLE_INTERRUPTS();
+                }
+                
+            }
+        }
+        else
+        {
+            
+            if(one_wire_led[i].tick % 2 == 1)
+            {
+                WriteColor((one_wire_led_t)i,one_wire_led[i].color);
+            }
+            else
+            {
+                WriteColor((one_wire_led_t)i,&led_color[NONE_C]);
+                //WriteColor(RIGHT_EYE_LED,&led_color[RED_C]);
+            }                        
+        }       
+    }
+  
+    if(is_charging == false)
+    //if(!0)
+    {
+        DISABLE_INTERRUPTS();
+        for(uint8_t i = FRONT_LEFT_LED; i < LED_NONE; i++)
+        {
+            SendData((one_wire_led_t)i);      
+        }
+        ENABLE_INTERRUPTS();
+    }
+    
+ 
+    
+    indicatorFreshCount ++;
+    if( indicatorFreshCount > 50 )
+    {
+        indicatorFreshCount = 0;
+        MicoGpioOutputTrigger( MICO_GPIO_SYS_LED );
+    }    
+}
+#endif
 /*********************END OF FILE**************/

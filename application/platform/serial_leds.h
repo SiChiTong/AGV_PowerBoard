@@ -7,6 +7,9 @@
 #include <stdint.h>
 #include "Common.h"
 
+//#include "platform.h"
+#include "mico_platform.h"
+
 
 #define BITBAND(addr, bitnum) 		((addr & 0xF0000000)+0x2000000+((addr &0xFFFFF)<<5)+(bitnum<<2))
 #define MEM_ADDR(addr)  					*((__IO uint32_t*)(addr))
@@ -106,24 +109,73 @@ typedef enum {
 #define BACK_LEFT_LED_NUM           5
 #define LEFT_EYE_LED_NUM            10
 #define RIGHT_EYE_LED_NUM           10
-                                
+
+#if 1
 #define  LedOutputHigh(gpio)    platform_gpio_pins[gpio].port->BSRR = (uint16_t) ( 1 << platform_gpio_pins[gpio].pin_number )
 #define  LedOutputLow(gpio)     platform_gpio_pins[gpio].port->BSRR = (uint32_t) ( 1 << platform_gpio_pins[gpio].pin_number ) << 16;      
-
+#else
+#define  LedOutputHigh(gpio)    gpio.port->BSRR = (uint16_t) ( 1 << gpio.pin_number )
+#define  LedOutputLow(gpio)     gpio.port->BSRR = (uint32_t) ( 1 << gpio.pin_number ) << 16; 
+#endif
 typedef struct
 {
     uint8_t r;
     uint8_t g;
     uint8_t b;
-}Color_t;
+}color_t;
 typedef struct 
 {
     uint16_t shine_period;
     uint8_t led_num;
     uint8_t on_off;
-    Color_t color;
+    color_t color;
 }OneWireLedCtrl_t;                                 
-                                  
+     
+
+
+
+//////////////////////////////////////////
+/////////////////////////////////////////
+typedef enum 
+{
+    RED_C = 0,
+    GREEN_C,
+    BLUE_C,
+    ORANGE_C,
+    WHITE_C,
+    CYAN_C,
+    GOLD_C,
+    NONE_C,
+  
+}led_color_t;
+typedef enum
+{
+    FRONT_LEFT_LED = 0,
+    FRONT_RIGHT_LED,
+    BACK_LEFT_LED,
+    BACK_RIGHT_LED,
+    LEFT_EYE_LED,
+    RIGHT_EYE_LED,
+    
+    
+    LED_NONE,
+    
+}one_wire_led_t;
+
+typedef struct
+{
+    mico_gpio_t     gpio;
+    color_t         *color;
+    uint8_t         charge_color_num;
+    uint16_t         period;
+    volatile uint32_t         *data_buf;
+    uint8_t         led_num;
+    uint32_t start_time;
+    uint32_t tick;
+}one_wire_led_para_t;
+/////////////////////////////////////////
+/////////////////////////////////////////
+
 typedef void (*freshSerialLedsFn_t)(void);
 
 typedef struct _leds_effect_t {

@@ -686,6 +686,20 @@ static void computeVoltage( void )
   }
 }
 
+void PrintAdcData(void)
+{
+    printf("\r\n");
+    //printf("battery percertage: %d%\r\n", boardStatus->vBatLevel);//get_percentage_from_battery_voltage( voltageConvert->bat_voltage ) );
+    for( uint8_t i = 0; i < sizeof(voltageData_t)/2; i++ )
+    {
+        if( i % 10 == 0)
+        {
+            printf("\r\n");
+        }   
+        printf( "%d: %d\t", i, *((uint16_t *)voltageConvert + i) );
+    }     
+    printf("\r\n");
+}
 static uint32_t lowVoltageStartTime = 0;
 static uint32_t  batteryPercentageStartTime = 0;
 void VolDetect_Tick( void )
@@ -747,15 +761,7 @@ void VolDetect_Tick( void )
              voltageConvert->_12V_reserve2_currents,\
              voltageConvert->_24V_reserve1_currents  );
 #else      
-      printf("\r\n");
-      printf("battery percertage: %d%\r\n", boardStatus->vBatLevel);//get_percentage_from_battery_voltage( voltageConvert->bat_voltage ) );
-      for( uint8_t i = 1; i <= sizeof(voltageData_t)/2; i++ )
-      {
-        if( i == 17 )
-           printf("\r\n");
-        printf( "%d: %d\t", i, *((uint16_t *)voltageConvert + i - 1) );
-      }     
-      printf("\r\n");
+      PrintAdcData();
 
 #endif
       if( PRINT_PEROID == voltageDebug.printType )

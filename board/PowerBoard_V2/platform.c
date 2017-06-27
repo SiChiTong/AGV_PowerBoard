@@ -140,11 +140,11 @@ const platform_gpio_t platform_gpio_pins[] =
     [MICO_GPIO_PWR_X86]             = { GPIOG,  0 },//new   
     [MICO_GPIO_PWR_RESERVE]         = { GPIOG,  1 },//new
     
-    [MICO_GPIO_5V_ROUTER_EN]           = { GPIOG,  7 },//new   
-    [MICO_GPIO_VSYS_24V_NV_EN]           = { GPIOG,  6 },//new
-    [MICO_GPIO_SLAM_EN]            = {GPIOG, 5 },//new
-    [MICO_GPIO_24V_PRINTER_EN]            = {GPIOG, 4 },//new
-    [MICO_GPIO_24V_EXTEND_EN]            = {GPIOG, 2 },//new
+    [MICO_GPIO_5V_ROUTER_EN]        = { GPIOG,  7 },//new   
+    [MICO_GPIO_VSYS_24V_NV_EN]      = { GPIOG,  6 },//new
+    [MICO_GPIO_SLAM_EN]             = {GPIOG, 5 },//new
+    [MICO_GPIO_24V_PRINTER_EN]      = {GPIOG, 4 },//new
+    [MICO_GPIO_24V_EXTEND_EN]       = {GPIOG, 2 },//new
    
     [MICO_GPIO_IRLED_PWM]           = { GPIOA,  8 },//new   
     
