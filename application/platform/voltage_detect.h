@@ -65,44 +65,10 @@ struct convert_adc_data {
   const uint8_t         fault_bit_mask_num;
 };
 
+
+
+#pragma pack(1)
 typedef struct _VoltageData_t {
-#if 0
-  uint16_t              _5V_reserve1_currents;
-  uint16_t              _12V_reserve2_currents;
-  uint16_t              bat_voltage;
-  uint16_t              sys_all_currents;
-  uint16_t              dh_12V_currents;
-  uint16_t              dh_5V_currents;
-  uint16_t              sensor_currents;
-  uint16_t              dlp_currents;
-  uint16_t              motor_5v_currents;
-  uint16_t              _24V_reserve1_currents;
-  uint16_t              _2_1_pa_currents;
-  uint16_t              pad_currents;
-  uint16_t              printer_currents;
-  uint16_t              x86_currents;
-  uint16_t              motor_currents;
-  uint16_t              _5V_led_currents;
-  uint16_t              bat_nv_currents;
-  uint16_t              _12V_nv_currents;
-  uint16_t              _12V_router_currents;
-  uint16_t              dyp_currents;
-  uint16_t              ir_led_currents;
-  uint16_t              charger_currents;
-  uint16_t              charge_currents;
-  uint16_t              _24V_voltage;
-  uint16_t              _12V_voltage;
-  uint16_t              _5V_voltage;
-  uint16_t              _5V_currents;
-  uint16_t              _12V_currents;
-  uint16_t              _24V_currents;
-  int16_t               ambient_temperature;
-  int16_t               _5V_regulator_temp;
-  int16_t               _12V_regulator_temp;
-  int16_t               _24V_regulator_temp;
-  int16_t               aiui_currents;
-  int16_t               _5V_router_currents;
-#endif
   uint16_t              _5V_reserve1_currents;
   uint16_t              _24V_nv_currents;
   uint16_t              _12V_nv_currents;
@@ -142,12 +108,14 @@ typedef struct _VoltageData_t {
   
   uint16_t              _12V_voltage;
   int16_t               _5V_voltage;
-  int16_t               bat_voltage;
+  int32_t               bat_voltage;
   int16_t               sensor_board_currents;
   
   int16_t               _5V_router_currents;
  
 } voltageData_t;
+#pragma pack()
+
 
 typedef struct _voltageConvert_t {
 #if 0

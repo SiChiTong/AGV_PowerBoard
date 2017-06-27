@@ -107,12 +107,20 @@ const platform_gpio_t platform_gpio_pins[] =
     [MICO_GPIO_SWITCH_SEL1]         = { GPIOG, 10 },//OK
     [MICO_GPIO_SWITCH_SEL2]         = { GPIOG, 11 },//OK
     [MICO_GPIO_SWITCH_SEL3]         = { GPIOG, 12 },//OK
-    [MICO_GPIO_LED_1]               = { GPIOC, 7 },//new
-    [MICO_GPIO_LED_2]               = { GPIOC, 6 },//new
-    [MICO_GPIO_LED_3]               = { GPIOB, 15},//new
-    [MICO_GPIO_LED_4]               = { GPIOB, 14},//new
-    [MICO_GPIO_LED_5]               = { GPIOB, 13},//new
-    [MICO_GPIO_LED_6]               = { GPIOB, 12},//new
+    
+    
+
+    
+    
+    [MICO_GPIO_FRONT_LEFT_LED]      = { GPIOB, 13},//{ GPIOC,  7 },
+    [MICO_GPIO_FRONT_RIGHT_LED]     = { GPIOC, 6 },
+  
+    [MICO_GPIO_BACK_RIGHT_LED]      = { GPIOC,  7 },//{ GPIOB, 15 },
+    [MICO_GPIO_BACK_LEFT_LED]       = { GPIOB, 12},//{ GPIOB, 14},
+  
+    [MICO_GPIO_LEFT_EYE_LED]        = { GPIOB, 15 },//{ GPIOB, 13},
+    [MICO_GPIO_RIGHT_EYE_LED]       = { GPIOB, 14},//{ GPIOB, 12},
+    
     [MICO_GPIO_5V_MOTOR_EN]         = { GPIOE, 2 },//new
     [MICO_GPIO_5V_RECHARGE_EN]      = { GPIOE, 3 },//new
     [MICO_GPIO_5V_SENSOR_BOARD_EN]  = { GPIOE, 5 },//new
@@ -173,31 +181,32 @@ ADC_HandleTypeDef adc_handles[2];
 
 const platform_adc_t platform_adc_peripherals[] =
 {
-    [MICO_ADC_5V_RESERVE_C]       = {ADC1, ADC_CHANNEL_0, &adc_handles[0], 1, &platform_gpio_pins[MICO_GPIO_5V_RES1_ADC]},
+    [MICO_ADC_5V_RESERVE_C]     = {ADC1, ADC_CHANNEL_0, &adc_handles[0], 1, &platform_gpio_pins[MICO_GPIO_5V_RES1_ADC]},
     //[MICO_ADC_12V_RES2]      = {ADC1, ADC_CHANNEL_1, &adc_handles[0], 2, &platform_gpio_pins[MICO_GPIO_12V_RES2_ADC]},
-    [MICO_ADC_24V_NV_C]        = {ADC1, ADC_CHANNEL_2, &adc_handles[0], 2, &platform_gpio_pins[MICO_GPIO_VSYS_24V_NV_ADC]},
-    [MICO_ADC_12V_NV_C]        = {ADC1, ADC_CHANNEL_3, &adc_handles[0], 3, &platform_gpio_pins[MICO_GPIO_12V_NV_ADC]},
-    [MICO_ADC_48V_EXTEND_C]    = {ADC1, ADC_CHANNEL_4, &adc_handles[0], 4, &platform_gpio_pins[MICO_GPIO_48V_EXTEND_ADC]},   
-    [MICO_ADC_12V_EXTEND_C]           = {ADC1, ADC_CHANNEL_5, &adc_handles[0], 5, &platform_gpio_pins[MICO_GPIO_12V_EXTEND_ADC]},  
+    [MICO_ADC_24V_NV_C]         = {ADC1, ADC_CHANNEL_2, &adc_handles[0], 2, &platform_gpio_pins[MICO_GPIO_VSYS_24V_NV_ADC]},
+    [MICO_ADC_12V_NV_C]         = {ADC1, ADC_CHANNEL_3, &adc_handles[0], 3, &platform_gpio_pins[MICO_GPIO_12V_NV_ADC]},
+    [MICO_ADC_48V_EXTEND_C]     = {ADC1, ADC_CHANNEL_4, &adc_handles[0], 4, &platform_gpio_pins[MICO_GPIO_48V_EXTEND_ADC]},   
+    [MICO_ADC_12V_EXTEND_C]     = {ADC1, ADC_CHANNEL_5, &adc_handles[0], 5, &platform_gpio_pins[MICO_GPIO_12V_EXTEND_ADC]},  
+    [MICO_ADC_RECHARGE_C]       = {ADC1, ADC_CHANNEL_6, &adc_handles[0], 6, &platform_gpio_pins[MICO_GPIO_RECHARGE_ADC]},   
     //[MICO_ADC_SENSOR]        = {ADC1, ADC_CHANNEL_6, &adc_handles[0], 7, &platform_gpio_pins[MICO_GPIO_SENSOR_ADC]},
     //[MICO_ADC_DLP]           = {ADC1, ADC_CHANNEL_7, &adc_handles[0], 8, &platform_gpio_pins[MICO_GPIO_DLP_ADC]},
-    [MICO_ADC_MOTOR_C]         = {ADC1, ADC_CHANNEL_8, &adc_handles[0], 6, &platform_gpio_pins[MICO_GPIO_MOTOR_ADC]},  
-    [MICO_ADC_SLAM_C]      = {ADC1, ADC_CHANNEL_9, &adc_handles[0], 7, &platform_gpio_pins[MICO_GPIO_24V_SLAM_ADC]},   
-    [MICO_ADC_2_1_PA_C]        = {ADC1, ADC_CHANNEL_10, &adc_handles[0], 8, &platform_gpio_pins[MICO_GPIO_2_1_PA_ADC]},   
-    [MICO_ADC_PAD_C]           = {ADC1, ADC_CHANNEL_11, &adc_handles[0], 9, &platform_gpio_pins[MICO_GPIO_PAD_ADC]}, 
-    [MICO_ADC_PRINTER_C]       = {ADC1, ADC_CHANNEL_12, &adc_handles[0], 10, &platform_gpio_pins[MICO_GPIO_PRINTER_ADC]},    
-    [MICO_ADC_X86_C]           = {ADC1, ADC_CHANNEL_13, &adc_handles[0], 11, &platform_gpio_pins[MICO_GPIO_X86_ADC]},   
-    [MICO_ADC_IRLED_C]         = {ADC1, ADC_CHANNEL_14, &adc_handles[0], 12, &platform_gpio_pins[MICO_GPIO_IRLED_ADC]},   
-    [MICO_ADC_5V_LEDS_C]          = {ADC1, ADC_CHANNEL_15, &adc_handles[0], 13, &platform_gpio_pins[MICO_GPIO_5V_LEDS_ADC]},
+    [MICO_ADC_MOTOR_C]          = {ADC1, ADC_CHANNEL_8, &adc_handles[0], 7, &platform_gpio_pins[MICO_GPIO_MOTOR_ADC]},  
+    [MICO_ADC_SLAM_C]           = {ADC1, ADC_CHANNEL_9, &adc_handles[0], 8, &platform_gpio_pins[MICO_GPIO_24V_SLAM_ADC]},   
+    [MICO_ADC_2_1_PA_C]         = {ADC1, ADC_CHANNEL_10, &adc_handles[0], 9, &platform_gpio_pins[MICO_GPIO_2_1_PA_ADC]},   
+    [MICO_ADC_PAD_C]            = {ADC1, ADC_CHANNEL_11, &adc_handles[0], 10, &platform_gpio_pins[MICO_GPIO_PAD_ADC]}, 
+    [MICO_ADC_PRINTER_C]        = {ADC1, ADC_CHANNEL_12, &adc_handles[0], 11, &platform_gpio_pins[MICO_GPIO_PRINTER_ADC]},    
+    [MICO_ADC_X86_C]            = {ADC1, ADC_CHANNEL_13, &adc_handles[0], 12, &platform_gpio_pins[MICO_GPIO_X86_ADC]},   
+    [MICO_ADC_IRLED_C]          = {ADC1, ADC_CHANNEL_14, &adc_handles[0], 13, &platform_gpio_pins[MICO_GPIO_IRLED_ADC]},   
+    [MICO_ADC_5V_LEDS_C]        = {ADC1, ADC_CHANNEL_15, &adc_handles[0], 14, &platform_gpio_pins[MICO_GPIO_5V_LEDS_ADC]},
 
     
-    [MICO_ADC_RECHARGE_C]        = {ADC3, ADC_CHANNEL_1, &adc_handles[1], 1, &platform_gpio_pins[MICO_GPIO_RECHARGE_ADC]},   
-    [MICO_ADC_24V_EXTEND_C]        = {ADC3, ADC_CHANNEL_2, &adc_handles[1], 2, &platform_gpio_pins[MICO_GPIO_24V_EXTEND_ADC]},
-    [MICO_ADC_CHARGE_C]        = {ADC3, ADC_CHANNEL_4, &adc_handles[1], 3, &platform_gpio_pins[MICO_GPIO_CHARGE_ADC]},  
-    [MICO_ADC_BATIN_C]         = {ADC3, ADC_CHANNEL_5, &adc_handles[1], 4, &platform_gpio_pins[MICO_GPIO_BATIN_ADC]},
-    [MICO_ADC_VBUS_C]          = {ADC3, ADC_CHANNEL_6, &adc_handles[1], 5, &platform_gpio_pins[MICO_GPIO_VBUS_ADC]},
-    [MICO_ADC_BAT_MOTOR_C]     = {ADC3, ADC_CHANNEL_7, &adc_handles[1], 6, &platform_gpio_pins[MICO_GPIO_BAT_MOTOR_ADC]},
-    [MICO_ADC_MULTI_CHANNAL]        = {ADC3, ADC_CHANNEL_8, &adc_handles[1], 7, &platform_gpio_pins[MICO_GPIO_MULTI_CHANNEL_ADC]},
+    //[MICO_ADC_RECHARGE_C]       = {ADC3, ADC_CHANNEL_1, &adc_handles[1], 1, &platform_gpio_pins[MICO_GPIO_RECHARGE_ADC]},   
+    [MICO_ADC_24V_EXTEND_C]     = {ADC3, ADC_CHANNEL_2, &adc_handles[1], 1, &platform_gpio_pins[MICO_GPIO_24V_EXTEND_ADC]},
+    [MICO_ADC_CHARGE_C]         = {ADC3, ADC_CHANNEL_4, &adc_handles[1], 2, &platform_gpio_pins[MICO_GPIO_CHARGE_ADC]},  
+    [MICO_ADC_BATIN_C]          = {ADC3, ADC_CHANNEL_5, &adc_handles[1], 3, &platform_gpio_pins[MICO_GPIO_BATIN_ADC]},
+    [MICO_ADC_VBUS_C]           = {ADC3, ADC_CHANNEL_6, &adc_handles[1], 4, &platform_gpio_pins[MICO_GPIO_VBUS_ADC]},
+    [MICO_ADC_BAT_MOTOR_C]      = {ADC3, ADC_CHANNEL_7, &adc_handles[1], 5, &platform_gpio_pins[MICO_GPIO_BAT_MOTOR_ADC]},
+    [MICO_ADC_MULTI_CHANNAL]    = {ADC3, ADC_CHANNEL_8, &adc_handles[1], 6, &platform_gpio_pins[MICO_GPIO_MULTI_CHANNEL_ADC]},
 };
 
 TIM_HandleTypeDef tim_handles[1];
@@ -581,7 +590,7 @@ void init_platform( void )
   //  Initialise switch
   pin_config.gpio_speed = GPIO_SPEED_MEDIUM;
   pin_config.gpio_mode = GPIO_MODE_IT_RISING_FALLING;
-  pin_config.gpio_pull = GPIO_PULLUP;//GPIO_NOPULL;//GPIO_PULLDOWN;
+  pin_config.gpio_pull = GPIO_PULLDOWN;//GPIO_NOPULL;//GPIO_PULLDOWN;
   MicoGpioInitialize( MICO_GPIO_PWRKEY, &pin_config );
   MicoGpioEnableIRQ( MICO_GPIO_PWRKEY , IRQ_TRIGGER_BOTH_EDGES, _switch_irq_handler, NULL);
 }

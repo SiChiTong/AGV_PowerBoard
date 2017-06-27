@@ -10,11 +10,11 @@
 
 #include "multi_channel_detection.h"
 
-#define   ADC1_DMA_CHANNELS_NUM  (13)
+#define   ADC1_DMA_CHANNELS_NUM  (14)
 #define   FILTER_TIMES          (5)
 #define   ADC1_DMA_BURRER_SIZE   (ADC1_DMA_CHANNELS_NUM*FILTER_TIMES)
 
-#define   ADC3_DMA_CHANNELS_NUM  (7)
+#define   ADC3_DMA_CHANNELS_NUM  (6)
 #define   FILTER_TIMES          (5)
 #define   ADC3_DMA_BURRER_SIZE   (ADC3_DMA_CHANNELS_NUM*FILTER_TIMES)
 
@@ -49,6 +49,8 @@ OSStatus select_multi_channel( mico_adc_t adc )
   OSStatus err = kNoErr;
   if ( adc >= MICO_ADC_MAX || adc <  MICO_ADC_24V_TS )
     return kUnsupportedErr;
+  
+  MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_SWITCH_EN );
   switch( adc )
   {
   case MICO_ADC_24V_TS:
@@ -135,8 +137,8 @@ OSStatus select_multi_channel( mico_adc_t adc )
   return err;
 }
 
-#define ADC1_USED_CHANNELELS    (13)
-#define ADC3_USED_CHANNELELS    (7)
+#define ADC1_USED_CHANNELELS    (14)
+#define ADC3_USED_CHANNELELS    (6)
 #define SAMPLE_CYCLE            (235)
 
 OSStatus multi_channel_adc_dma_init( void )
@@ -178,10 +180,10 @@ OSStatus multi_channel_adc_dma_init( void )
   err = MicoAdcStreamInitializeLate( MICO_ADC_5V_LEDS_C, (void *)adc1_dma_buffer, ADC1_DMA_BURRER_SIZE );
   require_noerr_quiet( err, exit );
 /*----------------------------------------------------------------------------*/  
-  err = MicoAdcStreamInitializeEarly( MICO_ADC_RECHARGE_C, ADC3_USED_CHANNELELS );
+  err = MicoAdcStreamInitializeEarly( MICO_ADC_24V_EXTEND_C, ADC3_USED_CHANNELELS );
   require_noerr_quiet( err, exit );
   
-  err = MicoAdcStreamAddChannel( MICO_ADC_RECHARGE_C, SAMPLE_CYCLE );
+  err = MicoAdcStreamAddChannel( MICO_ADC_24V_EXTEND_C, SAMPLE_CYCLE );
   require_noerr_quiet( err, exit );
   err = MicoAdcStreamAddChannel( MICO_ADC_24V_EXTEND_C, SAMPLE_CYCLE );
   require_noerr_quiet( err, exit );

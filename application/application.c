@@ -83,7 +83,7 @@ int main( void )
   for(;;)
   {
     Platform_Tick();
-    protocol_period();
+    protocol_period(); 
     VolDetect_Tick();
     can_protocol_period();
     Main_Menu(); 

@@ -169,12 +169,16 @@ typedef enum
     MICO_GPIO_24V_PRINTER_EN,   //new
     MICO_GPIO_24V_EXTEND_EN,    //new
     
-    MICO_GPIO_LED_1,//new
-    MICO_GPIO_LED_2,//new
-    MICO_GPIO_LED_3,//new
-    MICO_GPIO_LED_4,//new
-    MICO_GPIO_LED_5,//new
-    MICO_GPIO_LED_6,//new
+
+    
+    MICO_GPIO_FRONT_LEFT_LED,
+    MICO_GPIO_FRONT_RIGHT_LED,
+    MICO_GPIO_BACK_LEFT_LED,
+    MICO_GPIO_BACK_RIGHT_LED,
+    MICO_GPIO_LEFT_EYE_LED,
+    MICO_GPIO_RIGHT_EYE_LED,
+    
+    
 
     MICO_GPIO_CHARGE_ADC,           //new     
     MICO_GPIO_BATIN_ADC,            //new
@@ -197,6 +201,8 @@ typedef enum
     MICO_GPIO_24V_EXTEND_ADC,       //new
     MICO_GPIO_5V_LEDS_ADC,           //new
     MICO_GPIO_24V_SLAM_ADC,         //new
+    
+    
     
 
     MICO_GPIO_MAX, /* Denotes the total number of GPIO port aliases. Not a valid GPIO alias */
@@ -255,7 +261,7 @@ typedef enum
     
     MICO_ADC_48V_EXTEND_C,  //4
     MICO_ADC_12V_EXTEND_C,  //5
-    
+    MICO_ADC_RECHARGE_C,    //6
     MICO_ADC_MOTOR_C,       //8
     MICO_ADC_SLAM_C,        //9 
     MICO_ADC_2_1_PA_C,      //10
@@ -275,7 +281,7 @@ typedef enum
     MICO_ADC_SWITCH,
 #else   
     
-    MICO_ADC_RECHARGE_C,    //1
+    
     MICO_ADC_24V_EXTEND_C,  //2
     
     MICO_ADC_CHARGE_C,      //channal 4
@@ -353,7 +359,7 @@ typedef enum
 #define STDIO_UART          MICO_UART_3
 #define STDIO_UART_BAUDRATE (115200) 
 #else
-#define STDIO_UART          MICO_UART_3
+#define STDIO_UART          MICO_UART_2
 #define STDIO_UART_BAUDRATE (115200) 
 #endif
 

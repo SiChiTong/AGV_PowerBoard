@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include "Common.h"
 
+
 #define BITBAND(addr, bitnum) 		((addr & 0xF0000000)+0x2000000+((addr &0xFFFFF)<<5)+(bitnum<<2))
 #define MEM_ADDR(addr)  					*((__IO uint32_t*)(addr))
 
@@ -98,7 +99,31 @@ typedef enum {
 
 #define delay_ms          HAL_Delay
 #endif
+                               
+#define FRONT_LEFT_LED_NUM          16
+#define FRONT_RIGHT_LED_NUM         16
+#define BACK_RIGHT_LED_NUM          5
+#define BACK_LEFT_LED_NUM           5
+#define LEFT_EYE_LED_NUM            10
+#define RIGHT_EYE_LED_NUM           10
+                                
+#define  LedOutputHigh(gpio)    platform_gpio_pins[gpio].port->BSRR = (uint16_t) ( 1 << platform_gpio_pins[gpio].pin_number )
+#define  LedOutputLow(gpio)     platform_gpio_pins[gpio].port->BSRR = (uint32_t) ( 1 << platform_gpio_pins[gpio].pin_number ) << 16;      
 
+typedef struct
+{
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+}Color_t;
+typedef struct 
+{
+    uint16_t shine_period;
+    uint8_t led_num;
+    uint8_t on_off;
+    Color_t color;
+}OneWireLedCtrl_t;                                 
+                                  
 typedef void (*freshSerialLedsFn_t)(void);
 
 typedef struct _leds_effect_t {
