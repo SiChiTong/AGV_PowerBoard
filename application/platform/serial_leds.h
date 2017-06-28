@@ -166,12 +166,12 @@ typedef struct
 {
     mico_gpio_t     gpio;
     color_t         *color;
-    uint8_t         charge_color_num;
-    uint16_t         period;
-    volatile uint32_t         *data_buf;
+    uint8_t         color_number;
+    uint16_t        period;
+    __IO uint32_t   *data_buf;
     uint8_t         led_num;
-    uint32_t start_time;
-    uint32_t tick;
+    uint32_t        start_time;
+    uint32_t        tick;
 }one_wire_led_para_t;
 /////////////////////////////////////////
 /////////////////////////////////////////
