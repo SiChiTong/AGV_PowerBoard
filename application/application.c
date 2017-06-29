@@ -58,40 +58,37 @@ void test_power_tick( void );
 
 int main( void )
 {
-  init_clocks();
-  init_architecture();
-  init_platform();
-  
-  printf ( menu, MODEL, SW_VERSION, HARDWARE_REVISION );
-
-  os_PowerBoard_log( "System clock = %d Hz",HAL_RCC_GetHCLKFreq() );
-
-  bsp_Init();
-  init_platform();
-  Platform_Init();
-  SerialLeds_Init();
-  VolDetect_Init();
-  Protocol_Init();
-  startTps611xx();
-  MicoCanInitialize( MICO_CAN1 );
-  if( !isNeedAutoBoot() )
-  {
-    PowerOnDevices();
-  }
-  
-  //PowerOnDevices();
-  for(;;)
-  {
-    Platform_Tick();
-    protocol_period(); 
-    VolDetect_Tick();
-    can_protocol_period();
-    Main_Menu(); 
+    delay_us(100000);
+    init_clocks();
     
-#ifdef MIKE_TEST
-    test_power_tick();
-#endif
-  }
+    init_architecture();
+    init_platform();
+    printf ( menu, MODEL, SW_VERSION, HARDWARE_REVISION );
+
+    os_PowerBoard_log( "System clock = %d Hz",HAL_RCC_GetHCLKFreq() );
+
+    bsp_Init();
+    
+    Platform_Init();
+    SerialLeds_Init();
+    VolDetect_Init();
+    Protocol_Init();
+    startTps611xx();
+    MicoCanInitialize( MICO_CAN1 );
+    if( !isNeedAutoBoot() )
+    {
+        PowerOnDevices();
+    } 
+
+    //PowerOnDevices();
+    for(;;)
+    {
+        Platform_Tick();
+        protocol_period(); 
+        VolDetect_Tick();
+        can_protocol_period();
+        Main_Menu(); 
+    }
 }
 #if 0//def MIKE_TEST
 struct test_power_t {

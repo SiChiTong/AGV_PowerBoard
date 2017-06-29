@@ -1088,6 +1088,26 @@ static void WriteColor(one_wire_led_t led, color_t *color)
 // period: 10ms
 void serialLedsTick( void )
 {
+#if 0
+    platform_pin_config_t pin_config;
+    pin_config.gpio_speed = GPIO_SPEED_HIGH;
+    pin_config.gpio_mode = GPIO_MODE_OUTPUT_PP;
+    pin_config.gpio_pull = GPIO_PULLUP;
+
+
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_FRONT_LEFT_LED, &pin_config );
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_FRONT_RIGHT_LED, &pin_config );
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_BACK_RIGHT_LED, &pin_config );
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_BACK_LEFT_LED, &pin_config );
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_LEFT_EYE_LED, &pin_config );
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_RIGHT_EYE_LED, &pin_config );
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_FRONT_LEFT_LED );
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_FRONT_RIGHT_LED );
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_BACK_RIGHT_LED );
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_BACK_LEFT_LED );
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_LEFT_EYE_LED );
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_RIGHT_EYE_LED );
+#endif
     for(uint8_t i = FRONT_LEFT_LED; i < LED_NONE; i++)
     {
         if(os_get_time() - one_wire_led[i].start_time >= one_wire_led[i].period/SYSTICK_PERIOD)
@@ -1101,9 +1121,11 @@ void serialLedsTick( void )
             //WriteColor((one_wire_led_t)i, &charge_color[one_wire_led[i].tick % one_wire_led[i].color_number]);
 
             WriteColor((one_wire_led_t)i, &(one_wire_led[i].color[one_wire_led[i].tick % one_wire_led[i].color_number]));  
+#if 0
             DISABLE_INTERRUPTS();
             SendData((one_wire_led_t)i);      
             ENABLE_INTERRUPTS();
+#endif
         }     
     }
   

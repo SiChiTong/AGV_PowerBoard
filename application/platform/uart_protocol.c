@@ -73,6 +73,7 @@ OSStatus Protocol_Init( void )//( serial_t *serial )
 //    protocol_log("protocol had initialized, deinit and init again");
   }
   
+  
   serial->rx_info = &rxInfoInRam;
   require_action( serial->rx_info , exit, err = kGeneralErr );
   serial->uart_serial = &uartSerialInRam;
@@ -661,7 +662,7 @@ static OSStatus ackFwVersionInfoFrameProcess( serial_t *serial )
 {
   OSStatus err = kNoErr;
   uint8_t length = sizeof(ackVersionInfoFrame_t);
-  uint8_t swVersion[12] = SW_VERSION;
+  uint8_t swVersion[15] = SW_VERSION;
   uint8_t hwVersion[3] = HW_VERSION;
   ackVersionInfoFrame_t   *ackVersionInfoFrame;
 
@@ -1012,7 +1013,48 @@ static OSStatus ackReadErrChannelFrameProcess( serial_t *serial )
 exit:
   return err;
 }
-
+uint8_t ProcessUartData(const uint8_t *const in_data, const uint8_t in_data_len,  const uint8_t  volatile*out_data)
+{
+    uint8_t detectType = in_data[0];
+    switch( detectType )
+    {
+        case FRAME_TYPE_LEDS_CONTROL:
+            boardStatus->isUpgrading = 0;
+            recSerialLedsFrameProcess( serial );
+            break;
+        case FRAME_TYPE_S_SYS_V_BAT:
+            recReadSysStatusVbatFrameProcess( serial );
+            break;
+        case FRAME_TYPE_MODULE_STATE:
+            recReadModuleStatusFrameProcess( serial );
+            break;
+        case FRAME_TYPE_FAULT_BIT:
+            recReadFaultStatusFrameProcess( serial );
+            break;
+        case FRAME_TYPE_MODULE_CONTROL:
+            recModuleControlFrameProcess( serial );
+            break;
+        case FRAME_TYPE_VERSION_INFO:
+            recVersionInfoFrameProcess( serial );
+            break;
+        case FRAME_TYPE_FW_UPGRADE:
+            recFirmwareUpgradeProcess( serial );
+            break;  
+        case FRAME_TYPE_TEST_CURRENT:
+            recTestCurrentCmdFrame( serial );
+            break;
+        case FRAME_TYPE_READ_ERR_CURRENT:
+            recReadErrChannelFrameProcess( serial );
+            break;
+        case FRAME_TYPE_IRLED_CONTROL:
+            recIRLedControlFrameProcess( serial );
+            break;
+        default:
+            ackNotSupportFrameProcess( serial, detectType );
+            break;
+    }
+    return 0;
+}
 static int is_receive_right_frame( void  );
 static int is_receive_right_frame( void  )
 { 
@@ -1033,6 +1075,8 @@ void protocol_period( void )
 {
   uint8_t checksum;
   uint8_t detectType;
+  //uint8_t *rcv_info = NULL;
+  //uint8_t *send_info = NULL;
   
   if( !serial->isSerialInitialized )
   {
@@ -1123,7 +1167,7 @@ void protocol_period( void )
     protocol_log("check sum not match") );
 
   detectType = serial->rx_info->bufferHeader.detectType;
-  
+#if 0  
   switch( detectType )
   {
   case FRAME_TYPE_LEDS_CONTROL:
@@ -1161,6 +1205,7 @@ void protocol_period( void )
         ackNotSupportFrameProcess( serial, detectType );
     break;
   }
+#endif
 #if 1
   if( serial->rx_info->rxCount )
   {

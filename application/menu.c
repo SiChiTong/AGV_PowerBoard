@@ -449,102 +449,80 @@ void Main_Menu(void)
         printf("\r\n triggered sys led\r\n");
       }
       else if (findCommandPara(cmdbuf, "1", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_5V_EN );
-        printf("\r\n triggered 5V \r\n");
+        MicoGpioOutputTrigger( MICO_GPIO_5V_RECHARGE_EN   );
+        printf("\r\n triggered 5V_RECHARGE_EN \r\n");
       }
       else if (findCommandPara(cmdbuf, "2", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_12V_EN );
-        printf("\r\n triggered 12V \r\n");
+        MicoGpioOutputTrigger( MICO_GPIO_5V_SENSOR_BOARD_EN  );
+        printf("\r\n triggered 5V_SENSOR_BOARD_EN \r\n");
       }
       else if (findCommandPara(cmdbuf, "3", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_24V_EN );
-        printf("\r\n triggered 24V \r\n");
+        MicoGpioOutputTrigger( MICO_GPIO_5V_SWITCH_EN  );
+        printf("\r\n triggered 5V_SWITCH_EN \r\n");
       }
-#if 0
+#if 1
       else if (findCommandPara(cmdbuf, "4", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_MOTOR_EN );
-        printf("\r\n triggered 5v motor \r\n");
+        MicoGpioOutputTrigger( MICO_GPIO_5V_ROUTER_EN    );
+        printf("\r\n triggered 5V_ROUTER_EN \r\n");
       }
       else if (findCommandPara(cmdbuf, "5", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_SENSOR_EN );
-        printf("\r\n triggered sensor \r\n");
+        MicoGpioOutputTrigger( MICO_GPIO_5V_EN  );
+        printf("\r\n triggered 5V_EN \r\n");
       }
       else if (findCommandPara(cmdbuf, "6", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_LEDS_EN );
-        printf("\r\n triggered leds \r\n");
+        MicoGpioOutputTrigger( MICO_GPIO_12V_PAD_EN  );
+        printf("\r\n triggered 12V_PAD_EN \r\n");
       }
       else if (findCommandPara(cmdbuf, "7", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_5V_RES_EN );
-        printf("\r\n triggered 5V reserve \r\n");
+        MicoGpioOutputTrigger( MICO_GPIO_12V_2_1_PA_EN  );
+        printf("\r\n triggered 12V_2_1_PA_EN \r\n");
       }
       else if (findCommandPara(cmdbuf, "8", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_PAD_EN );
-        printf("\r\n triggered pad \r\n");
+        MicoGpioOutputTrigger( MICO_GPIO_12V_EXTEND_EN  );
+        printf("\r\n triggered 12V_EXTEND_EN \r\n");
       }
       else if (findCommandPara(cmdbuf, "9", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_12V_ROUTER_EN );
-        printf("\r\n triggered 12V router \r\n");
+        MicoGpioOutputTrigger( MICO_GPIO_12V_X86_EN  );
+        printf("\r\n triggered 12V_X86_EN \r\n");
       }
       else if (findCommandPara(cmdbuf, "A", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_2_1_PA_EN );
-        printf("\r\n triggered 2.1 pa \r\n");
+        MicoGpioOutputTrigger( MICO_GPIO_12V_NV_EN  );
+        printf("\r\n triggered 12V_NV_EN \r\n");
       }
       else if (findCommandPara(cmdbuf, "B", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_DYP_EN );
-        printf("\r\n triggered dyp \r\n");
+        MicoGpioOutputTrigger( MICO_GPIO_12V_EN  );
+        printf("\r\n triggered 12V_EN \r\n");
       }
       else if (findCommandPara(cmdbuf, "C", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_X86_EN );
-        printf("\r\n triggered x86 \r\n");
+        MicoGpioOutputTrigger( MICO_GPIO_24V_EN  );
+        printf("\r\n triggered 24V_EN \r\n");
       }
       else if (findCommandPara(cmdbuf, "D", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_NV_EN );
-        printf("\r\n triggered nv \r\n");
+        MicoGpioOutputTrigger( MICO_GPIO_24V_PRINTER_EN     );
+        printf("\r\n triggered 24V_PRINTER_EN \r\n");
       }
       else if (findCommandPara(cmdbuf, "E", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_12V_RES_EN );
-        printf("\r\n triggered 12v reserve \r\n");
+        MicoGpioOutputTrigger( MICO_GPIO_24V_EXTEND_EN    );
+        printf("\r\n triggered 24V_EXTEND_EN \r\n");
       }
       else if (findCommandPara(cmdbuf, "F", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_PRINTER_EN );
-        printf("\r\n triggered printer \r\n");
+        MicoGpioOutputTrigger( MICO_GPIO_VSYS_24V_NV_EN  );
+        printf("\r\n triggered 24V_NV_EN \r\n");
       }
       else if (findCommandPara(cmdbuf, "G", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_24V_RES_EN );
-        printf("\r\n triggered 24V reserve \r\n");
+        MicoGpioOutputTrigger( MICO_GPIO_RECHARGE_LED  );
+        printf("\r\n triggered RECHARGE_LED \r\n");
       }
       else if (findCommandPara(cmdbuf, "H", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_BAT_NV_EN );
-        printf("\r\n triggered bat nv \r\n");
+        MicoGpioOutputTrigger( MICO_GPIO_SLAM_EN);
+        printf("\r\n triggered SLAM_EN \r\n");
       }
       else if (findCommandPara(cmdbuf, "I", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_PWR_NV );
-        printf("\r\n triggered PWR NV \r\n");
+        MicoGpioOutputTrigger( MICO_GPIO_485_EN  );
+        printf("\r\n triggered 485_EN \r\n");
       }
-      else if (findCommandPara(cmdbuf, "J", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_PWR_DLP );
-        printf("\r\n triggered PWR DLP \r\n");
-      }
-      else if (findCommandPara(cmdbuf, "K", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_PWR_PAD );
-        printf("\r\n triggered PWR PAD \r\n");
-      }
-      else if (findCommandPara(cmdbuf, "L", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_PWR_X86 );
-        printf("\r\n triggered PWR X86 \r\n");
-      }
-      else if (findCommandPara(cmdbuf, "M", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_PWR_RES );
-        printf("\r\n triggered PWR RES \r\n");
-      }
-      else if (findCommandPara(cmdbuf, "N", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_DLP_EN );
-        printf("\r\n triggered dlp \r\n");
-      }
-      else if (findCommandPara(cmdbuf, "O", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_AIUI_EN );
-        printf("\r\n triggered aiui \r\n");
-      }
+      
+
 #endif
       else if (findCommandPara(cmdbuf, "P", NULL, 0) != -1){
         MicoGpioOutputTrigger( MICO_GPIO_5V_ROUTER_EN );
@@ -606,32 +584,25 @@ void Main_Menu(void)
         }
       }
       else {
-        printf(   "\r\n8 -0: sys led\r\n"
-                      "8 -1: 5v\r\n"
-                      "8 -2: 12v\r\n"
-                      "8 -3: 24v\r\n"
-                      "8 -4: 5v motor\r\n"
-                      "8 -5: sensor\r\n"
-                      "8 -6: leds\r\n"
-                      "8 -7: 5v reserve\r\n"
-                      "8 -8: pad\r\n"
-                      "8 -9: 12V_router\r\n"
-                      "8 -A: 2.1 pa\r\n"
-                      "8 -B: dyp\r\n"
-                      "8 -C: x86\r\n"
-                      "8 -D: nv\r\n"
-                      "8 -E: 12v reserve\r\n"
-                      "8 -F: printer\r\n"                      
-                      "8 -G: 24v reserve\r\n"
-                      "8 -H: bat nv\r\n"
-                      "8 -I: PWR NV\r\n"
-                      "8 -J: PWR DLP\r\n"
-                      "8 -K: PWR PAD\r\n"
-                      "8 -L: PWR X86\r\n"
-                      "8 -M: PWR RES\r\n"
-                      "8 -N: DLP\r\n"
-                      "8 -O: AIUI\r\n"
-                      "8 -P: 5V_ROUTER\r\n");
+        printf(   "\r\n8 -0: 5V_MOTOR_EN\r\n"
+                      "8 -1: 5V_RECHARGE_EN\r\n"
+                      "8 -2: 5V_SENSOR_BOARD_EN\r\n"
+                      "8 -3: 5V_SWITCH_EN\r\n"
+                      "8 -4: 5V_ROUTER_EN\r\n"
+                      "8 -5: 5V_EN\r\n"
+                      "8 -6: 12V_PAD_EN\r\n"
+                      "8 -7: 12V_2_1_PA_EN reserve\r\n"
+                      "8 -8: 12V_EXTEND_EN\r\n"
+                      "8 -9: 12V_X86_EN\r\n"
+                      "8 -A: 12V_NV_EN\r\n"
+                      "8 -B: 12V_EN\r\n"
+                      "8 -C: 24V_EN\r\n"
+                      "8 -D: 24V_PRINTER_EN\r\n"
+                      "8 -E: 24V_EXTEND_EN\r\n"
+                      "8 -F: VSYS_24V_NV_EN\r\n"                      
+                      "8 -G: RECHARGE_LED\r\n"
+                      "8 -H: SLAM_EN nv\r\n"
+                      "8 -I: 485_EN\r\n");
       }
       break;
     }
@@ -668,44 +639,49 @@ void Main_Menu(void)
     else if( strcmp(cmdname, "SHOW") == 0 || strcmp(cmdname, "A") == 0 )
     {
       voltageDebug.printType = PRINT_NO;
-#if 0
+#if 1
       printf("\r\nadc sequence num: (mV)\r\n");
       printf("1: _5V_reserve1_currents\r\n");
-      printf("2: _12V_reserve2_currents\r\n");
-      printf("3: bat_voltage\r\n");
-      printf("4: sys_all_currents\r\n");
-      printf("5: dh_12V_currents\r\n");
-      printf("6: dh_5V_currents\r\n");
-      printf("7: sensor_currents\r\n");
-      printf("8: dlp_currents\r\n");
-      printf("9: motor_5v_currents\r\n");
-      printf("10: _24V_reserve1_currents\r\n");
-      printf("11: _2_1_pa_currents\r\n");
-      printf("12: pad_currents\r\n");
-      printf("13: printer_currents\r\n");
-      printf("14: x86_currents\r\n");
-      printf("15: motor_currents\r\n");
-      printf("16: _5V_led_currents\r\n");
-
-      printf("17: bat_nv_currents\r\n");
-      printf("18: _12V_nv_currents\r\n");
-      printf("19: _12V_router_currents\r\n");
-      printf("20: dyp_currents\r\n");
-      printf("21: ir_led_currents\r\n");
-      printf("22: charger_currents\r\n");
-      printf("23: charge_currents\r\n");
-      printf("24: _24V_voltage\r\n");
-      printf("25: _12V_voltage\r\n");
-      printf("26: _5V_voltage\r\n");
-      printf("27: _5V_currents\r\n");
-      printf("28: _12V_currents\r\n");
-      printf("29: _24V_currents\r\n");
-      printf("30: ambient_temperature\r\n");
-      printf("31: _5V_regulator_temp\r\n");
-      printf("32: _12V_regulator_temp\r\n");
-      printf("33: _24V_regulator_temp\r\n");
-      printf("34: aiui_currents\r\n");
-      printf("35: _5V_router_currents\r\n");
+      printf("2: _24V_nv_currents\r\n");
+      printf("3: _12V_nv_currents\r\n");
+      printf("4: _48V_extend_currents\r\n");
+      
+      printf("5: _12V_extend_currents\r\n");
+      printf("6: motor_currents\r\n");
+      printf("7: slam_currents\r\n");
+      printf("8: _2_1_pa_currents\r\n");
+      
+      printf("9: pad_currents\r\n");
+      printf("10: printer_currents\r\n");
+      printf("11: x86_currents\r\n");
+      printf("12: ir_led_currents\r\n");
+      
+      printf("13: _5V_leds_currents\r\n");
+      
+      printf("14: recharge_currents\r\n");
+      printf("15: _24V_extend_currents\r\n");
+      printf("16: charge_currents\r\n");
+      printf("17: batin_currents\r\n");
+      
+      printf("18: vbus_currents\r\n");
+      printf("19: bat_motor_currents\r\n");
+      
+      printf("20: _24V_temp\r\n");
+      printf("21: _12V_temp\r\n");
+      printf("22: _5V_temp\r\n");
+      printf("23: air_temp\r\n");
+      
+      printf("24: _24V_all_currents\r\n");
+      printf("25: _12V_all_currents\r\n");
+      printf("26: _5V_all_currents\r\n");
+      printf("27: _24V_voltage\r\n");
+      
+      printf("28: _12V_voltage\r\n");
+      printf("29: _5V_voltage\r\n");
+      printf("30: bat_voltage\r\n");
+      printf("31: sensor_board_currents\r\n");
+      
+      printf("32: _5V_router_currents\r\n");
 #endif
       break;
     }

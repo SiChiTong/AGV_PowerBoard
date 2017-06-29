@@ -35,9 +35,9 @@
 #define READ_FW_VERSION_COMMAND         0x00
 #define READ_PROTOCOL_VERSION           0x01
 
-#define HW_VERSION                      "21"
-#define SW_VERSION                      "C001M07B103"
-#define PROTOCOL_VERSION                "20161215P0001"
+#define HW_VERSION                      "00"
+#define SW_VERSION                      "AGVC001M08B001"
+#define PROTOCOL_VERSION                "20170619P0001"
 
 typedef struct _serial_frame_t {
   uint8_t               header;

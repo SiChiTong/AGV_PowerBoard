@@ -250,6 +250,7 @@ void setModulePowerSignalOnOff( uint8_t module, uint8_t onoff )
 
 static void Switch_Tick( void )
 {
+#if 0
   if( /*(YES != switch_user->isSwitchOver) && */(switch_user->getSwitchState != NULL) )
   {
     if( (switch_user->startTime != 0) && ((os_get_time() - switch_user->startTime) >= SWITCH_DEBOUNCE_TIME) )
@@ -285,6 +286,96 @@ static void Switch_Tick( void )
       }
     }
   }
+#else
+  
+    extern const platform_gpio_t            platform_gpio_pins[];  
+#define DEVICE_STATE_POWER_ON       1  
+#define DEVICE_STATE_POWER_OFF      0
+    //static uint32_t power_on_start_time = 0;
+    //static uint32_t power_off_start_time = 0;
+    static uint8_t high_flag = 0;
+    static uint8_t low_flag = 0;
+    //static uint8_t state = DEVICE_STATE_POWER_OFF;
+    
+    if(switch_user->getSwitchState( SWITCH_USER ) == 1)
+    {
+        low_flag = 0;
+        if(high_flag == 0)
+        {
+            high_flag = 1;
+            //switch_user->isSwitchOver = NO;
+            switch_user->startTime = os_get_time();
+            platform_log("switch have switched");
+        }
+        
+        
+        if( (switch_user->startTime != 0) && ((os_get_time() - switch_user->startTime) >= SWITCH_DEBOUNCE_TIME) )
+        {
+            switch_user->startTime = 0;
+#if 0
+            if( switch_user->preIOState != switch_user->getSwitchState( SWITCH_USER ) )
+            {
+                switch_user->preIOState = switch_user->getSwitchState( SWITCH_USER );
+            }
+            else
+            {
+                return;
+            }
+#endif
+
+            switch_user->isSwitchOver = YES;
+            if( (STATE_POWER_OFF == (boardStatus->sysStatus & STATE_RUN_BITS))/* && (voltageConvert->bat_voltage >= VBAT_POWER_ON_LEVEL)*/ )
+            {
+                switch_user->switchOnOff = SWITCH_ON;
+                platform_log("confirm to ON stable");
+                if( boardStatus->sysStatus & STATE_IS_LOW_POWER )
+                {
+                    boardStatus->sysStatus &= ~STATE_IS_LOW_POWER;
+                }
+                PowerOnDevices();
+            }
+        }
+        
+       
+    }
+    
+    if(switch_user->getSwitchState( SWITCH_USER ) == 0)
+    {
+        high_flag = 0;
+        if(low_flag == 0)
+        {
+            low_flag = 1;
+            //switch_user->isSwitchOver = NO;
+            switch_user->startTime = os_get_time();
+            platform_log("switch have switched");
+        }
+        
+        
+        if( (switch_user->startTime != 0) && ((os_get_time() - switch_user->startTime) >= SWITCH_DEBOUNCE_TIME) )
+        {
+            switch_user->startTime = 0;
+#if 0
+            if( switch_user->preIOState != switch_user->getSwitchState( SWITCH_USER ) )
+            {
+                switch_user->preIOState = switch_user->getSwitchState( SWITCH_USER );
+            }
+            else
+            {
+                return;
+            }
+#endif
+            switch_user->isSwitchOver = YES;
+            if( ( STATE_POWER_ON == (boardStatus->sysStatus & STATE_RUN_BITS) ) )
+            {
+                switch_user->switchOnOff = SWITCH_OFF;
+                platform_log("confirm to OFF stable");
+
+                PowerOffDevices();
+            }
+        }
+           
+    }
+#endif
 }
 
 static void ControlSignal_Tick( void )
@@ -654,7 +745,7 @@ void Platform_Tick( void )
 void bsp_Init( void )
 {
   board_gpios_init();
-  charger_detect_init();
+  //charger_detect_init();
   //key_switch_init();
 }
 

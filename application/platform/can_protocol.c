@@ -558,7 +558,7 @@ CAN_TXDATA_STRUCT  CommandProcessing( uint32_t func_ID, uint8_t* dstPtr, uint8_t
     return CanData;
 }
 
-static uint8_t CANUpDataLen = 0;
+//static uint8_t CANUpDataLen = 0;
 //static uint8_t CANRxDataLen = 0;
 
 void can_protocol_period( void )
