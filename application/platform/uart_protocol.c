@@ -40,12 +40,12 @@ serial_t * const serial = &serialDataInRam;
 //UART_HandleTypeDef      ComUartHandle;
 
 static OSStatus uart_frame_send( serial_t *serial, const uint8_t *pData, uint32_t size );
-static OSStatus recSerialLedsFrameProcess( serial_t *serial );
+static OSStatus RcvSerialLedsFrameProcess( serial_t *serial );
 static OSStatus AckSerialLedsFrameProcess( serial_t *serial, uint8_t mode, color_t *color, uint8_t period );
 static OSStatus recReadSysStatusVbatFrameProcess( serial_t *serial );
 static OSStatus ackReadSysStatusVbatFrameProcess( serial_t *serial, uint8_t cmd_num );
 static OSStatus recReadModuleStatusFrameProcess( serial_t *serial );
-static OSStatus ackReadModuleStatusFrameProcess( serial_t *serial, uint8_t cmd_num );
+static OSStatus AckReadModuleStatusFrameProcess( serial_t *serial, uint8_t cmd_num );
 static OSStatus recReadFaultStatusFrameProcess( serial_t *serial );
 static OSStatus ackReadFaultStatusFrameProcess( serial_t *serial, uint8_t cmd_num );
 static OSStatus recModuleControlFrameProcess( serial_t *serial );
@@ -106,11 +106,11 @@ exit:
   return err;
 }
 
-static OSStatus recSerialLedsFrameProcess( serial_t *serial )
+static OSStatus RcvSerialLedsFrameProcess( serial_t *serial )
 {
   OSStatus err = kNoErr;
   uint8_t       ligth_mode;
-  uint16_t      lightEffect;
+  //uint16_t      lightEffect;
   rcv_serial_leds_frame_t *serial_leds_frame;
   color_t *color;
   uint8_t period;
@@ -221,6 +221,71 @@ exit:
   return err;
 }
 
+
+static OSStatus AckReadSysStatusVbatFrameProcess( serial_t *serial, uint8_t cmd_num )
+{
+    OSStatus err = kNoErr;
+    uint8_t  length = sizeof(ack_sys_status_t);
+    ack_sys_status_t *ack_sys_status_frame;
+
+    require_action( serial , exit, err = kGeneralErr );
+    require_action( serial->uart_serial , exit, err = kGeneralErr );
+    ack_sys_status_frame = (ack_sys_status_t*)serial->tx_buf.offset;
+    ack_sys_status_frame->cmd_num = cmd_num;
+    ack_sys_status_frame->ctype = FRAME_TYPE_SYS_STATUS;
+    ack_sys_status_frame->sys_status = boardStatus->sysStatus;
+    err = uart_frame_send( serial, (uint8_t *)ack_sys_status_frame, length );
+exit:
+    return err;
+}
+static OSStatus RcvReadSysStatusFrameProcess(serial_t *serial)
+{
+    OSStatus err = kNoErr;
+    uint8_t  cmd_num;
+    require_action( serial , exit, err = kGeneralErr );
+    require_action( serial->uart_serial , exit, err = kGeneralErr );
+    cmd_num = *(uint8_t *)serial->rx_buf.offset;
+    err = AckReadSysStatusVbatFrameProcess( serial , cmd_num);
+exit:
+    return err;
+}
+
+
+static OSStatus AckReadVbatFrameProcess( serial_t *serial, uint8_t cmd_num )
+{
+    OSStatus err = kNoErr;
+    uint8_t  length = sizeof(ack_sys_status_t);
+    ack_bat_status_t *bat_status_frame;
+    require_action( serial , exit, err = kGeneralErr );
+    require_action( serial->uart_serial , exit, err = kGeneralErr );
+    bat_status_frame = (ack_bat_status_t*)serial->tx_buf.offset;
+    bat_status_frame->cmd_num = cmd_num;
+    bat_status_frame->ctype = FRAME_TYPE_BAT_STATUS;
+    if(cmd_num == 1)
+    {
+        bat_status_frame->bat_status = 2600;
+    }
+    else if(cmd_num == 2)
+    {
+        bat_status_frame->bat_status = 80;
+    }
+    
+    err = uart_frame_send( serial, (uint8_t *)bat_status_frame, length );
+exit:
+    return err;
+}
+static OSStatus RcvReadBatStatus(serial_t *serial)
+{
+    OSStatus err = kNoErr;
+    uint8_t  cmd_num;
+    require_action( serial , exit, err = kGeneralErr );
+    require_action( serial->uart_serial , exit, err = kGeneralErr );
+    cmd_num = *(uint8_t *)serial->rx_buf.offset;
+    err = AckReadVbatFrameProcess( serial , cmd_num);
+exit:
+    return err;   
+}
+
 static OSStatus ackReadSysStatusVbatFrameProcess( serial_t *serial, uint8_t cmd_num )
 {
   OSStatus err = kNoErr;
@@ -266,24 +331,24 @@ static OSStatus recReadModuleStatusFrameProcess( serial_t *serial )
 
   cmd_num = *(uint8_t *)serial->rx_buf.offset;
 
-  err = ackReadModuleStatusFrameProcess( serial, cmd_num );
+  err = AckReadModuleStatusFrameProcess( serial, cmd_num );
 
 exit:
   return err;
 }
 
-static OSStatus ackReadModuleStatusFrameProcess( serial_t *serial, uint8_t cmd_num )
+static OSStatus AckReadModuleStatusFrameProcess( serial_t *serial, uint8_t cmd_num )
 {
   OSStatus err = kNoErr;
-  uint8_t  length = sizeof( ackModuleStatusFrame_t );
-  ackModuleStatusFrame_t *ackModuleStatusFrame;
+  uint8_t  length = sizeof( ack_module_status_frame_t );
+  ack_module_status_frame_t *ackModuleStatusFrame;
   uint32_t moduleState;
 
   require_action( serial , exit, err = kGeneralErr );
   require_action( serial->uart_serial , exit, err = kGeneralErr );
   
 
-  ackModuleStatusFrame = (ackModuleStatusFrame_t *)serial->tx_buf.offset;
+  ackModuleStatusFrame = (ack_module_status_frame_t *)serial->tx_buf.offset;
   require_action( ackModuleStatusFrame , exit, err = kGeneralErr );
 
   ackModuleStatusFrame->ctype = FRAME_TYPE_MODULE_STATE;
@@ -292,13 +357,13 @@ static OSStatus ackReadModuleStatusFrameProcess( serial_t *serial, uint8_t cmd_n
   switch( ackModuleStatusFrame->cmd_num )
   {
     case MODULE_STATUS_CMD_NUM:
-#ifdef NOT_USE_TMP
-    moduleState = getEachModuleStates(); 
-    memcpy( ackModuleStatusFrame->moduleStatus, (uint8_t *)&moduleState, sizeof(uint32_t) );
-#endif
+
+    moduleState = GetEachModuleStates(); 
+    memcpy( ackModuleStatusFrame->module_status, (uint8_t *)&moduleState, sizeof(uint32_t) );
+
     break;
     default:
-    memset( ackModuleStatusFrame->moduleStatus, 0xFF, 4 );
+    memset( ackModuleStatusFrame->module_status, 0xFF, 4 );
     break;
   }
   err = uart_frame_send( serial, (uint8_t *)ackModuleStatusFrame, length );
@@ -1026,48 +1091,7 @@ static OSStatus ackReadErrChannelFrameProcess( serial_t *serial )
 exit:
   return err;
 }
-uint8_t ProcessUartData(const uint8_t *const in_data, const uint8_t in_data_len,  const uint8_t  volatile*out_data)
-{
-    uint8_t detectType = in_data[0];
-    switch( detectType )
-    {
-        case FRAME_TYPE_LEDS_CONTROL:
-            boardStatus->isUpgrading = 0;
-            recSerialLedsFrameProcess( serial );
-            break;
-        case FRAME_TYPE_S_SYS_V_BAT:
-            recReadSysStatusVbatFrameProcess( serial );
-            break;
-        case FRAME_TYPE_MODULE_STATE:
-            recReadModuleStatusFrameProcess( serial );
-            break;
-        case FRAME_TYPE_FAULT_BIT:
-            recReadFaultStatusFrameProcess( serial );
-            break;
-        case FRAME_TYPE_MODULE_CONTROL:
-            recModuleControlFrameProcess( serial );
-            break;
-        case FRAME_TYPE_VERSION_INFO:
-            recVersionInfoFrameProcess( serial );
-            break;
-        case FRAME_TYPE_FW_UPGRADE:
-            recFirmwareUpgradeProcess( serial );
-            break;  
-        case FRAME_TYPE_TEST_CURRENT:
-            recTestCurrentCmdFrame( serial );
-            break;
-        case FRAME_TYPE_READ_ERR_CURRENT:
-            recReadErrChannelFrameProcess( serial );
-            break;
-        case FRAME_TYPE_IRLED_CONTROL:
-            recIRLedControlFrameProcess( serial );
-            break;
-        default:
-            ackNotSupportFrameProcess( serial, detectType );
-            break;
-    }
-    return 0;
-}
+
 static int is_receive_right_frame( void  );
 static int is_receive_right_frame( void  )
 { 
@@ -1181,22 +1205,30 @@ void protocol_period( void )
 #if 1  
   switch( detectType )
   {
-  case FRAME_TYPE_LEDS_CONTROL:
+  case FRAME_TYPE_LEDS_CONTROL:     //done
         boardStatus->isUpgrading = 0;
-        recSerialLedsFrameProcess( serial );
+        RcvSerialLedsFrameProcess( serial );
     break;
-  case FRAME_TYPE_S_SYS_V_BAT:
-        recReadSysStatusVbatFrameProcess( serial );
+    
+  case FRAME_TYPE_SYS_STATUS:       //done
+        //recReadSysStatusVbatFrameProcess( serial );
+        RcvReadSysStatusFrameProcess( serial );
     break;
+  
+  case FRAME_TYPE_BAT_STATUS:       //done
+        RcvReadBatStatus(serial);
+    break;
+        
+    
   case FRAME_TYPE_MODULE_STATE:
-        recReadModuleStatusFrameProcess( serial );
+        recReadModuleStatusFrameProcess( serial );  //done
     break;
-  case FRAME_TYPE_FAULT_BIT:
-        recReadFaultStatusFrameProcess( serial );
-    break;
-  case FRAME_TYPE_MODULE_CONTROL:
-        recModuleControlFrameProcess( serial );
-    break;
+  //case FRAME_TYPE_FAULT_BIT:
+       // recReadFaultStatusFrameProcess( serial );
+    //break;
+  //case FRAME_TYPE_MODULE_CONTROL:
+       // recModuleControlFrameProcess( serial );
+   // break;
   case FRAME_TYPE_VERSION_INFO:
         recVersionInfoFrameProcess( serial );
     break;

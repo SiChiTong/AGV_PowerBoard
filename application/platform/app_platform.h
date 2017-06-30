@@ -134,7 +134,7 @@ extern boardStatus_t *boardStatus;
 extern void PowerOffDevices( void );
 extern void PowerOnDevices( void );
 extern OSStatus Platform_Init( void );
-extern uint32_t getEachModuleStates( void );
+extern uint32_t GetEachModuleStates( void );
 extern void setModulePowerSignalOnOff( uint8_t module, uint8_t onoff );
 extern void Platform_Tick( void );
 extern void bsp_Init( void );

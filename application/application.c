@@ -90,47 +90,7 @@ int main( void )
         Main_Menu(); 
     }
 }
-#if 0//def MIKE_TEST
-struct test_power_t {
-  uint8_t               isHighOrLow;
-  uint32_t              highDelayTime;
-  uint32_t              lowDelayTime;
-  uint32_t              startTime;
-};
 
-static struct test_power_t res_24v = {
-  .highDelayTime        = 30000/SYSTICK_PERIOD,
-  .lowDelayTime         = 60000/SYSTICK_PERIOD,
-};
-
-void test_power_tick( void )
-{
-  if( res_24v.startTime == 0 )
-  {
-    res_24v.startTime = os_get_time();
-    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_PRINTER_EN );
-    res_24v.isHighOrLow = 0;
-  }
-  if( res_24v.isHighOrLow )
-  {
-    if( os_get_time() - res_24v.startTime > res_24v.highDelayTime )
-    {
-      res_24v.startTime = os_get_time();
-      MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_PRINTER_EN );
-      res_24v.isHighOrLow = 0;
-    }
-  }
-  else
-  {
-    if( os_get_time() - res_24v.startTime > res_24v.lowDelayTime )
-    {
-      res_24v.startTime = os_get_time();
-      MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_PRINTER_EN );
-      res_24v.isHighOrLow = 1;
-    }
-  }
-}
-#endif
 int8_t isNeedAutoBoot( void )
 {
   OSStatus err = kNoErr;

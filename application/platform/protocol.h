@@ -20,15 +20,21 @@
 #define FRAME_FOOTER                    0xA5
 
 #define FRAME_TYPE_LEDS_CONTROL         0x01
+#define FRAME_TYPE_SYS_STATUS           0x02
+#define FRAME_TYPE_BAT_STATUS           0x03
+#define FRAME_TYPE_MODULE_STATE         0x04
+#define FRAME_TYPE_READ_ERR_CURRENT     0x05
+
+
 #define FRAME_TYPE_S_SYS_V_BAT          0x02
-#define FRAME_TYPE_MODULE_STATE         0x03
+
 #define FRAME_TYPE_FAULT_BIT            0x04
 #define FRAME_TYPE_MODULE_CONTROL       0x05
 #define FRAME_TYPE_IRLED_CONTROL        0x06
 #define FRAME_TYPE_FANS_CONTROL         0x07
 
 #define FRAME_TYPE_TEST_CURRENT         0x0A
-#define FRAME_TYPE_READ_ERR_CURRENT     0x0B
+
 #define FRAME_TYPE_VERSION_INFO         0x0E
 #define FRAME_TYPE_FW_UPGRADE           0x0F
 
@@ -116,12 +122,35 @@ typedef struct _ackSysStatusVbatFrame_t {
   uint16_t              voltage;
 } ackSysStatusVbatFrame_t;
 
+#pragma pack(1)
+typedef struct
+{
+    //uint8_t             ctype;
+    uint8_t             cmd_num;
+}rcv_sys_status_t;
+typedef struct
+{
+    uint8_t             ctype;
+    uint8_t             cmd_num;
+    uint16_t            sys_status;    
+}ack_sys_status_t;
+
+typedef struct
+{
+    uint8_t             ctype;
+    uint8_t             cmd_num;
+    uint16_t            bat_status;
+}ack_bat_status_t;
+#pragma pack()
+
+
+
 typedef struct _ackModuleStatusFrame_t {
   uint8_t               ctype;
   uint8_t               cmd_num;
 #define             MODULE_STATUS_CMD_NUM             0x01
-  uint8_t               moduleStatus[4];
-} ackModuleStatusFrame_t;
+  uint8_t               module_status[4];
+} ack_module_status_frame_t;
 
 typedef struct _ackFaultStatusFrame_t {
   uint8_t               ctype;

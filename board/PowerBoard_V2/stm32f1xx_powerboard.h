@@ -117,7 +117,7 @@ uint32_t        BSP_SW_GetState(Switch_TypeDef Switch);
 
 void     BSP_GPIO_Init( void );
 void     BSP_Power_OnOff(PowerEnable_TypeDef PowerEn, PowerOnOff_TypeDef OnOff);
-uint32_t getModulePowerState(PowerEnable_TypeDef PowerEn);
+uint32_t GetModulePowerState(PowerEnable_TypeDef PowerEn);
 void     BSP_Control_Sigal(PowerControl_TypeDef PowerCon, ControlSignal_TypeDef isHold);
 
 extern void halEnterSleepMode( void );

@@ -798,8 +798,8 @@ static uint32_t    indicatorFreshCount = 0;
 color_t charge_color[] = 
 {
     [0]     = {255, 0  , 0  },  //RED_C
-    [1]     = {0  , 255, 0  },  //GREEN_C
-    [2]     = {255, 165, 0  },  //ORANGE_C
+    [1]     = {255, 165, 0  },  //ORANGE_C
+    [2]     = {0  , 255, 0  },  //GREEN_C
     [3]     = {255, 255, 255},  //WHITE_C
     [4]     = {0  , 255, 255},  //CYAN_C
   
@@ -840,8 +840,9 @@ color_t  front_left_color[3] =
 color_t  front_right_color[3] = 
 {
     [0]     = {255, 0  , 0  },  //RED_C
-    [1]     = {0  , 255, 0  },  //GREEN_C
-    [2]     = {0  , 255, 255},  //CYAN_C
+    [1]     = {255, 165, 0  },  //ORANGE_C
+    [2]     = {0  , 255, 0  },  //GREEN_C
+    
   
 };
 color_t  back_left_color[3] = 
@@ -932,12 +933,34 @@ extern const platform_gpio_t            platform_gpio_pins[];
         .start_time         = 0,
     },
 };
+
+#define SHINE_HIGH_SPEED_PERIOD         300
+#define SHINE_MEDIUM_SPEED_PERIOD       600
+#define SHINE_LOW_SPEED_PERIOD          1000
 void SetSerialLedsEffect( light_mode_t light_mode, color_t *cur_color, uint8_t period )
 {
     switch(light_mode)
     {
     case LIGHTS_MODE_NOMAL:
+        for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
+        {
+            //memcpy(one_wire_led[(one_wire_led_t)i].color, cur_color, sizeof(color_t));
+            one_wire_led[(one_wire_led_t)i].color[0] = led_color[ORANGE_C];
+            one_wire_led[(one_wire_led_t)i].color[1] = led_color[NONE_C];
+            one_wire_led[(one_wire_led_t)i].color_number = 2;
+            one_wire_led[(one_wire_led_t)i].period = SHINE_MEDIUM_SPEED_PERIOD;//period * 10;            
+        }
+        break;
     case LIGHTS_MODE_ERROR:
+        for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
+        {
+            //memcpy(one_wire_led[(one_wire_led_t)i].color, cur_color, sizeof(color_t));
+            one_wire_led[(one_wire_led_t)i].color[0] = led_color[RED_C];
+            one_wire_led[(one_wire_led_t)i].color[1] = led_color[NONE_C];
+            one_wire_led[(one_wire_led_t)i].color_number = 2;
+            one_wire_led[(one_wire_led_t)i].period = SHINE_MEDIUM_SPEED_PERIOD;//period * 10;            
+        }
+        break;
     case LIGHTS_MODE_COM_ERROR:
     case LIGHTS_MODE_LOW_POWER:
       
@@ -950,10 +973,52 @@ void SetSerialLedsEffect( light_mode_t light_mode, color_t *cur_color, uint8_t p
         }
         break;
     case LIGHTS_MODE_CHARGING:
+            //one_wire_led[(one_wire_led_t)i].color[1] = led_color[NONE_C];
+#if 0   //charging low power
+        for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
+        {
+            one_wire_led[(one_wire_led_t)i].color = charge_color;
+            one_wire_led[(one_wire_led_t)i].color_number = 2;
+            one_wire_led[(one_wire_led_t)i].period = 1000;//period * 10;
+        }
+#endif
+#if 0   //charging  power medium
+        for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
+        {
+            one_wire_led[(one_wire_led_t)i].color = &charge_color[1];
+            one_wire_led[(one_wire_led_t)i].color_number = 2;
+            one_wire_led[(one_wire_led_t)i].period = 1000;//period * 10;
+        }
+#endif
+#if 1   //charging power full
+        for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
+        {
+            one_wire_led[(one_wire_led_t)i].color = &led_color[GREEN_C];
+            one_wire_led[(one_wire_led_t)i].color_number = 1;
+            //one_wire_led[(one_wire_led_t)i].period = 1000;//period * 10;
+        }
+#endif
       break;
     case LIGHTS_MODE_TURN_LEFT:
       break;
     case LIGHTS_MODE_TURN_RIGHT:
+      break;
+    case LIGHTS_MODE_EMERGENCY_STOP:
+        for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
+        {
+            one_wire_led[(one_wire_led_t)i].color = &led_color[RED_C];
+            one_wire_led[(one_wire_led_t)i].color_number = 1;
+            //one_wire_led[(one_wire_led_t)i].period = period * 10;
+        }
+      break;
+    case LIGHT_MODE_LOW_POWER:
+        for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
+        {
+            one_wire_led[(one_wire_led_t)i].color = &led_color[RED_C];
+            one_wire_led[(one_wire_led_t)i].color[1] = led_color[NONE_C];
+            one_wire_led[(one_wire_led_t)i].color_number = 2;
+            one_wire_led[(one_wire_led_t)i].period = SHINE_HIGH_SPEED_PERIOD;
+        }
       break;
     }
   
@@ -1169,14 +1234,14 @@ void serialLedsTick( void )
         }     
     }
   
-    
+#if 0   
     DISABLE_INTERRUPTS();
     for(uint8_t i = FRONT_LEFT_LED; i < LED_NONE; i++)
     {
         SendData((one_wire_led_t)i);      
     }
     ENABLE_INTERRUPTS();
-          
+#endif          
     indicatorFreshCount ++;
     if( indicatorFreshCount > 50 )
     {

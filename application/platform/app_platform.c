@@ -706,19 +706,20 @@ static void BoardStatus_Tick( void )
 #define BAT_NV_STATE_ON         ((uint32_t)0x00040000)
 #define AIUI_STATE_ON           ((uint32_t)0x00080000)
 
-#ifdef NOT_USE_TMP
-uint32_t getEachModuleStates( void )
+
+uint32_t GetEachModuleStates( void )
 {
   uint32_t states;
   
-  states = getModulePowerState( POWER_ALL );
+  states = GetModulePowerState( POWER_ALL );
+#if 0
   if( SWITCH_ON == switch_user->switchOnOff )
   {
       states |= SWITCH_STATE_ON;
   }
-  if( DEVICE_POWER_ON == DLP_ControlSignal->deviceOnOff )
+  //if( DEVICE_POWER_ON == DLP_ControlSignal->deviceOnOff )
   {
-      states |= POWER_DLP;
+      //states |= POWER_DLP;
   }
   if( DEVICE_POWER_ON == X86_ControlSignal->deviceOnOff )
   {
@@ -732,9 +733,10 @@ uint32_t getEachModuleStates( void )
   {
       states |= POWER_NV;
   }
+#endif
   return states;
 }
-#endif
+
 void Platform_Tick( void )
 {
   Switch_Tick();

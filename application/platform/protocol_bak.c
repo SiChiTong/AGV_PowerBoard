@@ -80,7 +80,7 @@ void ackSerialLedsFrameProcess( uint8_t type )
   ackSerialLedsFrame->curLightEffectL = (serial_leds->effectType & 0x00ff);
   ackSerialLedsFrame->sysStatus = boardStatus->sysStatus;
   ackSerialLedsFrame->vBat = boardStatus->vBatLevel;
-  uint32_t states = getEachModuleStates();
+  uint32_t states = GetEachModuleStates();
  // states = ReadBig32(states);
   memcpy( ackSerialLedsFrame->moduleStatus, &states, 4 );
   memcpy( ackSerialLedsFrame->faultBit, voltageConvertData->faultBitTemp, 4);
