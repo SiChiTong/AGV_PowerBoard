@@ -705,98 +705,7 @@ void test_nsDelay(void)
 }
 #endif
 
-void setSerialLedsEffect( lightsMode_t lightsMode, uint16_t effect )
-{
-  if( lightsMode < LEDS_MODES_N )
-  {
-    if( (lightsMode == LIGHTS_MODE_DANCE) && (effect <= 0x00FF) )
-      return;
-    if( ((lightsMode != LIGHTS_MODE_DANCE) && (lightsMode != LIGHTS_MODE_FREEDOM)) && (effect >= 0xFF00) )
-      return;
-    
-    serialLeds[lightsMode].effectType = effect;
-    switch( effect )
-    {
-    case LIGHTS_EFFECT_DEFAULT:
-      return;
-    case BASIC_LIGHTS_EFFECT_FLOW:
-      serialLeds[lightsMode].leds_effect = &leds_effect[FLOW_WATER];
-      break;
-    case BASIC_LIGHTS_EFFECT_METEOR:
-      serialLeds[lightsMode].leds_effect = &leds_effect[STAR];
-      break;
-    case BASIC_LIGHTS_EFFECT_DOUBLE_METEOR:
-      serialLeds[lightsMode].leds_effect = &leds_effect[DOUBLE_STAR];
-      break;
-    case BASIC_LIGHTS_EFFECT_SHINE:
-      serialLeds[lightsMode].leds_effect = &leds_effect[SHINE];
-      break;
-    case BASIC_LIGHTS_EFFECT_BREATH_PURPLE:
-      serialLeds[lightsMode].leds_effect = &leds_effect[BREATH_PURPLE];
-      break;
-    case BASIC_LIGHTS_EFFECT_YELLOW_BEAT:
-      serialLeds[lightsMode].leds_effect = &leds_effect[YELLOW_BEAT];
-      break;
-    case BASIC_LIGHTS_EFFECT_WATER_GREEN:
-      serialLeds[lightsMode].leds_effect = &leds_effect[WATER_GREEN];
-      break;
-    case BASIC_LIGHTS_EFFECT_BREATH_COLORFUL:
-      serialLeds[lightsMode].leds_effect = &leds_effect[BREATH_COLORFUL];
-      break;
-    case BASIC_LIGHTS_EFFECT_RED_BEAT:
-      serialLeds[lightsMode].leds_effect = &leds_effect[RED_BEAT];
-      break;
-    case BASIC_LIGHTS_EFFECT_RED_METEOR:
-      serialLeds[lightsMode].leds_effect = &leds_effect[RED_STAR];
-      break;
-    case BASIC_LIGHTS_EFFECT_YELLOW_METEOR:
-      serialLeds[lightsMode].leds_effect = &leds_effect[YELLOW_STAR];
-      break;
-    case BASIC_LIGHTS_EFFECT_GREEN_METEOR:
-      serialLeds[lightsMode].leds_effect = &leds_effect[GREEN_STAR];
-      break;
-    case BASIC_LIGHTS_EFFECT_RED_LONG:
-      serialLeds[lightsMode].leds_effect = &leds_effect[RED_LONG];
-      break;
-    case BASIC_LIGHTS_EFFECT_GREEN_LONG:
-      serialLeds[lightsMode].leds_effect = &leds_effect[GREEN_LONG];
-      break;
-    case BASIC_LIGHTS_EFFECT_BLUE_LONG:
-      serialLeds[lightsMode].leds_effect = &leds_effect[BLUE_LONG];
-      break;
-    case DANCE_LIGHTS_EFFECT_DEFAULT:
-      serial_leds = &serialLeds[lightsMode];
-      serial_leds->modeType = lightsMode;
-      serial_leds->effectType = effect;
-      pRhythmControl->songList = SONG1;
-      setCurLedsMode(LIGHTS_MODE_DANCE);
-      return;
-    case DANCE_LIGHTS_EFFECT_SONG1:
-      serial_leds = &serialLeds[lightsMode];
-      serial_leds->modeType = lightsMode;
-      serial_leds->effectType = effect;
-      pRhythmControl->songList = SONG1;
-      setCurLedsMode(LIGHTS_MODE_DANCE);
-      return;
-    case DANCE_LIGHTS_EFFECT_SONG2:
-      serial_leds = &serialLeds[lightsMode];
-      serial_leds->modeType = lightsMode;
-      serial_leds->effectType = effect;
-      pRhythmControl->songList = SONG2;
-      setCurLedsMode(LIGHTS_MODE_DANCE);
-      return;
-    default:
-      return;
-    }
-    
-    if( LIGHTS_MODE_FREEDOM == lightsMode )
-    {
-      setCurLedsMode( LIGHTS_MODE_FREEDOM );
-    }
 
-//    setCurLedsMode( (lightsMode_t)lightsMode );
-  }
-}
 #ifdef LIGHTS_DEBUG
 const static uint8_t debugLigthsChar[LIGHTS_MODE_MAX][30] = {
   [LIGHTS_MODE_DEFAULT]         = {"lights start default mode"},
@@ -907,6 +816,21 @@ color_t  led_color[] =
   [NONE_C]      = {0  , 0  , 0  },
 };
 
+light_mode_para_t light_mode_para[] = 
+{
+    [LIGHTS_MODE_ERROR] = 
+    {
+        .color      = &led_color[RED_C],
+        .period     = 50,
+    },
+        [LIGHTS_MODE_LOW_POWER] = 
+    {
+        .color      = &led_color[RED_C],
+        .period     = 50,
+    },
+
+    
+};
 color_t  front_left_color[3] = 
 {
     [0]     = {255, 0  , 0  },  //RED_C
@@ -1008,7 +932,123 @@ extern const platform_gpio_t            platform_gpio_pins[];
         .start_time         = 0,
     },
 };
+void SetSerialLedsEffect( light_mode_t light_mode, color_t *cur_color, uint8_t period )
+{
+    switch(light_mode)
+    {
+    case LIGHTS_MODE_NOMAL:
+    case LIGHTS_MODE_ERROR:
+    case LIGHTS_MODE_COM_ERROR:
+    case LIGHTS_MODE_LOW_POWER:
+      
+        for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
+        {
+            memcpy(one_wire_led[(one_wire_led_t)i].color, cur_color, sizeof(color_t));
+            one_wire_led[(one_wire_led_t)i].color[1] = led_color[NONE_C];
+            one_wire_led[(one_wire_led_t)i].color_number = 2;
+            one_wire_led[(one_wire_led_t)i].period = period * 10;            
+        }
+        break;
+    case LIGHTS_MODE_CHARGING:
+      break;
+    case LIGHTS_MODE_TURN_LEFT:
+      break;
+    case LIGHTS_MODE_TURN_RIGHT:
+      break;
+    }
+  
+#if 0
+  if( lightsMode < LEDS_MODES_N )
+  {
+    if( (lightsMode == LIGHTS_MODE_DANCE) && (effect <= 0x00FF) )
+      return;
+    if( ((lightsMode != LIGHTS_MODE_DANCE) && (lightsMode != LIGHTS_MODE_FREEDOM)) && (effect >= 0xFF00) )
+      return;
+    
+    serialLeds[lightsMode].effectType = effect;
+    switch( effect )
+    {
+    case LIGHTS_EFFECT_DEFAULT:
+      return;
+    case BASIC_LIGHTS_EFFECT_FLOW:
+      serialLeds[lightsMode].leds_effect = &leds_effect[FLOW_WATER];
+      break;
+    case BASIC_LIGHTS_EFFECT_METEOR:
+      serialLeds[lightsMode].leds_effect = &leds_effect[STAR];
+      break;
+    case BASIC_LIGHTS_EFFECT_DOUBLE_METEOR:
+      serialLeds[lightsMode].leds_effect = &leds_effect[DOUBLE_STAR];
+      break;
+    case BASIC_LIGHTS_EFFECT_SHINE:
+      serialLeds[lightsMode].leds_effect = &leds_effect[SHINE];
+      break;
+    case BASIC_LIGHTS_EFFECT_BREATH_PURPLE:
+      serialLeds[lightsMode].leds_effect = &leds_effect[BREATH_PURPLE];
+      break;
+    case BASIC_LIGHTS_EFFECT_YELLOW_BEAT:
+      serialLeds[lightsMode].leds_effect = &leds_effect[YELLOW_BEAT];
+      break;
+    case BASIC_LIGHTS_EFFECT_WATER_GREEN:
+      serialLeds[lightsMode].leds_effect = &leds_effect[WATER_GREEN];
+      break;
+    case BASIC_LIGHTS_EFFECT_BREATH_COLORFUL:
+      serialLeds[lightsMode].leds_effect = &leds_effect[BREATH_COLORFUL];
+      break;
+    case BASIC_LIGHTS_EFFECT_RED_BEAT:
+      serialLeds[lightsMode].leds_effect = &leds_effect[RED_BEAT];
+      break;
+    case BASIC_LIGHTS_EFFECT_RED_METEOR:
+      serialLeds[lightsMode].leds_effect = &leds_effect[RED_STAR];
+      break;
+    case BASIC_LIGHTS_EFFECT_YELLOW_METEOR:
+      serialLeds[lightsMode].leds_effect = &leds_effect[YELLOW_STAR];
+      break;
+    case BASIC_LIGHTS_EFFECT_GREEN_METEOR:
+      serialLeds[lightsMode].leds_effect = &leds_effect[GREEN_STAR];
+      break;
+    case BASIC_LIGHTS_EFFECT_RED_LONG:
+      serialLeds[lightsMode].leds_effect = &leds_effect[RED_LONG];
+      break;
+    case BASIC_LIGHTS_EFFECT_GREEN_LONG:
+      serialLeds[lightsMode].leds_effect = &leds_effect[GREEN_LONG];
+      break;
+    case BASIC_LIGHTS_EFFECT_BLUE_LONG:
+      serialLeds[lightsMode].leds_effect = &leds_effect[BLUE_LONG];
+      break;
+    case DANCE_LIGHTS_EFFECT_DEFAULT:
+      serial_leds = &serialLeds[lightsMode];
+      serial_leds->modeType = lightsMode;
+      serial_leds->effectType = effect;
+      pRhythmControl->songList = SONG1;
+      setCurLedsMode(LIGHTS_MODE_DANCE);
+      return;
+    case DANCE_LIGHTS_EFFECT_SONG1:
+      serial_leds = &serialLeds[lightsMode];
+      serial_leds->modeType = lightsMode;
+      serial_leds->effectType = effect;
+      pRhythmControl->songList = SONG1;
+      setCurLedsMode(LIGHTS_MODE_DANCE);
+      return;
+    case DANCE_LIGHTS_EFFECT_SONG2:
+      serial_leds = &serialLeds[lightsMode];
+      serial_leds->modeType = lightsMode;
+      serial_leds->effectType = effect;
+      pRhythmControl->songList = SONG2;
+      setCurLedsMode(LIGHTS_MODE_DANCE);
+      return;
+    default:
+      return;
+    }
+    
+    if( LIGHTS_MODE_FREEDOM == lightsMode )
+    {
+      setCurLedsMode( LIGHTS_MODE_FREEDOM );
+    }
 
+//    setCurLedsMode( (lightsMode_t)lightsMode );
+  }
+#endif
+}
 inline void Write_0(mico_gpio_t gpio)
 {
     LedOutputHigh(gpio);
@@ -1121,7 +1161,7 @@ void serialLedsTick( void )
             //WriteColor((one_wire_led_t)i, &charge_color[one_wire_led[i].tick % one_wire_led[i].color_number]);
 
             WriteColor((one_wire_led_t)i, &(one_wire_led[i].color[one_wire_led[i].tick % one_wire_led[i].color_number]));  
-#if 0
+#if 1
             DISABLE_INTERRUPTS();
             SendData((one_wire_led_t)i);      
             ENABLE_INTERRUPTS();

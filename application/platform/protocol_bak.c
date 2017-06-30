@@ -58,7 +58,7 @@ void serialLedsFrameProcess( void *buf )
   
   if( STATE_IS_POWER_OFF != (boardStatus->sysStatus & STATE_RUN_BITS) )
   {
-    setSerialLedsEffect((lightsMode_t)ligthMode, lightEffect);
+    SetSerialLedsEffect((light_mode_t)ligthMode, lightEffect);
   }
 
   ackSerialLedsFrameProcess(recSerialLedsFrame->type);

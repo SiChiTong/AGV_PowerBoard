@@ -57,6 +57,20 @@ typedef enum {
   LIGHTS_MODE_MAX
 } lightsMode_t;
 
+typedef enum 
+{
+    //LIGHTS_MODE_DEFAULT                 = 0,
+    LIGHTS_MODE_NOMAL                   = 1,
+    LIGHTS_MODE_ERROR                   = 2,
+    LIGHTS_MODE_LOW_POWER,
+    LIGHTS_MODE_CHARGING,
+    LIGHTS_MODE_TURN_LEFT,
+    LIGHTS_MODE_TURN_RIGHT,
+    LIGHTS_MODE_COM_ERROR,
+}light_mode_t;
+
+
+
 /*
 #define LIGHTS_MODE_DEFAULT             0x00
 #define LIGHTS_MODE_WELCOME             0x01
@@ -123,6 +137,13 @@ typedef struct
     uint8_t g;
     uint8_t b;
 }color_t;
+
+typedef struct
+{
+    color_t     *color;
+    uint8_t     period;
+}light_mode_para_t;
+
 typedef struct 
 {
     uint16_t shine_period;
@@ -154,6 +175,7 @@ typedef enum
     FRONT_RIGHT_LED,
     BACK_LEFT_LED,
     BACK_RIGHT_LED,
+    
     LEFT_EYE_LED,
     RIGHT_EYE_LED,
     
@@ -173,6 +195,8 @@ typedef struct
     uint32_t        start_time;
     uint32_t        tick;
 }one_wire_led_para_t;
+
+
 /////////////////////////////////////////
 /////////////////////////////////////////
 
@@ -183,12 +207,13 @@ typedef struct _leds_effect_t {
   freshSerialLedsFn_t    freshSerialLedshandle;
 } leds_effect_t;
 
+#pragma pack(1)
 typedef struct _serial_leds_t {
   uint8_t                modeType;
   uint16_t               effectType;
   leds_effect_t          *leds_effect;
 } serial_leds_t;
-
+#pragma pack()
 
 extern serial_leds_t *serial_leds;
 
@@ -209,7 +234,7 @@ void single_color_water_led(uint32_t color,uint8_t times);
 void style_charge_function( uint32_t color );
 //void test_nsDelay(void);
 
-void setSerialLedsEffect( lightsMode_t lightsMode, uint16_t effect );
+void SetSerialLedsEffect( light_mode_t lightsMode, color_t *color, uint8_t period );
 
 void setCurLedsMode( lightsMode_t lightsMode );
 

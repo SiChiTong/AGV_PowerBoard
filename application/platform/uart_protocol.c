@@ -16,20 +16,20 @@
 #define protocol_log_trace() custom_log_trace("Protocol")
 
 
-static  uint8_t    rxBuf[UART_RX_BUFFER_LENGTH];
-static  uint8_t    txBuf[UART_TX_BUFFER_LENGTH];
+static  uint8_t    rx_buf[UART_RX_BUFFER_LENGTH];
+static  uint8_t    tx_buf[UART_TX_BUFFER_LENGTH];
 
 recBuf_t                rxInfoInRam;
 
 serial_t                serialDataInRam = {
     .rx_buf = {
-        .pBuffer = rxBuf,
-        .offset = rxBuf + 3, //header,length,ctype
+        .pBuffer = rx_buf,
+        .offset = rx_buf + 3, //header,length,ctype
         .bufferSize = UART_RX_BUFFER_LENGTH,
     },
     .tx_buf = {
-        .pBuffer = txBuf,
-        .offset = txBuf + 2, //header,length
+        .pBuffer = tx_buf,
+        .offset = tx_buf + 2, //header,length
         .bufferSize = UART_TX_BUFFER_LENGTH,
     },
 };
@@ -41,7 +41,7 @@ serial_t * const serial = &serialDataInRam;
 
 static OSStatus uart_frame_send( serial_t *serial, const uint8_t *pData, uint32_t size );
 static OSStatus recSerialLedsFrameProcess( serial_t *serial );
-static OSStatus ackSerialLedsFrameProcess( serial_t *serial );
+static OSStatus AckSerialLedsFrameProcess( serial_t *serial, uint8_t mode, color_t *color, uint8_t period );
 static OSStatus recReadSysStatusVbatFrameProcess( serial_t *serial );
 static OSStatus ackReadSysStatusVbatFrameProcess( serial_t *serial, uint8_t cmd_num );
 static OSStatus recReadModuleStatusFrameProcess( serial_t *serial );
@@ -80,7 +80,7 @@ OSStatus Protocol_Init( void )//( serial_t *serial )
   require_action( serial->uart_serial , exit, err = kGeneralErr );
 
   serial->rx_info->pData = 0;
-  serial->rx_info->rxBuffer = rxBuf;
+  serial->rx_info->rxBuffer = rx_buf;
   serial->rx_info->rxCount = 0;
 
  // serial->uart_serial->uartHandle = &ComUartHandle;
@@ -109,46 +109,59 @@ exit:
 static OSStatus recSerialLedsFrameProcess( serial_t *serial )
 {
   OSStatus err = kNoErr;
-  uint8_t       ligthMode;
+  uint8_t       ligth_mode;
   uint16_t      lightEffect;
-  recSerialLedsFrame_t *recSerialLedsFrame;
+  rcv_serial_leds_frame_t *serial_leds_frame;
+  color_t *color;
+  uint8_t period;
+  //ack_serial_leds_frame_t *ack_serial_leds_frame;
     
   require_action( serial , exit, err = kGeneralErr );
   require_action( serial->uart_serial , exit, err = kGeneralErr );
 
-  recSerialLedsFrame = (recSerialLedsFrame_t *)serial->rx_buf.offset;
-  ligthMode = recSerialLedsFrame->lightMode;
-  lightEffect = (recSerialLedsFrame->lightEffectH << 8) | recSerialLedsFrame->lightEffectL;
+  serial_leds_frame = (rcv_serial_leds_frame_t *)(serial->rx_buf.offset);
+  ligth_mode = serial_leds_frame->cur_light_mode;
+  color = &serial_leds_frame->color;
+  period = serial_leds_frame->period;
   
+  
+  //ack_serial_leds_frame->ctype = FRAME_TYPE_LEDS_CONTROL;
+  //ack_serial_leds_frame->cur_light_mode = ligth_mode;
+  //memcpy(ack_serial_leds_frame->color, color, sizeof(color_t));
+
   if( STATE_IS_POWER_OFF != (boardStatus->sysStatus & STATE_RUN_BITS) )
   {
-    setSerialLedsEffect( (lightsMode_t)ligthMode, lightEffect );
+    SetSerialLedsEffect( (light_mode_t)ligth_mode, color , period);
   }
 
-  err = ackSerialLedsFrameProcess( serial );
+  //ack_serial_leds_frame = (ack_serial_leds_frame_t *)serial->tx_buf.offset;
+  //require_action( ack_serial_leds_frame , exit, err = kGeneralErr );
+
+ 
+  //ack_serial_leds_frame->color = color;
+  
+  err = AckSerialLedsFrameProcess( serial, ligth_mode, color, period );
 
 exit:
   return err;
 }
 
-static OSStatus ackSerialLedsFrameProcess( serial_t *serial )
+static OSStatus AckSerialLedsFrameProcess( serial_t *serial, uint8_t mode, color_t *color, uint8_t period )
 {
   OSStatus err = kNoErr;
-  uint8_t  length = sizeof(ackSerialLedsFrame_t);
-  ackSerialLedsFrame_t *ackSerialLedsFrame;
+  uint8_t  length = sizeof(ack_serial_leds_frame_t);
+  ack_serial_leds_frame_t *ack_serial_leds_frame;
 
   require_action( serial , exit, err = kGeneralErr );
   require_action( serial->uart_serial , exit, err = kGeneralErr );  
+  ack_serial_leds_frame = (ack_serial_leds_frame_t *)serial->tx_buf.offset;
+  ack_serial_leds_frame->ctype = FRAME_TYPE_LEDS_CONTROL;
+  
+  memcpy(&ack_serial_leds_frame->color, color, sizeof(color_t));
+  ack_serial_leds_frame->period = period;
+  ack_serial_leds_frame->cur_light_mode = mode;
 
-  ackSerialLedsFrame = (ackSerialLedsFrame_t *)serial->tx_buf.offset;
-  require_action( ackSerialLedsFrame , exit, err = kGeneralErr );
-
-  ackSerialLedsFrame->ctype = FRAME_TYPE_LEDS_CONTROL;
-  ackSerialLedsFrame->curLightMode = serial_leds->modeType;
-  ackSerialLedsFrame->curLightEffectH = (serial_leds->effectType & 0xff00) >> 8;
-  ackSerialLedsFrame->curLightEffectL = (serial_leds->effectType & 0x00ff);
-
-  err = uart_frame_send( serial, (uint8_t *)ackSerialLedsFrame, length );
+  err = uart_frame_send( serial, (uint8_t *)ack_serial_leds_frame/*serial->tx_buf.offset*/, length );
 
 exit:
   return err;
@@ -1075,8 +1088,6 @@ void protocol_period( void )
 {
   uint8_t checksum;
   uint8_t detectType;
-  //uint8_t *rcv_info = NULL;
-  //uint8_t *send_info = NULL;
   
   if( !serial->isSerialInitialized )
   {
@@ -1167,7 +1178,7 @@ void protocol_period( void )
     protocol_log("check sum not match") );
 
   detectType = serial->rx_info->bufferHeader.detectType;
-#if 0  
+#if 1  
   switch( detectType )
   {
   case FRAME_TYPE_LEDS_CONTROL:

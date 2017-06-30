@@ -359,11 +359,11 @@ typedef enum
 #define STDIO_UART          MICO_UART_3
 #define STDIO_UART_BAUDRATE (115200) 
 #else
-#define STDIO_UART          MICO_UART_3
+#define STDIO_UART          MICO_UART_2
 #define STDIO_UART_BAUDRATE (115200) 
 #endif
 
-#define COMM_UART        MICO_UART_1
+#define COMM_UART        MICO_UART_3
 #define COMM_UART_BAUDRATE (115200) 
 #define UART_FOR_APP     MICO_UART_1
 #define CLI_UART         MICO_UART_3

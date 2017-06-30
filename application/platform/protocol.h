@@ -8,6 +8,8 @@
 #include "serial_uart.h"
 #include "RingBufferUtils.h"
 #include "voltage_detect.h"
+#include "serial_leds.h"
+
 
 #define PROTOCOL_DEBUG
 
@@ -80,19 +82,30 @@ typedef struct _serial_t {
   ram_buff_t                    tx_buf;
 } serial_t;
 
-typedef struct _recSerialLedsFrame_t {
+typedef struct _recSerialLedsFrame_t 
+{
   uint8_t               lightMode;
   uint8_t               lightEffectH;
   uint8_t               lightEffectL;
 } recSerialLedsFrame_t;
 
-typedef struct _ackSerialLedsFrame_t {
-  uint8_t               ctype;
-  uint8_t               curLightMode;
-  uint8_t               curLightEffectH;
-  uint8_t               curLightEffectL;
-} ackSerialLedsFrame_t;
+#pragma pack(1)
+typedef struct 
+{
+//  uint8_t               ctype;
+  uint8_t               cur_light_mode;
+  color_t               color;
+  uint8_t               period;
+} rcv_serial_leds_frame_t;
 
+typedef struct 
+{
+  uint8_t               ctype;
+  uint8_t               cur_light_mode;
+  color_t               color;
+  uint8_t               period;
+} ack_serial_leds_frame_t;
+#pragma pack()
 
 typedef struct _ackSysStatusVbatFrame_t {
   uint8_t               ctype;
