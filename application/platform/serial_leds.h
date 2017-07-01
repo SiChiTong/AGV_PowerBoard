@@ -68,7 +68,10 @@ typedef enum
     LIGHTS_MODE_TURN_RIGHT,
     LIGHTS_MODE_COM_ERROR,
     LIGHTS_MODE_EMERGENCY_STOP,
-    LIGHT_MODE_LOW_POWER,
+    
+    
+    
+    LIGHTS_MODE_SETTING                 = 0xff,
 }light_mode_t;
 
 
@@ -168,6 +171,8 @@ typedef enum
     WHITE_C,
     CYAN_C,
     GOLD_C,
+    
+    SETTING_C,
     NONE_C,
   
 }led_color_t;

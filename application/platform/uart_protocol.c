@@ -48,7 +48,7 @@ static OSStatus recReadModuleStatusFrameProcess( serial_t *serial );
 static OSStatus AckReadModuleStatusFrameProcess( serial_t *serial, uint8_t cmd_num );
 static OSStatus recReadFaultStatusFrameProcess( serial_t *serial );
 static OSStatus ackReadFaultStatusFrameProcess( serial_t *serial, uint8_t cmd_num );
-static OSStatus recModuleControlFrameProcess( serial_t *serial );
+static OSStatus RcvModuleControlFrameProcess( serial_t *serial );
 static OSStatus ackModuleControlFrameProcess( serial_t *serial, uint8_t ack );
 static OSStatus ackNotSupportFrameProcess( serial_t *serial, uint8_t ctype );
 static OSStatus recTestCurrentCmdFrame( serial_t *serial );
@@ -553,7 +553,7 @@ static void setModulePowerOnOff( uint8_t module, uint8_t onoff )
   }
 }
 #endif
-static OSStatus recModuleControlFrameProcess( serial_t *serial )
+static OSStatus RcvModuleControlFrameProcess( serial_t *serial )
 {
   OSStatus err = kNoErr;
   recModuleControlFrame_t *recModuleControlFrame;
@@ -1226,9 +1226,10 @@ void protocol_period( void )
   //case FRAME_TYPE_FAULT_BIT:
        // recReadFaultStatusFrameProcess( serial );
     //break;
-  //case FRAME_TYPE_MODULE_CONTROL:
-       // recModuleControlFrameProcess( serial );
-   // break;
+  case FRAME_TYPE_MODULE_CONTROL:
+        RcvModuleControlFrameProcess( serial );
+    break;
+    
   case FRAME_TYPE_VERSION_INFO:
         recVersionInfoFrameProcess( serial );
     break;
@@ -1241,9 +1242,9 @@ void protocol_period( void )
   case FRAME_TYPE_READ_ERR_CURRENT:
         recReadErrChannelFrameProcess( serial );
     break;
-  case FRAME_TYPE_IRLED_CONTROL:
-        recIRLedControlFrameProcess( serial );
-    break;
+  //case FRAME_TYPE_IRLED_CONTROL:
+        //recIRLedControlFrameProcess( serial );
+   // break;
   default:
         ackNotSupportFrameProcess( serial, detectType );
     break;

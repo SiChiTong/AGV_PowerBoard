@@ -23,13 +23,13 @@
 #define FRAME_TYPE_SYS_STATUS           0x02
 #define FRAME_TYPE_BAT_STATUS           0x03
 #define FRAME_TYPE_MODULE_STATE         0x04
-#define FRAME_TYPE_READ_ERR_CURRENT     0x05
-
+#define FRAME_TYPE_READ_ERR_CURRENT     0x05//
+#define FRAME_TYPE_MODULE_CONTROL       0x06
 
 #define FRAME_TYPE_S_SYS_V_BAT          0x02
 
 #define FRAME_TYPE_FAULT_BIT            0x04
-#define FRAME_TYPE_MODULE_CONTROL       0x05
+
 #define FRAME_TYPE_IRLED_CONTROL        0x06
 #define FRAME_TYPE_FANS_CONTROL         0x07
 
