@@ -25,12 +25,13 @@
 #define FRAME_TYPE_MODULE_STATE         0x04
 #define FRAME_TYPE_READ_ERR_CURRENT     0x05//
 #define FRAME_TYPE_MODULE_CONTROL       0x06
+#define FRAME_TYPE_IRLED_CONTROL        0x07
 
 #define FRAME_TYPE_S_SYS_V_BAT          0x02
 
 #define FRAME_TYPE_FAULT_BIT            0x04
 
-#define FRAME_TYPE_IRLED_CONTROL        0x06
+
 #define FRAME_TYPE_FANS_CONTROL         0x07
 
 #define FRAME_TYPE_TEST_CURRENT         0x0A
@@ -183,12 +184,12 @@ typedef struct _recModuleControlFrame_t {
 #define             AIUI_MODULE           0x13
 #define             _5V_ROUTER_MODULE     0x14
   uint8_t               control;
-} recModuleControlFrame_t;
+} rcv_module_control_frame_t;
 
 typedef struct _recIRLedControlFrame_t {
   uint8_t               type_wr;
   uint8_t               brightness;
-} recIRLedControlFrame_t;
+} rcv_irled_control_frame_t;
 
 typedef struct _ackGeneralFrame_t {
   uint8_t               ctype;

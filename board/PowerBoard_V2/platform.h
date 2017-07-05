@@ -184,14 +184,14 @@ typedef enum
     MICO_GPIO_BATIN_ADC,            //new
     MICO_GPIO_VBUS_ADC,             //new
     MICO_GPIO_BAT_MOTOR_ADC,        //new
-    MICO_GPIO_2_1_PA_ADC,           //new
-    MICO_GPIO_PAD_ADC,              //new
-    MICO_GPIO_PRINTER_ADC,          //new
-    MICO_GPIO_X86_ADC,              //new
+    MICO_GPIO_12V_2_1_PA_ADC,           //new
+    MICO_GPIO_12V_PAD_ADC,              //new
+    MICO_GPIO_24V_PRINTER_ADC,          //new
+    MICO_GPIO_12V_X86_ADC,              //new
     MICO_GPIO_5V_RES1_ADC,          //new
     MICO_GPIO_12V_NV_ADC,           //new
     MICO_GPIO_IRLED_ADC,            //new
-    MICO_GPIO_MOTOR_ADC,            //new
+    MICO_GPIO_5V_MOTOR_ADC,            //new
 
     MICO_GPIO_MULTI_CHANNEL_ADC,    //new
     MICO_GPIO_VSYS_24V_NV_ADC,      //new
@@ -262,13 +262,13 @@ typedef enum
     MICO_ADC_48V_EXTEND_C,  //4
     MICO_ADC_12V_EXTEND_C,  //5
     MICO_ADC_RECHARGE_C,    //6
-    MICO_ADC_MOTOR_C,       //8
-    MICO_ADC_SLAM_C,        //9 
-    MICO_ADC_2_1_PA_C,      //10
+    MICO_ADC_5V_MOTOR_C,       //8
+    MICO_ADC_24V_SLAM_C,        //9 
+    MICO_ADC_12V_2_1_PA_C,      //10
     
-    MICO_ADC_PAD_C,         //11
-    MICO_ADC_PRINTER_C,     //12
-    MICO_ADC_X86_C,         //13
+    MICO_ADC_12V_PAD_C,         //11
+    MICO_ADC_24V_PRINTER_C,     //12
+    MICO_ADC_12V_X86_C,         //13
     MICO_ADC_IRLED_C,       //14
     MICO_ADC_5V_LEDS_C,     //15
 #endif  
@@ -359,11 +359,11 @@ typedef enum
 #define STDIO_UART          MICO_UART_3
 #define STDIO_UART_BAUDRATE (115200) 
 #else
-#define STDIO_UART          MICO_UART_2
+#define STDIO_UART          MICO_UART_3
 #define STDIO_UART_BAUDRATE (115200) 
 #endif
 
-#define COMM_UART        MICO_UART_3
+#define COMM_UART        MICO_UART_1
 #define COMM_UART_BAUDRATE (115200) 
 #define UART_FOR_APP     MICO_UART_1
 #define CLI_UART         MICO_UART_3

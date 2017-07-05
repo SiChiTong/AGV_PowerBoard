@@ -117,6 +117,23 @@ typedef enum
                                 
 #define delay_us(n)       do { for(uint32_t i=0;i<n;i++){delay_300ns();delay_600ns();}\
                                 } while(0==1)
+                                
+                                
+#define delay_200ns()     do {asm("nop");asm("nop");asm("nop");asm("nop");\
+                              asm("nop");asm("nop");asm("nop");asm("nop");\
+                              asm("nop");asm("nop");asm("nop");asm("nop");\
+                              asm("nop");asm("nop");asm("nop");asm("nop");\
+                              } while(1==0)
+                                
+#define delay_500ns()     do { asm("nop");asm("nop");asm("nop");asm("nop");\
+                               asm("nop");asm("nop");asm("nop");asm("nop");\
+                               asm("nop");asm("nop");asm("nop");asm("nop");\
+                               asm("nop");asm("nop");asm("nop");asm("nop");\
+                               asm("nop");asm("nop");asm("nop");asm("nop");\
+                               asm("nop");asm("nop");asm("nop");asm("nop");\
+                               asm("nop");asm("nop");asm("nop");asm("nop");\
+                               asm("nop");asm("nop");asm("nop");asm("nop");\
+                               asm("nop");asm("nop");} while(1==0)
 //#else
 
 #define delay_ms          HAL_Delay
@@ -124,8 +141,8 @@ typedef enum
                                
 #define FRONT_LEFT_LED_NUM          16
 #define FRONT_RIGHT_LED_NUM         16
-#define BACK_RIGHT_LED_NUM          5
-#define BACK_LEFT_LED_NUM           5
+#define BACK_RIGHT_LED_NUM          7
+#define BACK_LEFT_LED_NUM           7
 #define LEFT_EYE_LED_NUM            10
 #define RIGHT_EYE_LED_NUM           10
 

@@ -72,13 +72,13 @@ typedef enum {
     CURRENTS_48V_EXTEND,
     
     CURRENTS_12V_EXTEND,
-    CURRENTS_MOTOR,
-    CURRENTS_SLAM,
-    CURRENTS_2_1_PA,
+    CURRENTS_5V_MOTOR,
+    CURRENTS_24V_SLAM,
+    CURRENTS_12V_2_1_PA,
     
-    CURRENTS_PAD,
-    CURRENTS_PRINTER,
-    CURRENTS_X86,
+    CURRENTS_12V_PAD,
+    CURRENTS_24V_PRINTER,
+    CURRENTS_12V_X86,
     CURRENTS_IRLED,
 
     
@@ -114,6 +114,8 @@ typedef enum {
 #endif
 } adc_channel_t ;
 
+#define ADC_FACTOR_5    5
+#define ADC_FACTOR_50    50
 struct convert_adc_data convert_data[] = {
   [CURRENTS_5V_RES] = 
   {
@@ -132,7 +134,7 @@ struct convert_adc_data convert_data[] = {
     .adc_type           = MICO_ADC_24V_NV_C,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'N',
-    .convert_factor     = 5,//5.95,//5,
+    .convert_factor     = ADC_FACTOR_5,//5.95,//5,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -144,7 +146,7 @@ struct convert_adc_data convert_data[] = {
     .adc_type           = MICO_ADC_12V_NV_C    ,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'N',
-    .convert_factor     = 50,
+    .convert_factor     = ADC_FACTOR_5,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -158,7 +160,7 @@ struct convert_adc_data convert_data[] = {
     .adc_type           = MICO_ADC_48V_EXTEND_C,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'N',
-    .convert_factor     = 5,//5.55,//5,
+    .convert_factor     = ADC_FACTOR_50,//5.55,//5,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -170,79 +172,79 @@ struct convert_adc_data convert_data[] = {
     .adc_type           = MICO_ADC_12V_EXTEND_C   ,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'N',
-    .convert_factor     = 5,//6.2,//5,
+    .convert_factor     = ADC_FACTOR_5,//6.2,//5,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
     .err_channel        = 0x08,
     .fault_bit_mask_num = DLP_CURRENTS_FAULT_BIT_MASK_NUM, 
   },
-  [CURRENTS_MOTOR] = 
+  [CURRENTS_5V_MOTOR] = 
   {
-    .adc_type           = MICO_ADC_MOTOR_C,
+    .adc_type           = MICO_ADC_5V_MOTOR_C,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'N',
-    .convert_factor     = 5,//5.8,//
+    .convert_factor     = ADC_FACTOR_5,//5.8,//
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
     .err_channel        = 0x09,
     .fault_bit_mask_num = MOTOR_CURRENTS_FAULT_BIT_MASK_NUM, 
   },
-  [CURRENTS_SLAM] = 
+  [CURRENTS_24V_SLAM] = 
   {
-    .adc_type           = MICO_ADC_SLAM_C,
+    .adc_type           = MICO_ADC_24V_SLAM_C,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'N',
-    .convert_factor     = 5,//4.985,//5,
+    .convert_factor     = ADC_FACTOR_5,//4.985,//5,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
     .err_channel        = 0x0A,
     .fault_bit_mask_num = RES_24V_CURRENTS_FAULT_BIT_MASK_NUM, 
   }, 
-  [CURRENTS_2_1_PA] = 
+  [CURRENTS_12V_2_1_PA] = 
   {
-    .adc_type           = MICO_ADC_2_1_PA_C,
+    .adc_type           = MICO_ADC_12V_2_1_PA_C,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'N',
-    .convert_factor     = 5,//5.59,//5,
+    .convert_factor     = ADC_FACTOR_5,//5.59,//5,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
     .err_channel        = 0x0B,
     .fault_bit_mask_num = PA_2_1_CURRENTS_FAULT_BIT_MASK_NUM, 
   },
-  [CURRENTS_PAD] = 
+  [CURRENTS_12V_PAD] = 
   {
-    .adc_type           = MICO_ADC_PAD_C,
+    .adc_type           = MICO_ADC_12V_PAD_C,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'N',
-    .convert_factor     = 5,//6.3,//5,
+    .convert_factor     = ADC_FACTOR_5,//6.3,//5,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
     .err_channel        = 0x0C,
     .fault_bit_mask_num = PAD_CURRENTS_FAULT_BIT_MASK_NUM, 
   },
-  [CURRENTS_PRINTER] = 
+  [CURRENTS_24V_PRINTER] = 
   {
-    .adc_type           = MICO_ADC_PRINTER_C,
+    .adc_type           = MICO_ADC_24V_PRINTER_C,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'N',
-    .convert_factor     = 5,//5.56,//5,
+    .convert_factor     = ADC_FACTOR_5,//5.56,//5,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
     .err_channel        = 0x0D,
     .fault_bit_mask_num = PRINTER_CURRENTS_FAULT_BIT_MASK_NUM, 
   },
-  [CURRENTS_X86] = 
+  [CURRENTS_12V_X86] = 
   {
-    .adc_type           = MICO_ADC_X86_C,
+    .adc_type           = MICO_ADC_12V_X86_C,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'N',
-    .convert_factor     = 5.1,//5,
+    .convert_factor     = ADC_FACTOR_5,//5,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -254,7 +256,7 @@ struct convert_adc_data convert_data[] = {
     .adc_type           = MICO_ADC_IRLED_C,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'N',
-    .convert_factor     = 50,//41.17,//
+    .convert_factor     = ADC_FACTOR_5,//41.17,//
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -266,7 +268,7 @@ struct convert_adc_data convert_data[] = {
     .adc_type           = MICO_ADC_5V_LEDS_C,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'N',
-    .convert_factor     = 5.45,//5,
+    .convert_factor     = ADC_FACTOR_5,//5,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -278,7 +280,7 @@ struct convert_adc_data convert_data[] = {
     .adc_type           = MICO_ADC_RECHARGE_C,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'N',
-    .convert_factor     = 5,//5.65,//
+    .convert_factor     = ADC_FACTOR_5,//5.65,//
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -290,7 +292,7 @@ struct convert_adc_data convert_data[] = {
     .adc_type           = MICO_ADC_24V_EXTEND_C ,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'N',
-    .convert_factor     = 6.2,//5,
+    .convert_factor     = ADC_FACTOR_5,//5,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -302,7 +304,7 @@ struct convert_adc_data convert_data[] = {
     .adc_type           = MICO_ADC_CHARGE_C,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'N',
-    .convert_factor     = 7.55,//5,
+    .convert_factor     = ADC_FACTOR_50,//5,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -314,7 +316,7 @@ struct convert_adc_data convert_data[] = {
     .adc_type           = MICO_ADC_BATIN_C,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'N',
-    .convert_factor     = 5,//7.25,//
+    .convert_factor     = ADC_FACTOR_5,//7.25,//
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -326,7 +328,7 @@ struct convert_adc_data convert_data[] = {
     .adc_type           = MICO_ADC_VBUS_C,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'N',
-    .convert_factor     = 5,
+    .convert_factor     = ADC_FACTOR_50,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -338,7 +340,7 @@ struct convert_adc_data convert_data[] = {
     .adc_type           = MICO_ADC_BAT_MOTOR_C,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'N',
-    .convert_factor     = 50,
+    .convert_factor     = ADC_FACTOR_50,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -404,7 +406,7 @@ struct convert_adc_data convert_data[] = {
     .adc_type           = MICO_ADC_AIR_TS,
     .convert_type       = CONVERT_TYPE_TEMP,
     .isNeedDelay        = 'Y',
-    .convert_factor     = 5,
+    .convert_factor     = 1,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -416,7 +418,7 @@ struct convert_adc_data convert_data[] = {
     .adc_type           = MICO_ADC_24V_ALL_C ,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'Y',
-    .convert_factor     = 5,
+    .convert_factor     = ADC_FACTOR_5,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -428,7 +430,7 @@ struct convert_adc_data convert_data[] = {
     .adc_type           = MICO_ADC_12V_ALL_C,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'Y',
-    .convert_factor     = 5,
+    .convert_factor     = ADC_FACTOR_5,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -440,7 +442,7 @@ struct convert_adc_data convert_data[] = {
     .adc_type           = MICO_ADC_5V_ALL_C,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'Y',
-    .convert_factor     = 1,
+    .convert_factor     = ADC_FACTOR_5,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -500,7 +502,7 @@ struct convert_adc_data convert_data[] = {
     .adc_type           = MICO_ADC_5V_SENSOR_BOARD_C,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'Y',
-    .convert_factor     = 5.4,//5,
+    .convert_factor     = ADC_FACTOR_5,//5,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -512,7 +514,7 @@ struct convert_adc_data convert_data[] = {
     .adc_type           = MICO_ADC_5V_ROUTER_C,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'Y',
-    .convert_factor     = 5.55,//5,
+    .convert_factor     = ADC_FACTOR_5,//5,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -610,13 +612,13 @@ static void computeVoltage( void )
   voltageConvert->_48V_extend_currents = processChannelsData( CURRENTS_48V_EXTEND );
   
   voltageConvert->_12V_extend_currents = processChannelsData( CURRENTS_12V_EXTEND );
-  voltageConvert->motor_currents = processChannelsData( CURRENTS_MOTOR );
-  voltageConvert->slam_currents = processChannelsData( CURRENTS_SLAM );
-  voltageConvert->_2_1_pa_currents = processChannelsData( CURRENTS_2_1_PA );
+  voltageConvert->motor_currents = processChannelsData( CURRENTS_5V_MOTOR );
+  voltageConvert->slam_currents = processChannelsData( CURRENTS_24V_SLAM );
+  voltageConvert->_2_1_pa_currents = processChannelsData( CURRENTS_12V_2_1_PA );
   
-  voltageConvert->pad_currents = processChannelsData( CURRENTS_PAD );
-  voltageConvert->printer_currents = processChannelsData( CURRENTS_PRINTER );
-  voltageConvert->x86_currents = processChannelsData( CURRENTS_X86 );
+  voltageConvert->pad_currents = processChannelsData( CURRENTS_12V_PAD );
+  voltageConvert->printer_currents = processChannelsData( CURRENTS_24V_PRINTER );
+  voltageConvert->x86_currents = processChannelsData( CURRENTS_12V_X86 );
   voltageConvert->ir_led_currents = processChannelsData( CURRENTS_IRLED );
   
   voltageConvert->_5V_leds_currents = processChannelsData( CURRENTS_5V_LEDS );
@@ -690,13 +692,13 @@ void PrintAdcData(void)
 {
     printf("\r\n");
     //printf("battery percertage: %d%\r\n", boardStatus->vBatLevel);//get_percentage_from_battery_voltage( voltageConvert->bat_voltage ) );
-    for( uint8_t i = 0; i < sizeof(voltageData_t)/2; i++ )
+    for( uint8_t i = 1; i <= sizeof(voltageData_t)/2; i++ )
     {
         if( i % 10 == 0)
         {
             printf("\r\n");
         }   
-        printf( "%d: %d\t", i, *((uint16_t *)voltageConvert + i) );
+        printf( "%d: %d\t", i, *((uint16_t *)voltageConvert + i - 1) );
     }     
     printf("\r\n");
 }

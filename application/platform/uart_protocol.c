@@ -44,7 +44,7 @@ static OSStatus RcvSerialLedsFrameProcess( serial_t *serial );
 static OSStatus AckSerialLedsFrameProcess( serial_t *serial, uint8_t mode, color_t *color, uint8_t period );
 static OSStatus recReadSysStatusVbatFrameProcess( serial_t *serial );
 static OSStatus ackReadSysStatusVbatFrameProcess( serial_t *serial, uint8_t cmd_num );
-static OSStatus recReadModuleStatusFrameProcess( serial_t *serial );
+static OSStatus RcvReadModuleStatusFrameProcess( serial_t *serial );
 static OSStatus AckReadModuleStatusFrameProcess( serial_t *serial, uint8_t cmd_num );
 static OSStatus recReadFaultStatusFrameProcess( serial_t *serial );
 static OSStatus ackReadFaultStatusFrameProcess( serial_t *serial, uint8_t cmd_num );
@@ -53,7 +53,7 @@ static OSStatus ackModuleControlFrameProcess( serial_t *serial, uint8_t ack );
 static OSStatus ackNotSupportFrameProcess( serial_t *serial, uint8_t ctype );
 static OSStatus recTestCurrentCmdFrame( serial_t *serial );
 static OSStatus ackReadErrChannelFrameProcess( serial_t *serial );
-static OSStatus recIRLedControlFrameProcess( serial_t *serial );
+static OSStatus RcvIRLedControlFrameProcess( serial_t *serial );
 static OSStatus ackIRLedControlFrameProcess( serial_t *serial );
 
 OSStatus Protocol_Init( void )//( serial_t *serial )
@@ -322,7 +322,7 @@ exit:
   return err;
 }
 
-static OSStatus recReadModuleStatusFrameProcess( serial_t *serial )
+static OSStatus RcvReadModuleStatusFrameProcess( serial_t *serial )
 {
   OSStatus err = kNoErr;
   uint8_t  cmd_num;
@@ -556,22 +556,22 @@ static void setModulePowerOnOff( uint8_t module, uint8_t onoff )
 static OSStatus RcvModuleControlFrameProcess( serial_t *serial )
 {
   OSStatus err = kNoErr;
-  recModuleControlFrame_t *recModuleControlFrame;
+  rcv_module_control_frame_t *rcv_module_control_frame;
 
   require_action( serial, exit, err = kGeneralErr );
   require_action( serial->uart_serial , exit, err = kGeneralErr );
 
-  recModuleControlFrame = (recModuleControlFrame_t *)serial->rx_buf.offset;
-  require_action( recModuleControlFrame , exit, err = kGeneralErr );
+  rcv_module_control_frame = (rcv_module_control_frame_t *)serial->rx_buf.offset;
+  require_action( rcv_module_control_frame , exit, err = kGeneralErr );
 
-  switch( recModuleControlFrame->module )
+  switch( rcv_module_control_frame->module )
   {
     case SYSTEM_MODULE:
-    if( recModuleControlFrame->control == 0x00 )//shutdown system
+    if( rcv_module_control_frame->control == 0x00 )//shutdown system
     {
         PowerOffDevices();
     }
-    else if( recModuleControlFrame->control == 0x01 )// reboot system
+    else if( rcv_module_control_frame->control == 0x01 )// reboot system
     {
         flashTable.isNeedAutoBoot = 'Y';
         MICOBootConfiguration( &flashTable );
@@ -603,7 +603,7 @@ static OSStatus RcvModuleControlFrameProcess( serial_t *serial )
     case X86_MODULE:
     case NV_MODULE:
     case DLP_MODULE:
-      setModulePowerSignalOnOff( recModuleControlFrame->module, recModuleControlFrame->control );
+      setModulePowerSignalOnOff( rcv_module_control_frame->module, rcv_module_control_frame->control );
       break;
     default:
       err = ackModuleControlFrameProcess( serial, HW_NO_SUPPORT );
@@ -639,24 +639,24 @@ exit:
   return err;
 }
 
-static OSStatus recIRLedControlFrameProcess( serial_t *serial )
+static OSStatus RcvIRLedControlFrameProcess( serial_t *serial )
 {
   OSStatus err = kNoErr;
-  recIRLedControlFrame_t *recIRLedControlFrame;
+  rcv_irled_control_frame_t *rcv_irled_control_frame;
 
   require_action( serial, exit, err = kGeneralErr );
   require_action( serial->uart_serial , exit, err = kGeneralErr );
 
-  recIRLedControlFrame = (recIRLedControlFrame_t *)serial->rx_buf.offset;
-  require_action( recIRLedControlFrame , exit, err = kGeneralErr );
+  rcv_irled_control_frame = (rcv_irled_control_frame_t *)serial->rx_buf.offset;
+  require_action( rcv_irled_control_frame , exit, err = kGeneralErr );
 
-  if( recIRLedControlFrame->type_wr == 0x00 )//read
+  if( rcv_irled_control_frame->type_wr == 0x00 )//read
   {
   }
-  else if( recIRLedControlFrame->type_wr == 0x01 )//write
+  else if( rcv_irled_control_frame->type_wr == 0x01 )//write
   {
-    brightness_dimming( 50000, recIRLedControlFrame->brightness );
-    boardStatus->irled_duty = recIRLedControlFrame->brightness;
+    brightness_dimming( 50000, rcv_irled_control_frame->brightness );
+    boardStatus->irled_duty = rcv_irled_control_frame->brightness;
   }
   err = ackIRLedControlFrameProcess( serial );
   
@@ -1221,12 +1221,12 @@ void protocol_period( void )
         
     
   case FRAME_TYPE_MODULE_STATE:
-        recReadModuleStatusFrameProcess( serial );  //done
+        RcvReadModuleStatusFrameProcess( serial );  //done
     break;
   //case FRAME_TYPE_FAULT_BIT:
        // recReadFaultStatusFrameProcess( serial );
     //break;
-  case FRAME_TYPE_MODULE_CONTROL:
+  case FRAME_TYPE_MODULE_CONTROL:                   //done
         RcvModuleControlFrameProcess( serial );
     break;
     
@@ -1242,9 +1242,9 @@ void protocol_period( void )
   case FRAME_TYPE_READ_ERR_CURRENT:
         recReadErrChannelFrameProcess( serial );
     break;
-  //case FRAME_TYPE_IRLED_CONTROL:
-        //recIRLedControlFrameProcess( serial );
-   // break;
+  case FRAME_TYPE_IRLED_CONTROL:            // done ??
+        RcvIRLedControlFrameProcess( serial );
+    break;
   default:
         ackNotSupportFrameProcess( serial, detectType );
     break;

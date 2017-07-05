@@ -810,7 +810,7 @@ color_t led_color[] =
   [RED_C]       = {255, 0  , 0  },
   [GREEN_C]     = {0  , 255, 0  },
   [BLUE_C]      = {0  , 0  , 255},
-  [ORANGE_C]    = {255, 165, 0  },
+  [ORANGE_C]    = {255, 100, 0  },
   [WHITE_C]     = {255, 255, 255},
   [CYAN_C]      = {0  , 255, 255},
   [GOLD_C]      = {255, 215, 0  },
@@ -1033,6 +1033,13 @@ void SetSerialLedsEffect( light_mode_t light_mode, color_t *cur_color, uint8_t p
     }
 
 }
+
+inline void WriteReset(mico_gpio_t gpio)
+{
+    LedOutputLow((mico_gpio_t)gpio);
+    delay_us(80);	
+}
+#if 0
 inline void Write_0(mico_gpio_t gpio)
 {
     LedOutputHigh(gpio);
@@ -1051,7 +1058,32 @@ inline void Write_1(mico_gpio_t gpio)
     LedOutputLow(gpio);
     delay_600ns();
 }
+#else
+inline void Write_0(mico_gpio_t gpio)
+{
+    LedOutputHigh(gpio);
 
+    //delay_300ns();
+    delay_200ns();
+    LedOutputLow(gpio);
+    //delay_300ns();
+    //delay_600ns();
+    delay_200ns();
+    delay_500ns();
+}
+
+inline void Write_1(mico_gpio_t gpio)
+{
+        
+    LedOutputHigh(gpio);
+    //delay_600ns();
+    delay_500ns();
+
+    LedOutputLow(gpio);
+    //delay_600ns();
+    delay_500ns();
+}
+#endif
 
 void Write24bit(mico_gpio_t gpio, uint32_t word)
 {
@@ -1145,7 +1177,7 @@ void serialLedsTick( void )
             //WriteColor((one_wire_led_t)i, &charge_color[one_wire_led[i].tick % one_wire_led[i].color_number]);
 
             WriteColor((one_wire_led_t)i, &(one_wire_led[i].color[one_wire_led[i].tick % one_wire_led[i].color_number]));  
-#if 0
+#if 1
             DISABLE_INTERRUPTS();
             SendData((one_wire_led_t)i);      
             ENABLE_INTERRUPTS();
@@ -1153,7 +1185,7 @@ void serialLedsTick( void )
         }     
     }
   
-#if 1   
+#if 0   
     DISABLE_INTERRUPTS();
     for(uint8_t i = FRONT_LEFT_LED; i < LED_NONE; i++)
     {

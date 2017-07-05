@@ -250,7 +250,7 @@ void setModulePowerSignalOnOff( uint8_t module, uint8_t onoff )
 
 static void Switch_Tick( void )
 {
-#if 0
+#if 1
   if( /*(YES != switch_user->isSwitchOver) && */(switch_user->getSwitchState != NULL) )
   {
     if( (switch_user->startTime != 0) && ((os_get_time() - switch_user->startTime) >= SWITCH_DEBOUNCE_TIME) )
@@ -288,7 +288,7 @@ static void Switch_Tick( void )
   }
 #else
   
-    extern const platform_gpio_t            platform_gpio_pins[];  
+    //extern const platform_gpio_t            platform_gpio_pins[];  
 #define DEVICE_STATE_POWER_ON       1  
 #define DEVICE_STATE_POWER_OFF      0
     //static uint32_t power_on_start_time = 0;
@@ -297,7 +297,7 @@ static void Switch_Tick( void )
     static uint8_t low_flag = 0;
     //static uint8_t state = DEVICE_STATE_POWER_OFF;
     
-    if(switch_user->getSwitchState( SWITCH_USER ) == 1)
+    if((switch_user->getSwitchState( SWITCH_USER ) == 1) && (boardStatus->isPowerOffFinish == YES))
     {
         low_flag = 0;
         if(high_flag == 0)
@@ -339,7 +339,7 @@ static void Switch_Tick( void )
        
     }
     
-    if(switch_user->getSwitchState( SWITCH_USER ) == 0)
+    if((switch_user->getSwitchState( SWITCH_USER ) == 0) && (boardStatus->isPowerOnFinish == YES))
     {
         high_flag = 0;
         if(low_flag == 0)
