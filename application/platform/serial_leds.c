@@ -878,8 +878,8 @@ extern const platform_gpio_t            platform_gpio_pins[];
     {
         .gpio               = MICO_GPIO_FRONT_RIGHT_LED,
         .color              = front_right_color,
-        .color_number       = 3,
-        .period             = 800,
+        .color_number       = 1,
+        .period             = 500,
         .data_buf           = front_right_buff,
         .led_num            = FRONT_RIGHT_LED_NUM,
         .start_time         = 0,
@@ -888,8 +888,8 @@ extern const platform_gpio_t            platform_gpio_pins[];
     {
         .gpio               = MICO_GPIO_FRONT_LEFT_LED,
         .color              = front_left_color,
-        .color_number       = 3,
-        .period             = 700,
+        .color_number       = 1,
+        .period             = 500,
         .data_buf           = front_left_buff,
         .led_num            = FRONT_LEFT_LED_NUM,
         .start_time         = 0,
@@ -898,8 +898,8 @@ extern const platform_gpio_t            platform_gpio_pins[];
     {
         .gpio               = MICO_GPIO_BACK_RIGHT_LED,
         .color              = back_right_color,
-        .color_number       = 3,
-        .period             = 400,
+        .color_number       = 1,
+        .period             = 500,
         .data_buf           = back_right_buff,
         .led_num            = BACK_RIGHT_LED_NUM,
         .start_time         = 0,
@@ -908,7 +908,7 @@ extern const platform_gpio_t            platform_gpio_pins[];
     {
         .gpio               = MICO_GPIO_BACK_LEFT_LED,
         .color              = back_left_color,
-        .color_number       = 2,
+        .color_number       = 1,
         .period             = 500,
         .data_buf           = back_left_buff,
         .led_num            = BACK_LEFT_LED_NUM,
@@ -918,8 +918,8 @@ extern const platform_gpio_t            platform_gpio_pins[];
     {
         .gpio               = MICO_GPIO_LEFT_EYE_LED,
         .color              = left_eye_color,
-        .color_number       = 2,
-        .period             = 600,
+        .color_number       = 1,
+        .period             = 500,
         .data_buf           = left_eye_buff,
         .led_num            = LEFT_EYE_LED_NUM,
         .start_time         = 0,
@@ -928,14 +928,28 @@ extern const platform_gpio_t            platform_gpio_pins[];
     {
         .gpio               = MICO_GPIO_RIGHT_EYE_LED,
         .color              = right_eye_color,
-        .color_number       = 2,
-        .period             = 700,
+        .color_number       = 1,
+        .period             = 500,
         .data_buf           = right_eye_buff,
         .led_num            = RIGHT_EYE_LED_NUM,
         .start_time         = 0,
     },
 };
 
+void OpenEyes(void)
+{
+    one_wire_led[RIGHT_EYE_LED].color[0] = led_color[WHITE_C];
+    one_wire_led[LEFT_EYE_LED].color[0] = led_color[WHITE_C];
+    one_wire_led[RIGHT_EYE_LED].color_number = 1;
+    one_wire_led[LEFT_EYE_LED].color_number = 1;
+}
+void CloseEyes(void)
+{
+    one_wire_led[RIGHT_EYE_LED].color[0] = led_color[NONE_C];
+    one_wire_led[LEFT_EYE_LED].color[0] = led_color[NONE_C];
+    one_wire_led[RIGHT_EYE_LED].color_number = 1;
+    one_wire_led[LEFT_EYE_LED].color_number = 1;
+}
 #define SHINE_HIGH_SPEED_PERIOD         300
 #define SHINE_MEDIUM_SPEED_PERIOD       600
 #define SHINE_LOW_SPEED_PERIOD          1000
@@ -949,8 +963,10 @@ void SetSerialLedsEffect( light_mode_t light_mode, color_t *cur_color, uint8_t p
             one_wire_led[(one_wire_led_t)i].color[0] = led_color[ORANGE_C];
             one_wire_led[(one_wire_led_t)i].color[1] = led_color[NONE_C];
             one_wire_led[(one_wire_led_t)i].color_number = 2;
-            one_wire_led[(one_wire_led_t)i].period = SHINE_MEDIUM_SPEED_PERIOD;      
+            one_wire_led[(one_wire_led_t)i].period = SHINE_MEDIUM_SPEED_PERIOD;   
+            one_wire_led[(one_wire_led_t)i].tick = 0;
         }
+        OpenEyes();
         break;
     case LIGHTS_MODE_ERROR:
         for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
@@ -958,8 +974,10 @@ void SetSerialLedsEffect( light_mode_t light_mode, color_t *cur_color, uint8_t p
             one_wire_led[(one_wire_led_t)i].color[0] = led_color[RED_C];
             one_wire_led[(one_wire_led_t)i].color[1] = led_color[NONE_C];
             one_wire_led[(one_wire_led_t)i].color_number = 2;
-            one_wire_led[(one_wire_led_t)i].period = SHINE_MEDIUM_SPEED_PERIOD;   
+            one_wire_led[(one_wire_led_t)i].period = SHINE_MEDIUM_SPEED_PERIOD; 
+            one_wire_led[(one_wire_led_t)i].tick = 0;
         }
+        CloseEyes();
         break;
     case LIGHTS_MODE_COM_ERROR:
         for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
@@ -967,8 +985,10 @@ void SetSerialLedsEffect( light_mode_t light_mode, color_t *cur_color, uint8_t p
             one_wire_led[(one_wire_led_t)i].color[0] = led_color[RED_C];
             one_wire_led[(one_wire_led_t)i].color[1] = led_color[NONE_C];
             one_wire_led[(one_wire_led_t)i].color_number = 2;
-            one_wire_led[(one_wire_led_t)i].period = period * 10;            
+            one_wire_led[(one_wire_led_t)i].period = period * 10; 
+            one_wire_led[(one_wire_led_t)i].tick = 0;
         }
+        CloseEyes();
         break;
       
     case LIGHTS_MODE_LOW_POWER:     
@@ -978,7 +998,9 @@ void SetSerialLedsEffect( light_mode_t light_mode, color_t *cur_color, uint8_t p
             one_wire_led[(one_wire_led_t)i].color[1] = led_color[NONE_C];
             one_wire_led[(one_wire_led_t)i].color_number = 2;
             one_wire_led[(one_wire_led_t)i].period = SHINE_HIGH_SPEED_PERIOD;
+            one_wire_led[(one_wire_led_t)i].tick = 0;
         }
+        CloseEyes();
         break;
     case LIGHTS_MODE_CHARGING: 
         if(voltageConvert->bat_voltage < 46000)     //charging low power -- test code 
@@ -989,6 +1011,7 @@ void SetSerialLedsEffect( light_mode_t light_mode, color_t *cur_color, uint8_t p
                 one_wire_led[(one_wire_led_t)i].color[1] = led_color[ORANGE_C];
                 one_wire_led[(one_wire_led_t)i].color_number = 2;
                 one_wire_led[(one_wire_led_t)i].period = 1000;
+                one_wire_led[(one_wire_led_t)i].tick = 0;
             }
         }
         else if(voltageConvert->bat_voltage < 50000)    //charging  power medium -- test code 
@@ -999,6 +1022,7 @@ void SetSerialLedsEffect( light_mode_t light_mode, color_t *cur_color, uint8_t p
                 one_wire_led[(one_wire_led_t)i].color[1] = led_color[GREEN_C];
                 one_wire_led[(one_wire_led_t)i].color_number = 2;
                 one_wire_led[(one_wire_led_t)i].period = 1000;
+                one_wire_led[(one_wire_led_t)i].tick = 0;
             }
         }
         else        //charging power full -- test code 
@@ -1007,19 +1031,25 @@ void SetSerialLedsEffect( light_mode_t light_mode, color_t *cur_color, uint8_t p
             {
                 one_wire_led[(one_wire_led_t)i].color[0] = led_color[GREEN_C];
                 one_wire_led[(one_wire_led_t)i].color_number = 1;
+                one_wire_led[(one_wire_led_t)i].tick = 0;
             }
         }
+        CloseEyes();
       break;
     case LIGHTS_MODE_TURN_LEFT:
+      OpenEyes();
       break;
     case LIGHTS_MODE_TURN_RIGHT:
+      OpenEyes();
       break;
     case LIGHTS_MODE_EMERGENCY_STOP:
         for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
         {
             one_wire_led[(one_wire_led_t)i].color[0] = led_color[RED_C];//led_color[WHITE_C];
             one_wire_led[(one_wire_led_t)i].color_number = 1;
+            one_wire_led[(one_wire_led_t)i].tick = 0;
         }
+        CloseEyes();
       break;
     case LIGHTS_MODE_SETTING:
         for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
@@ -1028,8 +1058,13 @@ void SetSerialLedsEffect( light_mode_t light_mode, color_t *cur_color, uint8_t p
             one_wire_led[(one_wire_led_t)i].color[0] = led_color[SETTING_C];
             one_wire_led[(one_wire_led_t)i].color[1] = led_color[NONE_C];
             one_wire_led[(one_wire_led_t)i].color_number = 2;
-            one_wire_led[(one_wire_led_t)i].period = period * 10;            
+            one_wire_led[(one_wire_led_t)i].period = period * 10;   
+            one_wire_led[(one_wire_led_t)i].tick = 0;
         }
+        OpenEyes();
+        break;
+    default :
+        break;
     }
 
 }

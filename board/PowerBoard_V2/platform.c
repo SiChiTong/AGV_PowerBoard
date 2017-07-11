@@ -112,14 +112,14 @@ const platform_gpio_t platform_gpio_pins[] =
 
     
     
-    [MICO_GPIO_FRONT_LEFT_LED]      = { GPIOC,  7 },//{ GPIOB, 13},//
-    [MICO_GPIO_FRONT_RIGHT_LED]     = { GPIOB, 14},//{ GPIOC, 6 },
+    [MICO_GPIO_FRONT_LEFT_LED]      = { GPIOB, 13},//{ GPIOB, 14},//
+    [MICO_GPIO_FRONT_RIGHT_LED]     = { GPIOC, 6 },
   
-    [MICO_GPIO_BACK_RIGHT_LED]      = { GPIOB, 15 },//{ GPIOC,  7 },//{ GPIOB, 15 },
-    [MICO_GPIO_BACK_LEFT_LED]       = { GPIOC, 6},//{ GPIOB, 14},
+    [MICO_GPIO_BACK_RIGHT_LED]      = { GPIOB, 14},////{ GPIOC,  7 },//{ GPIOB, 15 },
+    [MICO_GPIO_BACK_LEFT_LED]       = { GPIOB, 15 },//{ GPIOC, 6},//
   
     [MICO_GPIO_LEFT_EYE_LED]        = { GPIOB, 12},//{ GPIOB, 15 },//{ GPIOB, 13},
-    [MICO_GPIO_RIGHT_EYE_LED]       = { GPIOB, 13},//{ GPIOB, 14},//{ GPIOB, 12},
+    [MICO_GPIO_RIGHT_EYE_LED]       = { GPIOC,  7 },//{ GPIOB, 13},//{ GPIOB, 14},//{ GPIOB, 12},
     
     [MICO_GPIO_5V_MOTOR_EN]         = { GPIOE, 2 },//new
     [MICO_GPIO_5V_RECHARGE_EN]      = { GPIOE, 3 },//new

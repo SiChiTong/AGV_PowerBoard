@@ -55,7 +55,7 @@ int8_t isNeedAutoBoot( void );
 #ifdef MIKE_TEST
 void test_power_tick( void );
 #endif
-
+void OneWireLedTest(void);
 int main( void )
 {
     delay_us(100000);
@@ -87,7 +87,37 @@ int main( void )
         protocol_period(); 
         VolDetect_Tick();
         can_protocol_period();
-        Main_Menu(); 
+        Main_Menu();
+        OneWireLedTest();
+    }
+}
+
+
+
+void OneWireLedTest(void)
+{
+#define ONE_WIRE_LED_TEST_PERIOD    10000/SYSTICK_PERIOD//10s
+
+    static uint32_t start_time = 0;
+    static uint8_t new_tick = 0;
+    static uint8_t last_tick = 0;
+    last_tick = new_tick;
+    if(os_get_time() - start_time >= ONE_WIRE_LED_TEST_PERIOD)
+    {
+        start_time = os_get_time();
+        new_tick++;
+    }
+    
+    if(new_tick <= LIGHTS_MODE_EMERGENCY_STOP)
+    {
+        if(new_tick != last_tick)
+        {
+            SetSerialLedsEffect( (light_mode_t)new_tick, NULL, 50 );
+        }     
+    }
+    else
+    {
+        new_tick = 1;
     }
 }
 

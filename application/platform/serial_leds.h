@@ -141,10 +141,10 @@ typedef enum
                                
 #define FRONT_LEFT_LED_NUM          16
 #define FRONT_RIGHT_LED_NUM         16
-#define BACK_RIGHT_LED_NUM          7
-#define BACK_LEFT_LED_NUM           7
-#define LEFT_EYE_LED_NUM            10
-#define RIGHT_EYE_LED_NUM           10
+#define BACK_RIGHT_LED_NUM          16
+#define BACK_LEFT_LED_NUM           16
+#define LEFT_EYE_LED_NUM            16
+#define RIGHT_EYE_LED_NUM           16
 
 #if 1
 #define  LedOutputHigh(gpio)    platform_gpio_pins[gpio].port->BSRR = (uint16_t) ( 1 << platform_gpio_pins[gpio].pin_number )
