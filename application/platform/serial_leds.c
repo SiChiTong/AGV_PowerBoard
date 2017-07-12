@@ -835,7 +835,7 @@ light_mode_para_t light_mode_para[] =
 };
 color_t  front_left_color[3] = 
 {
-    [0]     = {255, 0  , 0  },  //RED_C
+    [0]     = {235, 130 , 5  },  //
     [1]     = {0  , 255, 0  },  //GREEN_C
     [2]     = {255, 165, 0  },  //ORANGE_C
 };
@@ -1058,8 +1058,10 @@ void SetSerialLedsEffect( light_mode_t light_mode, color_t *cur_color, uint8_t p
             one_wire_led[(one_wire_led_t)i].color[0] = led_color[SETTING_C];
             one_wire_led[(one_wire_led_t)i].color[1] = led_color[NONE_C];
             one_wire_led[(one_wire_led_t)i].color_number = 2;
-            one_wire_led[(one_wire_led_t)i].period = period * 10;   
+            //one_wire_led[(one_wire_led_t)i].period = period * 10;   
+            one_wire_led[(one_wire_led_t)i].period = period * 20;   
             one_wire_led[(one_wire_led_t)i].tick = 0;
+            one_wire_led[(one_wire_led_t)i].start_time = os_get_time();
         }
         OpenEyes();
         break;
@@ -1162,7 +1164,7 @@ void SendData(one_wire_led_t led)
     
 }
  
-#define LIGHTNESS   1
+#define LIGHTNESS   2
 static void WriteColor(one_wire_led_t led, color_t *color)
 {
     

@@ -58,7 +58,7 @@ void test_power_tick( void );
 void OneWireLedTest(void);
 int main( void )
 {
-    delay_us(100000);
+    delay_us(5000);
     init_clocks();
     
     init_architecture();
@@ -93,32 +93,52 @@ int main( void )
 }
 
 
+color_t color_test[] = 
+{
+    [0]     = {0xc8, 0x32, 0x00 },  
+    [1]     = {0x96, 0x19, 0x00 },  
+    [2]     = {0x82, 0x1e, 0x00 },
+    [3]     = {0xb4, 0x1e, 0x00 },  
+    [4]     = {0xb4, 0x14, 0x00 },
+    [5]     = {255, 165, 0 },
+};
 
 void OneWireLedTest(void)
 {
-#define ONE_WIRE_LED_TEST_PERIOD    10000/SYSTICK_PERIOD//10s
+#define ONE_WIRE_LED_TEST_PERIOD    3000/SYSTICK_PERIOD//10s
 
     static uint32_t start_time = 0;
     static uint8_t new_tick = 0;
-    static uint8_t last_tick = 0;
-    last_tick = new_tick;
+    static uint8_t last_tick = 1;
+    static uint8_t init_flag = 0;
+    if(init_flag == 0)
+    {
+        init_flag = 1;
+       
+    }
+    
+    
     if(os_get_time() - start_time >= ONE_WIRE_LED_TEST_PERIOD)
     {
         start_time = os_get_time();
         new_tick++;
+        
     }
     
-    if(new_tick <= LIGHTS_MODE_EMERGENCY_STOP)
+    if(new_tick >= sizeof(color_test)/sizeof(color_test[0]))
+    {
+        new_tick = 0;
+         
+    }
+    //else
     {
         if(new_tick != last_tick)
         {
-            SetSerialLedsEffect( (light_mode_t)new_tick, NULL, 50 );
-        }     
+            //SetSerialLedsEffect( (light_mode_t)new_tick, NULL, 50 );
+            SetSerialLedsEffect(LIGHTS_MODE_SETTING, &color_test[new_tick], 150);
+        }    
     }
-    else
-    {
-        new_tick = 1;
-    }
+    last_tick = new_tick;
 }
 
 int8_t isNeedAutoBoot( void )
