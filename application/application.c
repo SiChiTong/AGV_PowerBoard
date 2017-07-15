@@ -11,6 +11,8 @@
 #include "upgrade_flash.h"
 #include "can_protocol.h"
 
+#include "battery.h"
+
 #define os_PowerBoard_log(format, ...)  custom_log("PowerBoard", format, ##__VA_ARGS__)
 
 extern void Main_Menu(void);
@@ -74,6 +76,10 @@ int main( void )
     VolDetect_Init();
     Protocol_Init();
     startTps611xx();
+    
+    battery_init();
+    //battery_protocol_init();
+    
     MicoCanInitialize( MICO_CAN1 );
     if( !isNeedAutoBoot() )
     {
@@ -89,6 +95,7 @@ int main( void )
         can_protocol_period();
         Main_Menu();
         OneWireLedTest();
+        battery_period();
     }
 }
 

@@ -30,8 +30,10 @@ void stopDmaRecive( UART_HandleTypeDef *uartHandle );
 uint32_t receviedDmaDataLength( UART_HandleTypeDef *uartHandle );
 #else
 OSStatus startDmaRecive( mico_uart_t uart, uint8_t *rxbuf );
+OSStatus StartDmaReciveEx( mico_uart_t uart, uint8_t *rxbuf, uint16_t num );
 OSStatus stopDmaRecive( mico_uart_t uart );
 uint32_t receviedDmaDataLength( mico_uart_t uart );
+uint32_t RcvDmaDataLengthEx( mico_uart_t uart , uint32_t num);
 
 #endif
 #endif

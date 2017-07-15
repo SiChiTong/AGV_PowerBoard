@@ -113,6 +113,12 @@ typedef enum
     MICO_GPIO_SPI_MISO,
     MICO_GPIO_SPI_MOSI,
     
+    MICO_GPIO_UART5_TX,
+    MICO_GPIO_UART5_RX,
+    
+    MICO_GPIO_UART4_TX,
+    MICO_GPIO_UART4_RX,
+    
     MICO_GPIO_UART3_TX,
     MICO_GPIO_UART3_RX,
    
@@ -332,6 +338,8 @@ typedef enum
     MICO_UART_1,
     MICO_UART_2,
     MICO_UART_3,
+    MICO_UART_4,
+    MICO_UART_5,
     MICO_UART_MAX, /* Denotes the total number of UART port aliases. Not a valid UART alias */
     MICO_UART_NONE,
 } mico_uart_t;
@@ -359,15 +367,21 @@ typedef enum
 #define STDIO_UART          MICO_UART_3
 #define STDIO_UART_BAUDRATE (115200) 
 #else
-#define STDIO_UART          MICO_UART_3
+
+
+
+
+#define STDIO_UART          MICO_UART_1
 #define STDIO_UART_BAUDRATE (115200) 
 #endif
 
-#define COMM_UART        MICO_UART_1
+#define COMM_UART        MICO_UART_3
 #define COMM_UART_BAUDRATE (115200) 
 #define UART_FOR_APP     MICO_UART_1
 #define CLI_UART         MICO_UART_3
 
+#define BATT_UART           MICO_UART_4
+#define BATT_UART_BAUDRATE  (9600)  
 
 #ifdef __cplusplus
 } /*extern "C" */

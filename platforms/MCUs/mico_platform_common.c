@@ -537,7 +537,8 @@ OSStatus MicoUartSend( mico_uart_t uart, const void* data, uint32_t size )
 {
   if ( uart >= MICO_UART_NONE )
     return kUnsupportedErr;
-
+  
+  
   return (OSStatus) platform_uart_transmit_bytes( &platform_uart_drivers[uart], (const uint8_t*) data, size );
 }
 

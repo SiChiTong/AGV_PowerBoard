@@ -82,6 +82,9 @@ const platform_gpio_t platform_gpio_pins[] =
     [MICO_GPIO_CAN_TX]            = { GPIOA, 12 },
     [MICO_GPIO_CAN_STB]           = { GPIOD,  3 },
 
+    [MICO_GPIO_UART4_TX]          = { GPIOC, 10 },
+    [MICO_GPIO_UART4_RX]          = { GPIOC, 11 },
+
     [MICO_GPIO_UART3_TX]          = { GPIOB, 10 },
     [MICO_GPIO_UART3_RX]          = { GPIOB, 11 },
     
@@ -256,7 +259,34 @@ platform_spi_driver_t platform_spi_drivers[MICO_SPI_MAX];
 
 const platform_uart_t platform_uart_peripherals[] =
 {
-  [MICO_UART_3] =
+  
+  [MICO_UART_4] =
+  {
+    .port                         = UART4,
+    .pin_tx                       = &platform_gpio_pins[MICO_GPIO_UART4_TX],
+    .pin_rx                       = &platform_gpio_pins[MICO_GPIO_UART4_RX],
+    .pin_cts                      = NULL,
+    .pin_rts                      = NULL,
+    /*
+    .tx_dma_config =
+    {
+      .controller                 = DMA1,
+      .channel                    = DMA1_Channel2,
+      .irq_vector                 = DMA1_Channel2_IRQn,
+      .complete_flags             = DMA_ISR_TCIF2,
+      .error_flags                = DMA_ISR_TEIF2,
+    },
+    .rx_dma_config =
+    {
+      .controller                 = DMA1,
+      .channel                    = DMA1_Channel3,
+      .irq_vector                 = DMA1_Channel3_IRQn,
+      .complete_flags             = DMA_ISR_TCIF3,
+      .error_flags                = DMA_ISR_TEIF3,
+    },
+    */
+  },
+      [MICO_UART_3] =
   {
     .port                         = USART3,
     .pin_tx                       = &platform_gpio_pins[MICO_GPIO_UART3_TX],
@@ -278,6 +308,42 @@ const platform_uart_t platform_uart_peripherals[] =
       .irq_vector                 = DMA1_Channel3_IRQn,
       .complete_flags             = DMA_ISR_TCIF3,
       .error_flags                = DMA_ISR_TEIF3,
+    },
+  },
+  [MICO_UART_4] =
+  {
+    .port                         = UART4,
+    .pin_tx                       = &platform_gpio_pins[MICO_GPIO_UART4_TX],
+    .pin_rx                       = &platform_gpio_pins[MICO_GPIO_UART4_RX],
+    .pin_cts                      = NULL,
+    .pin_rts                      = NULL,
+    .tx_dma_config =
+    {
+      .controller                 = NULL,
+      .channel                    = NULL,
+    },
+    .rx_dma_config =
+    {
+      .controller                 = NULL,
+      .channel                    = NULL,
+    },
+  },
+  [MICO_UART_5] =
+  {
+    .port                         = UART5,
+    .pin_tx                       = &platform_gpio_pins[MICO_GPIO_UART5_TX],
+    .pin_rx                       = &platform_gpio_pins[MICO_GPIO_UART5_RX],
+    .pin_cts                      = NULL,
+    .pin_rts                      = NULL,
+    .tx_dma_config =
+    {
+      .controller                 = NULL,
+      .channel                    = NULL,
+    },
+    .rx_dma_config =
+    {
+      .controller                 = NULL,
+      .channel                    = NULL,
     },
   },
   [MICO_UART_1] =
@@ -329,9 +395,9 @@ const platform_uart_t platform_uart_peripherals[] =
     },
   },
 };
-static UART_HandleTypeDef UartHandle[3];
-static DMA_HandleTypeDef  uart_tx_dmaHandle[3];
-static DMA_HandleTypeDef  uart_rx_dmaHandle[3];
+static UART_HandleTypeDef UartHandle[5];
+static DMA_HandleTypeDef  uart_tx_dmaHandle[4];
+static DMA_HandleTypeDef  uart_rx_dmaHandle[4];
 //platform_uart_driver_t platform_uart_drivers[MICO_UART_MAX];
 platform_uart_driver_t platform_uart_drivers[] = 
 {
@@ -352,6 +418,18 @@ platform_uart_driver_t platform_uart_drivers[] =
     .uart_handle = &UartHandle[2],
     .rx_dma_handle = &uart_rx_dmaHandle[2],
     .tx_dma_handle = &uart_tx_dmaHandle[2],
+  },
+  [MICO_UART_4] = 
+  {
+    .uart_handle = &UartHandle[3],
+    .rx_dma_handle = NULL,
+    .tx_dma_handle = NULL,
+  },
+  [MICO_UART_5] = 
+  {
+    .uart_handle = &UartHandle[4],
+    .rx_dma_handle = NULL,
+    .tx_dma_handle = NULL,
   },
 };
 #if 0
@@ -474,6 +552,15 @@ MICO_RTOS_DEFINE_ISR( USART1_IRQHandler )
   platform_uart_irq( &platform_uart_drivers[MICO_UART_1] );
 }
 
+#include "battery.h"
+MICO_RTOS_DEFINE_ISR( UART4_IRQHandler )
+{
+  __HAL_UART_CLEAR_FLAG( platform_uart_drivers[MICO_UART_4].uart_handle, UART_FLAG_RXNE );
+  __HAL_UART_DISABLE_IT( platform_uart_drivers[MICO_UART_4].uart_handle, UART_IT_RXNE );
+  battery_data_recieved();
+  __HAL_UART_ENABLE_IT( platform_uart_drivers[MICO_UART_4].uart_handle, UART_IT_RXNE );
+}
+
 MICO_RTOS_DEFINE_ISR( USART2_IRQHandler )
 {
   platform_uart_irq( &platform_uart_drivers[MICO_UART_2] );
@@ -558,6 +645,8 @@ void platform_init_peripheral_irq_priorities( void )
   NVIC_SetPriority( USART1_IRQn      ,  6 ); /* MICO_UART_1         */
   NVIC_SetPriority( USART2_IRQn      ,  6 ); /* MICO_UART_2         */
   NVIC_SetPriority( USART3_IRQn      ,  6 ); /* MICO_UART_3         */
+  NVIC_SetPriority( UART4_IRQn       ,  6 ); /* MICO_UART_4         */
+  NVIC_SetPriority( UART5_IRQn       ,  6 ); /* MICO_UART_5         */
   NVIC_SetPriority( DMA1_Channel4_IRQn,  7 ); /* MICO_UART_1 TX DMA  */
   NVIC_SetPriority( DMA1_Channel5_IRQn,  7 ); /* MICO_UART_1 RX DMA  */
   NVIC_SetPriority( DMA1_Channel2_IRQn,  7 ); /* MICO_UART_2 TX DMA  */

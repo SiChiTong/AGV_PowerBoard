@@ -152,6 +152,35 @@ exit:
     return err;
 }
 
+OSStatus StartDmaReciveEx( mico_uart_t uart, uint8_t *rxbuf, uint16_t num )
+{
+    OSStatus err = kNoErr;
+    uint32_t *tmp=0;
+    DMA_HandleTypeDef*         dma_handle;
+    
+    if ( uart >= MICO_UART_NONE )
+      return kUnsupportedErr;
+
+    require_action_quiet( platform_uart_drivers[uart].rx_dma_handle, exit, err = kParamErr );
+    require_action_quiet( platform_uart_drivers[uart].uart_handle, exit, err = kParamErr );
+    
+    dma_handle = platform_uart_drivers[uart].rx_dma_handle;
+//    __HAL_DMA_DISABLE_IT( dma_handle, DMA_IT_TC | DMA_IT_HT | DMA_IT_TE );
+    __HAL_DMA_DISABLE( dma_handle ); 
+    dma_handle->Instance->CNDTR = num;
+    dma_handle->Instance->CPAR = (uint32_t)&platform_uart_drivers[uart].uart_handle->Instance->DR;
+    tmp = (uint32_t*)&rxbuf;
+    dma_handle->Instance->CMAR = *(uint32_t *)tmp;
+    __HAL_DMA_ENABLE( dma_handle );
+    clear_err_bit( platform_uart_drivers[uart].uart_handle );
+    SET_BIT( platform_uart_drivers[uart].uart_handle->Instance->CR3, USART_CR3_DMAR );
+    SET_BIT( platform_uart_drivers[uart].uart_handle->Instance->CR1, UART_MODE_RX );
+    
+
+exit:
+    return err;
+}
+
 OSStatus stopDmaRecive( mico_uart_t uart )
 {
     OSStatus err = kNoErr;
@@ -174,6 +203,13 @@ uint32_t receviedDmaDataLength( mico_uart_t uart )
       return 0;
     
     return (uint32_t)(UART_RX_BUFFER_LENGTH - platform_uart_drivers[uart].rx_dma_handle->Instance->CNDTR);
+}
+uint32_t RcvDmaDataLengthEx( mico_uart_t uart , uint32_t num)
+{
+    if( platform_uart_drivers[uart].rx_dma_handle == NULL )
+      return 0;
+    
+    return (uint32_t)(num - platform_uart_drivers[uart].rx_dma_handle->Instance->CNDTR);
 }
 
 static void clear_err_bit(UART_HandleTypeDef *huart)
