@@ -191,6 +191,9 @@ OSStatus SerialLeds_Init( void )
   pSongLightsRhythmRoutine->isNeedChangeStyleThenChange = isNeedChangeStyleThenChange;
   
   serial_leds_log("serial leds init success!");
+  
+  SetSerialLedsEffect( LIGHTS_MODE_NOMAL, NULL, 0 );
+  
   return err;
 }
 
@@ -810,7 +813,7 @@ color_t led_color[] =
   [RED_C]       = {255, 0  , 0  },
   [GREEN_C]     = {0  , 255, 0  },
   [BLUE_C]      = {0  , 0  , 255},
-  [ORANGE_C]    = {255, 100, 0  },
+  [ORANGE_C]    = {0xc8, 0x32, 0x00 },
   [WHITE_C]     = {255, 255, 255},
   [CYAN_C]      = {0  , 255, 255},
   [GOLD_C]      = {255, 215, 0  },
@@ -1163,13 +1166,13 @@ void SendData(one_wire_led_t led)
 	}
     
 }
- 
-#define LIGHTNESS   2
+  
+#define LIGHTNESS   (1.25)
 static void WriteColor(one_wire_led_t led, color_t *color)
 {
     
-    uint32_t word = ((color->r/LIGHTNESS)<<16) | ((color->g/LIGHTNESS)<<8) | color->b/LIGHTNESS;
-    //word = word/LIGHTNESS;
+    //uint32_t word = ((color->r/LIGHTNESS)<<16) | ((color->g/LIGHTNESS)<<8) | color->b/LIGHTNESS;
+    uint32_t word = (((color->r/5) * 4 )<<16) | (((color->g/5) * 4 )<<8) | ((color->b/5) * 4) ;
     uint8_t i = one_wire_led[led].led_num;
 	
 

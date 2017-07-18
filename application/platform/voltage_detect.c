@@ -743,29 +743,10 @@ void VolDetect_Tick( void )
         {
           return;
         }
-      }
-#if 0     
-      printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\r\n",
-             voltageConvert->bat_voltage,\
-             voltageConvert->sys_all_currents,\
-             voltageConvert->dh_12V_currents,\
-             voltageConvert->dh_5V_currents,\
-             voltageConvert->sensor_currents,\
-             voltageConvert->dlp_currents,\
-             voltageConvert->motor_5v_currents,\
-             voltageConvert->_2_1_pa_currents,\
-             voltageConvert->pad_currents,\
-             voltageConvert->printer_currents,\
-             voltageConvert->x86_currents,\
-             voltageConvert->motor_currents,\
-             voltageConvert->_5V_led_currents,\
-             voltageConvert->_5V_reserve1_currents,\
-             voltageConvert->_12V_reserve2_currents,\
-             voltageConvert->_24V_reserve1_currents  );
-#else      
+      }     
       PrintAdcData();
 
-#endif
+
       if( PRINT_PEROID == voltageDebug.printType )
       {
         voltageDebug.startTime = os_get_time();
@@ -788,24 +769,6 @@ void VolDetect_Tick( void )
         }
         voltageDebug.printMaxType = PRINT_NO;
       }
-#ifdef NOT_USE_TMP
-      vol_detect_log("min vbat = %.2f V", tempMaxVoltageData->bat_voltage/100.0);
-      vol_detect_log("max sys_all = %d mA", tempMaxVoltageData->sys_all_currents);
-      vol_detect_log("max dh_12V = %d mA", tempMaxVoltageData->dh_12V_currents);
-      vol_detect_log("max dh_5v = %d mA", tempMaxVoltageData->dh_5V_currents);
-      vol_detect_log("max sensor = %d mA", tempMaxVoltageData->sensor_currents);
-      vol_detect_log("max dlp = %d mA", tempMaxVoltageData->dlp_currents);
-      vol_detect_log("max motor_5v = %d mA", tempMaxVoltageData->motor_5v_currents);
-      vol_detect_log("max _2_1_pa = %d mA", tempMaxVoltageData->_2_1_pa_currents);
-      vol_detect_log("max pad = %d mA", tempMaxVoltageData->pad_currents);
-      vol_detect_log("max printer = %d mA", tempMaxVoltageData->printer_currents);
-      vol_detect_log("max x86  = %d mA", tempMaxVoltageData->x86_currents);
-      vol_detect_log("max motor = %d mA", tempMaxVoltageData->motor_currents);
-      vol_detect_log("max _5V_led = %d mA", tempMaxVoltageData->_5V_led_currents);
-      vol_detect_log("max _5V_reserve1 = %d mA", tempMaxVoltageData->_5V_reserve1_currents);
-      vol_detect_log("max _12V_reserve2 = %d mA", tempMaxVoltageData->_12V_reserve2_currents);
-      vol_detect_log("max _24V_reserve1 = %d mA", tempMaxVoltageData->_24V_reserve1_currents);
-#endif
     }
 #endif //#ifdef  VOLTAGE_DEBUG
     if( SWITCH_ON == switch_user->switchOnOff )

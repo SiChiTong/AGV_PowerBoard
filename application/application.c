@@ -94,7 +94,7 @@ int main( void )
         VolDetect_Tick();
         can_protocol_period();
         Main_Menu();
-        OneWireLedTest();
+        //OneWireLedTest();
         battery_period();
     }
 }
@@ -112,7 +112,7 @@ color_t color_test[] =
 
 void OneWireLedTest(void)
 {
-#define ONE_WIRE_LED_TEST_PERIOD    3000/SYSTICK_PERIOD//10s
+#define ONE_WIRE_LED_TEST_PERIOD    4500/SYSTICK_PERIOD//10s
 
     static uint32_t start_time = 0;
     static uint8_t new_tick = 0;
@@ -142,7 +142,7 @@ void OneWireLedTest(void)
         if(new_tick != last_tick)
         {
             //SetSerialLedsEffect( (light_mode_t)new_tick, NULL, 50 );
-            SetSerialLedsEffect(LIGHTS_MODE_SETTING, &color_test[new_tick], 150);
+            SetSerialLedsEffect(LIGHTS_MODE_SETTING, &color_test[new_tick], 200);
         }    
     }
     last_tick = new_tick;

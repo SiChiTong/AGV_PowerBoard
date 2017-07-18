@@ -141,8 +141,10 @@ uint16_t getLengthFromLengthData( uint16_t length_data )
   length_check += (uint8_t)length;
   length_check += (uint8_t)(length >> 4);
   length_check += (uint8_t)(length >> 8);
+  
   length_check = ~(uint8_t)length_check;
   length_check += 1;
+  length_check %= 16;
   
   if( length_check != length_data_u.length_struct.lchecksum )
   {
