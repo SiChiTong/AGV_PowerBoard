@@ -78,7 +78,6 @@ int main( void )
     startTps611xx();
     
     battery_init();
-    //battery_protocol_init();
     
     MicoCanInitialize( MICO_CAN1 );
     if( !isNeedAutoBoot() )

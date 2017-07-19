@@ -622,7 +622,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>PowerBoard_Application1.hex</state>
+          <state>AGV_PB_Application.hex</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>

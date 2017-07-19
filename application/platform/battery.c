@@ -393,7 +393,7 @@ void battery_parse_rx_buffer( const uint8_t * const hex_rx_buf )
     //return;
   }
   if( *ptr_rx++ != 0x01 )//address
-  {
+  { 
     //return;
   }
   battery_m = *ptr_rx;//battery M
@@ -423,7 +423,9 @@ static void PrintBatInfo(void)
 
 #define BAT_SOI     0x7E
 #define BAT_EOI     0x0D
+#define BATTERY_COM_ERR_DEBOUNCE_CNT    3
 static uint32_t battery_period_start_time;
+static uint8_t battery_com_err_cnt = 0;
 void battery_period( void )
 {
     uint8_t recvDataLength;
@@ -443,22 +445,31 @@ void battery_period( void )
             if( pBatteryData->cmd_type == 0x42 )
             {
                 battery_parse_rx_buffer(information);
+                battery_com_err_cnt = 0;
             }
             pBatteryData->cmd_type = 0x00;
             StartDmaReciveEx( BATT_UART, (uint8_t *)rx_data , RX_MAX_DATA_LENGTH);
         }
     }
 
-    if( os_get_time() - battery_period_start_time > 3000/SYSTICK_PERIOD  )
+    if( os_get_time() - battery_period_start_time >= 3000/SYSTICK_PERIOD  )
     {
         battery_period_start_time = os_get_time();  
-
+        battery_com_err_cnt++;
+        
         battery_read_infomation();
         //battery_read_warm_info();
         //battery_get_system_param();
         
+        if(battery_com_err_cnt >= BATTERY_COM_ERR_DEBOUNCE_CNT)
+        {
+            battery_log(" CAN NOT GET BATTERY INFO ! ! !\r\n");
+        }
+        else
+        {
+            PrintBatInfo();
+        }
         
-        PrintBatInfo();
     }
 }
 

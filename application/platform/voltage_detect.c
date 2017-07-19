@@ -10,6 +10,7 @@
 #include "protocol.h"
 #include "multi_channel_detection.h"
 #include "temp_reference.h"
+#include "battery.h"
 
 #define vol_detect_log(M, ...) custom_log("VolDetect", M, ##__VA_ARGS__)
 #define vol_detect_log_trace() custom_log_trace("VolDetect")
@@ -703,109 +704,119 @@ void PrintAdcData(void)
     printf("\r\n");
 }
 static uint32_t lowVoltageStartTime = 0;
-static uint32_t  batteryPercentageStartTime = 0;
+//static uint32_t  batteryPercentageStartTime = 0;
 void VolDetect_Tick( void )
 {
+    uint8_t percentage = 0;
     computeVoltage();
+#if 0
     if( os_get_time() - batteryPercentageStartTime >= 1000/SYSTICK_PERIOD )
     {
-      batteryPercentageStartTime = os_get_time();
-      battery_percentage_1s_period();
+        batteryPercentageStartTime = os_get_time();
+        battery_percentage_1s_period();
     }
-    
+#endif
     if( ( YES == voltageDebug.isNeedUpload ) && IS_SEND_RATE_DATA( voltageDebug.uploadRate ) )
     {     
-      if( voltageDebug.uploadRate == SEND_RATE_SINGLE )
-      {
-//        uploadCurrentInformation( serial, voltageConvert );
-        voltageDebug.isNeedUpload = NO;
-        boardStatus->sysStatus &= ~(uint16_t)STATE_IS_AUTO_UPLOAD;
-      }
-      else
-      {
-        if( (os_get_time() - voltageDebug.uploadFlagTime) >= sendRateToTime(voltageDebug.uploadRate) )
+        if( voltageDebug.uploadRate == SEND_RATE_SINGLE )
         {
-          boardStatus->sysStatus |= (uint16_t)STATE_IS_AUTO_UPLOAD;
-          voltageDebug.uploadFlagTime = os_get_time();
-          uploadCurrentInformation( serial, voltageConvert );
+            //        uploadCurrentInformation( serial, voltageConvert );
+            voltageDebug.isNeedUpload = NO;
+            boardStatus->sysStatus &= ~(uint16_t)STATE_IS_AUTO_UPLOAD;
         }
-      }
+        else
+        {
+            if( (os_get_time() - voltageDebug.uploadFlagTime) >= sendRateToTime(voltageDebug.uploadRate) )
+            {
+                boardStatus->sysStatus |= (uint16_t)STATE_IS_AUTO_UPLOAD;
+                voltageDebug.uploadFlagTime = os_get_time();
+                uploadCurrentInformation( serial, voltageConvert );
+            }
+        }
     }
     if( PRINT_ONCE == voltageDebug.printType || PRINT_PEROID == voltageDebug.printType )
     {
-      if( voltageDebug.printType == PRINT_ONCE )
-      {
-          voltageDebug.printType = PRINT_NO;
-      }
-      if( PRINT_PEROID == voltageDebug.printType )
-      {
-        if( os_get_time() - voltageDebug.startTime < voltageDebug.peroid/SYSTICK_PERIOD )
+        if( voltageDebug.printType == PRINT_ONCE )
         {
-          return;
+            voltageDebug.printType = PRINT_NO;
         }
-      }     
-      PrintAdcData();
+        if( PRINT_PEROID == voltageDebug.printType )
+        {
+            if( os_get_time() - voltageDebug.startTime < voltageDebug.peroid/SYSTICK_PERIOD )
+            {
+                return;
+            }
+        }     
+        PrintAdcData();
 
 
-      if( PRINT_PEROID == voltageDebug.printType )
-      {
-        voltageDebug.startTime = os_get_time();
-        //vol_detect_log("print peroid = %d ms",voltageDebug.peroid );
-      }
+        if( PRINT_PEROID == voltageDebug.printType )
+        {
+            voltageDebug.startTime = os_get_time();
+            //vol_detect_log("print peroid = %d ms",voltageDebug.peroid );
+        }
     }
 #ifdef  VOLTAGE_DEBUG
     if( PRINT_ONCE == voltageDebug.printMaxType || RESET_MAX_BUF == voltageDebug.printMaxType )
     {
-      if( voltageDebug.printMaxType == PRINT_ONCE )
-      {
-          voltageDebug.printMaxType = PRINT_NO;
-      }
-      if( RESET_MAX_BUF == voltageDebug.printMaxType )
-      {
-        memset(tempMaxVoltageData, 0x0, sizeof(voltageData_t));
-        if( tempMaxVoltageData )
+        if( voltageDebug.printMaxType == PRINT_ONCE )
         {
-          tempMaxVoltageData->bat_voltage = 10000;//set temp max voltage is 100v
+            voltageDebug.printMaxType = PRINT_NO;
         }
-        voltageDebug.printMaxType = PRINT_NO;
-      }
+        if( RESET_MAX_BUF == voltageDebug.printMaxType )
+        {
+            memset(tempMaxVoltageData, 0x0, sizeof(voltageData_t));
+            if( tempMaxVoltageData )
+            {
+                tempMaxVoltageData->bat_voltage = 10000;//set temp max voltage is 100v
+            }
+            voltageDebug.printMaxType = PRINT_NO;
+        }
     }
 #endif //#ifdef  VOLTAGE_DEBUG
     if( SWITCH_ON == switch_user->switchOnOff )
     {
-      if( voltageConvert->bat_voltage < VBAT_LOW_POWER_LEVEL )
-      {
-        boardStatus->sysStatus |= STATE_IS_LOW_POWER;
-      }
-      else
-      {
-        boardStatus->sysStatus &= ~STATE_IS_LOW_POWER;
-      }
- 
-#ifdef NOT_USE_TMP
-      if( voltageConvert->bat_voltage < VBAT_POWER_OFF_LEVEL )
-      {
-        if( lowVoltageStartTime == 0)
+        if( voltageConvert->bat_voltage < VBAT_LOW_POWER_LEVEL )
         {
-          lowVoltageStartTime = os_get_time();
+            boardStatus->sysStatus |= STATE_IS_LOW_POWER;
         }
-        if( os_get_time() - lowVoltageStartTime >= 5000/SYSTICK_PERIOD )
+        else
         {
-          PowerOffDevices();
-          lowVoltageStartTime = 0;
+            boardStatus->sysStatus &= ~STATE_IS_LOW_POWER;
         }
-      }
-      else
-      {
-        if( lowVoltageStartTime != 0 )
+
+#if 1
+        if( (battery_pack.pack_totoal_soc > 0) && (battery_pack.pack_voltage > 0) )
         {
-          lowVoltageStartTime = 0;
+            percentage = battery_pack.pack_current_soc * 100 / battery_pack.pack_totoal_soc;
+            if( percentage < VBAT_POWER_OFF_PERCENTAGE )
+            {
+                if( lowVoltageStartTime == 0)
+                {
+                    lowVoltageStartTime = os_get_time();
+                }
+                if( os_get_time() - lowVoltageStartTime >= 7000/SYSTICK_PERIOD )
+                {
+                    vol_detect_log(" Low Power ! ! \r\n Power is %d", percentage);
+                    
+                    PowerOffDevices();
+                    lowVoltageStartTime = 0;
+                }
+            }
+            else
+            {
+                if( lowVoltageStartTime != 0 )
+                {
+                    lowVoltageStartTime = 0;
+                }
+            }
         }
-      }
+
 #endif
     }
 }
 
+#if 0
 //1s compute once
 #define BUFFER_SIZE   20
 static uint16_t percentage[BUFFER_SIZE];
@@ -849,6 +860,6 @@ void battery_percentage_1s_period( void )
     }
     //vol_detect_log("vBatLevel is %d", boardStatus->vBatLevel);
 }
-
+#endif
 
 /*********************END OF FILE**************/

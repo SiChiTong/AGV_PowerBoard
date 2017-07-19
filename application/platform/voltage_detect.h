@@ -15,6 +15,7 @@
 #define VBAT_LOW_POWER_LEVEL         4600//x10mV
 #define VBAT_POWER_OFF_LEVEL         4450//x10mV
 #define VBAT_FULL_POWER_LEVEL        5800//x10mV
+#define VBAT_POWER_OFF_PERCENTAGE    10//x10mV
 
 #define   CURRENT_THRESHOLD_H_PRINTER_MA          2500
 #define   CURRENT_THRESHOLD_L_PRINTER_MA          0
