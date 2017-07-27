@@ -8,7 +8,7 @@
 *                    Constants
 ******************************************************/
 
-#define HARDWARE_REVISION   "PM_V2.0"
+#define HARDWARE_REVISION   "PM_V0.0"
 #define DEFAULT_NAME        "POWERBOARD"
 #define MODEL               "POWERBOARD"
 

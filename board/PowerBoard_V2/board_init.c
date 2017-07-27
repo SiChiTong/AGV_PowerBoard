@@ -206,9 +206,6 @@ static void charger_detect_interrupt_cb( void )
     setCurLedsMode( LIGHTS_MODE_IS_CHARGING );//called before the following line
     boardStatus->sysStatus |= (uint16_t)STATE_IS_CHARGER_IN;
     board_log("charger pin is high");
-#ifdef MIKE_TEST
-    boardStatus->charger_times += 1;
-#endif
   }
   else
   {

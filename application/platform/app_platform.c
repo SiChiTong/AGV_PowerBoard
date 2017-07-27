@@ -747,7 +747,7 @@ void Platform_Tick( void )
 void bsp_Init( void )
 {
   board_gpios_init();
-  //charger_detect_init();
+  charger_detect_init();
   //key_switch_init();
 }
 

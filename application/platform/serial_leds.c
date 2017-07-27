@@ -1040,9 +1040,42 @@ void SetSerialLedsEffect( light_mode_t light_mode, color_t *cur_color, uint8_t p
         CloseEyes();
       break;
     case LIGHTS_MODE_TURN_LEFT:
+        for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
+        {
+            if((i == FRONT_LEFT_LED) || ( i == BACK_LEFT_LED))
+            {
+                one_wire_led[(one_wire_led_t)i].color[0] = led_color[ORANGE_C];
+            }
+            else
+            {
+                one_wire_led[(one_wire_led_t)i].color[0] = led_color[NONE_C];
+            }
+            
+            one_wire_led[(one_wire_led_t)i].color[1] = led_color[NONE_C];
+            one_wire_led[(one_wire_led_t)i].color_number = 2;
+            one_wire_led[(one_wire_led_t)i].period = SHINE_MEDIUM_SPEED_PERIOD;   
+            one_wire_led[(one_wire_led_t)i].tick = 0;
+        }
+        OpenEyes();
       OpenEyes();
       break;
     case LIGHTS_MODE_TURN_RIGHT:
+        for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
+        {
+            if((i == FRONT_RIGHT_LED) || ( i == BACK_RIGHT_LED))
+            {
+                one_wire_led[(one_wire_led_t)i].color[0] = led_color[ORANGE_C];
+            }
+            else
+            {
+                one_wire_led[(one_wire_led_t)i].color[0] = led_color[NONE_C];
+            }
+            
+            one_wire_led[(one_wire_led_t)i].color[1] = led_color[NONE_C];
+            one_wire_led[(one_wire_led_t)i].color_number = 2;
+            one_wire_led[(one_wire_led_t)i].period = SHINE_MEDIUM_SPEED_PERIOD;   
+            one_wire_led[(one_wire_led_t)i].tick = 0;
+        }
       OpenEyes();
       break;
     case LIGHTS_MODE_EMERGENCY_STOP:
@@ -1061,10 +1094,8 @@ void SetSerialLedsEffect( light_mode_t light_mode, color_t *cur_color, uint8_t p
             one_wire_led[(one_wire_led_t)i].color[0] = led_color[SETTING_C];
             one_wire_led[(one_wire_led_t)i].color[1] = led_color[NONE_C];
             one_wire_led[(one_wire_led_t)i].color_number = 2;
-            //one_wire_led[(one_wire_led_t)i].period = period * 10;   
-            one_wire_led[(one_wire_led_t)i].period = period * 20;   
+            one_wire_led[(one_wire_led_t)i].period = period * 10;   
             one_wire_led[(one_wire_led_t)i].tick = 0;
-            one_wire_led[(one_wire_led_t)i].start_time = os_get_time();
         }
         OpenEyes();
         break;

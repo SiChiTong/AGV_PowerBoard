@@ -29,6 +29,7 @@ typedef struct _battery_pack_t{
  uint16_t pack_current_soc;
  uint16_t pack_totoal_soc;
  uint16_t pack_recharge_cycle;
+ uint16_t pack_temperature[15];
 } battery_pack_t;
 
 extern battery_pack_t battery_pack;

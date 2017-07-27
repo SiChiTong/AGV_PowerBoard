@@ -62,15 +62,13 @@ int main( void )
 {
     delay_us(5000);
     init_clocks();
-    
+    bsp_Init();
     init_architecture();
     init_platform();
     printf ( menu, MODEL, SW_VERSION, HARDWARE_REVISION );
 
     os_PowerBoard_log( "System clock = %d Hz",HAL_RCC_GetHCLKFreq() );
-
-    bsp_Init();
-    
+     
     Platform_Init();
     SerialLeds_Init();
     VolDetect_Init();

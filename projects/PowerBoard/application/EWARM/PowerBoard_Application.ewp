@@ -622,7 +622,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>AGV_PB_Application.hex</state>
+          <state>NOAH_PB_Application.hex</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>

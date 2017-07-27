@@ -159,11 +159,11 @@ OSStatus battery_common_read( uint8_t cid2, uint8_t* info, uint16_t info_len )
   OSStatus err = kNoErr;
   battery_protocol_t read_data;
   char *convert_str;
-  
+  //static uint8_t test = 0x10;
   require_action_quiet( ( info != NULL ) && ( info_len <= READ_INFO_LENGTH ), exit, err = kParamErr);
   
   read_data.soi = 0x7E;//'~'
-  read_data.ver = 0x20;
+  read_data.ver = 0x20;//test++;//
   read_data.adr = 0x01;
   read_data.cid1 = 0x46;
   read_data.cid2 = cid2;
@@ -377,7 +377,7 @@ exit:
 
 battery_pack_t battery_pack;
 
-void battery_parse_rx_buffer( const uint8_t * const hex_rx_buf )
+void  battery_parse_rx_buffer( const uint8_t * const hex_rx_buf )
 {
   uint8_t battery_m;
   uint8_t temperture_n;
@@ -424,12 +424,14 @@ static void PrintBatInfo(void)
 #define BAT_SOI     0x7E
 #define BAT_EOI     0x0D
 #define BATTERY_COM_ERR_DEBOUNCE_CNT    3
+#define BATTERY_READ_PERIOD             (3000/SYSTICK_PERIOD)
 static uint32_t battery_period_start_time;
 static uint8_t battery_com_err_cnt = 0;
+//uint8_t test_buf[] = {0x7e, 0x32, 0x35, 0x30,     0x31, 0x34, 0x36, 0x43,     0x31, 0x30, 0x30, 0x30,     0x30, 0x46, 0x44, 0x39,     0x41, 0x0d};
 void battery_period( void )
 {
     uint8_t recvDataLength;
-    uint32_t rcv_len = RcvDmaDataLengthEx( BATT_UART , RX_MAX_DATA_LENGTH);
+    //uint32_t rcv_len = RcvDmaDataLengthEx( BATT_UART , RX_MAX_DATA_LENGTH);
 
     if( pBatteryData->isDetectedEOI )
     {
@@ -452,14 +454,15 @@ void battery_period( void )
         }
     }
 
-    if( os_get_time() - battery_period_start_time >= 3000/SYSTICK_PERIOD  )
+    if( os_get_time() - battery_period_start_time >= BATTERY_READ_PERIOD  )
     {
         battery_period_start_time = os_get_time();  
         battery_com_err_cnt++;
         
-        battery_read_infomation();
+        battery_read_infomation(); 
         //battery_read_warm_info();
         //battery_get_system_param();
+        //MicoUartSend(BATT_UART, test_buf, sizeof(test_buf) );
         
         if(battery_com_err_cnt >= BATTERY_COM_ERR_DEBOUNCE_CNT)
         {
