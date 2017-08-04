@@ -263,11 +263,11 @@ static OSStatus AckReadVbatFrameProcess( serial_t *serial, uint8_t cmd_num )
     bat_status_frame->ctype = FRAME_TYPE_BAT_STATUS;
     if(cmd_num == 1)
     {
-        bat_status_frame->bat_status = 2600;
+        bat_status_frame->bat_status = voltageConvert->bat_voltage;
     }
     else if(cmd_num == 2)
     {
-        bat_status_frame->bat_status = 80;
+        bat_status_frame->bat_status = 80;  //test code
     }
     
     err = uart_frame_send( serial, (uint8_t *)bat_status_frame, length );
@@ -563,7 +563,11 @@ static OSStatus RcvModuleControlFrameProcess( serial_t *serial )
 
   rcv_module_control_frame = (rcv_module_control_frame_t *)serial->rx_buf.offset;
   require_action( rcv_module_control_frame , exit, err = kGeneralErr );
-
+  
+  if((rcv_module_control_frame->module < POWER_SLAM * 2) && (rcv_module_control_frame->module > 0) )
+  {
+      BSP_Power_OnOff((PowerEnable_TypeDef)rcv_module_control_frame->module, (PowerOnOff_TypeDef)rcv_module_control_frame->control);
+  }
   switch( rcv_module_control_frame->module )
   {
     case SYSTEM_MODULE:
@@ -579,22 +583,34 @@ static OSStatus RcvModuleControlFrameProcess( serial_t *serial )
         boardStatus->rebootFlag = REBOOT_YES;
     }
     break;
-    case MOTOR_MODULE:
-    case SENSOR_MODULE:
-    case LEDS_MODULE:
-    case _5VRESERVE_MODULE:
-    case _12V_ROUTER_MODULE:
-    case _2_1_PA_MODULE:
-    case DYP_MODULE:
-    case _12V_RESERVE_MODULE:
-    case PRINTER_MODULE:
-    case _24V_RESERVE_MODULE:
-    case BAT_NV_MODULE:
-    case _5V_ALL_MODULE:
-    case _12V_ALL_MODULE:
-    case _24V_ALL_MODULE:
-    case AIUI_MODULE:
-    case _5V_ROUTER_MODULE:
+#if 0   // do not delete
+    case POWER_5V_MOTOR: 
+    case POWER_5V_RECHARGE:
+    case POWER_5V_SENSOR_BOARD:  
+    case POWER_5V_SWITCH: 
+    case POWER_5V_ROUTER: 
+    case POWER_5V_EN:  
+
+    case POWER_12V_PAD:  
+    case POWER_12V_2_1_PA: 
+    case POWER_12V_EXTEND:  
+    case POWER_12V_X86 : 
+    case POWER_12V_NV:   
+    case POWER_12V_EN: 
+
+
+    case POWER_24V_EN:   
+    case POWER_24V_PRINTER:
+    case POWER_24V_EXTEND: 
+    case POWER_VSYS_24V_NV:
+
+    case POWER_485:   
+    case POWER_SYS_LED:  
+    case POWER_RECHARGE_LED: 
+    case POWER_SLAM: 
+        BSP_Power_OnOff((PowerEnable_TypeDef)rcv_module_control_frame->module, (PowerOnOff_TypeDef)rcv_module_control_frame->control);
+        break;
+#endif
 #ifdef NOT_USE_TMP
       setModulePowerOnOff( recModuleControlFrame->module, recModuleControlFrame->control );
 #endif
@@ -610,6 +626,7 @@ static OSStatus RcvModuleControlFrameProcess( serial_t *serial )
       goto exit;
       break;
   }
+
 
   err = ackModuleControlFrameProcess( serial, ACK_SUCCESS );
 
@@ -740,8 +757,9 @@ static OSStatus ackFwVersionInfoFrameProcess( serial_t *serial )
 {
   OSStatus err = kNoErr;
   uint8_t length = sizeof(ackVersionInfoFrame_t);
-  uint8_t swVersion[15] = SW_VERSION;
+  uint8_t swVersion[16] = SW_VERSION;
   uint8_t hwVersion[3] = HW_VERSION;
+  hwVersion[2] = 0;
   ackVersionInfoFrame_t   *ackVersionInfoFrame;
 
   require_action( serial, exit, err = kGeneralErr );
@@ -752,8 +770,8 @@ static OSStatus ackFwVersionInfoFrameProcess( serial_t *serial )
 
   ackVersionInfoFrame->ctype = FRAME_TYPE_VERSION_INFO;
   ackVersionInfoFrame->ver_type = VERSION_TYPE_FARMWARE;
-  memcpy( ackVersionInfoFrame->hw, (void const*)hwVersion, 2 );
-  memcpy( ackVersionInfoFrame->sw, (void const*)swVersion, 11 );
+  memcpy( ackVersionInfoFrame->hw, (void const*)hwVersion, 3 );
+  memcpy( ackVersionInfoFrame->sw, (void const*)swVersion, 16 );
 
   err = uart_frame_send( serial, (uint8_t *)ackVersionInfoFrame, length );
 

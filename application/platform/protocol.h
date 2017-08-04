@@ -45,7 +45,7 @@
 #define READ_PROTOCOL_VERSION           0x01
 
 #define HW_VERSION                      "00"
-#define SW_VERSION                      "NOAHC001M08B003"
+#define SW_VERSION                      "NOAHC001M08B004"
 #define PROTOCOL_VERSION                "20170619P0001"
 
 typedef struct _serial_frame_t {
@@ -160,8 +160,9 @@ typedef struct _ackFaultStatusFrame_t {
   uint8_t               faultBit[4];
 } ackFaultStatusFrame_t;
 
-typedef struct _recModuleControlFrame_t {
-  uint8_t               module;
+
+
+#if 1// do not delete !
 #define             SYSTEM_MODULE         0x00
 #define             MOTOR_MODULE          0x01
 #define             SENSOR_MODULE         0x02
@@ -183,6 +184,12 @@ typedef struct _recModuleControlFrame_t {
 #define             _24V_ALL_MODULE       0x12
 #define             AIUI_MODULE           0x13
 #define             _5V_ROUTER_MODULE     0x14
+#endif
+
+typedef struct _recModuleControlFrame_t {
+  //uint8_t               module;
+  uint32_t               module;
+
   uint8_t               control;
 } rcv_module_control_frame_t;
 
@@ -204,8 +211,8 @@ typedef struct _ackVersionInfoFrame_t {
   uint8_t               ver_type;
 #define             VERSION_TYPE_FARMWARE 0x00
 #define             VERSION_TYPE_PROTOCOL 0x01
-  uint8_t               hw[2];
-  uint8_t               sw[11];           
+  uint8_t               hw[3];
+  uint8_t               sw[16];           
 } ackVersionInfoFrame_t;
 
 /***************** begin of upgrade defines ********************/
