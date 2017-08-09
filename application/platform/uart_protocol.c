@@ -49,7 +49,7 @@ static OSStatus AckReadModuleStatusFrameProcess( serial_t *serial, uint8_t cmd_n
 static OSStatus recReadFaultStatusFrameProcess( serial_t *serial );
 static OSStatus ackReadFaultStatusFrameProcess( serial_t *serial, uint8_t cmd_num );
 static OSStatus RcvModuleControlFrameProcess( serial_t *serial );
-static OSStatus ackModuleControlFrameProcess( serial_t *serial, uint8_t ack );
+static OSStatus ackModuleControlFrameProcess( serial_t *serial, uint32_t ack );
 static OSStatus ackNotSupportFrameProcess( serial_t *serial, uint8_t ctype );
 static OSStatus recTestCurrentCmdFrame( serial_t *serial );
 static OSStatus ackReadErrChannelFrameProcess( serial_t *serial );
@@ -564,10 +564,16 @@ static OSStatus RcvModuleControlFrameProcess( serial_t *serial )
   rcv_module_control_frame = (rcv_module_control_frame_t *)serial->rx_buf.offset;
   require_action( rcv_module_control_frame , exit, err = kGeneralErr );
   
-  if((rcv_module_control_frame->module < POWER_SLAM * 2) && (rcv_module_control_frame->module > 0) )
-  {
-      BSP_Power_OnOff((PowerEnable_TypeDef)rcv_module_control_frame->module, (PowerOnOff_TypeDef)rcv_module_control_frame->control);
-  }
+    if((rcv_module_control_frame->module < POWER_SLAM * 2) && (rcv_module_control_frame->module > 0) )
+    {
+        BSP_Power_OnOff((PowerEnable_TypeDef)rcv_module_control_frame->module, (PowerOnOff_TypeDef)rcv_module_control_frame->control);
+    }
+    else
+    {
+        err = ackModuleControlFrameProcess( serial, HW_NO_SUPPORT );
+        goto exit;
+    }
+#if 0
   switch( rcv_module_control_frame->module )
   {
     case SYSTEM_MODULE:
@@ -626,15 +632,15 @@ static OSStatus RcvModuleControlFrameProcess( serial_t *serial )
       goto exit;
       break;
   }
-
-
-  err = ackModuleControlFrameProcess( serial, ACK_SUCCESS );
+#endif
+    
+  err = ackModuleControlFrameProcess( serial, GetModulePowerState(POWER_ALL) );
 
 exit:
   return err;
 }
 
-static OSStatus ackModuleControlFrameProcess( serial_t *serial, uint8_t ack )
+static OSStatus ackModuleControlFrameProcess( serial_t *serial, uint32_t ack )
 {
   OSStatus err = kNoErr;
   uint8_t  length = sizeof( ackGeneralFrame_t );

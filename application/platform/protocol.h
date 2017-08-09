@@ -198,13 +198,15 @@ typedef struct _recIRLedControlFrame_t {
   uint8_t               brightness;
 } rcv_irled_control_frame_t;
 
+#pragma pack(1)
 typedef struct _ackGeneralFrame_t {
   uint8_t               ctype;
-  uint8_t               ack;
+  uint32_t               ack;
 #define             ACK_SUCCESS           0x00
 #define             ACK_FAIL              0x01
-#define             HW_NO_SUPPORT         0xFF
+#define             HW_NO_SUPPORT         0xFFFFFFFF
 } ackGeneralFrame_t;
+#pragma pack()
 
 typedef struct _ackVersionInfoFrame_t {
   uint8_t               ctype;
