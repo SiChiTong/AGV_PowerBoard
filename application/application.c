@@ -68,7 +68,7 @@ int main( void )
     printf ( menu, MODEL, SW_VERSION, HARDWARE_REVISION );
 
     os_PowerBoard_log( "System clock = %d Hz",HAL_RCC_GetHCLKFreq() );
-     
+      
     Platform_Init();
     SerialLeds_Init();
     VolDetect_Init();
@@ -91,8 +91,17 @@ int main( void )
         VolDetect_Tick();
         can_protocol_period();
         Main_Menu();
-        //OneWireLedTest();
-        battery_period();
+        
+        
+        OneWireLedTest();//////////////test code
+        
+        
+        //in normal version must get battery info
+        //battery_period();
+        
+        
+        
+        
     }
 }
 
@@ -109,7 +118,7 @@ color_t color_test[] =
 
 void OneWireLedTest(void)
 {
-#define ONE_WIRE_LED_TEST_PERIOD    4500/SYSTICK_PERIOD//10s
+#define ONE_WIRE_LED_TEST_PERIOD    500/SYSTICK_PERIOD//10s
 
     static uint32_t start_time = 0;
     static uint8_t new_tick = 0;
@@ -140,6 +149,7 @@ void OneWireLedTest(void)
         {
             //SetSerialLedsEffect( (light_mode_t)new_tick, NULL, 50 );
             SetSerialLedsEffect(LIGHTS_MODE_SETTING, &color_test[new_tick], 200);
+            printf("hello hello");
         }    
     }
     last_tick = new_tick;
@@ -163,4 +173,15 @@ int8_t isNeedAutoBoot( void )
     return 0;
   }
   return -1;
+}
+
+static uint32_t    indicatorFreshCount = 0;
+void SysLed(void)
+{
+    indicatorFreshCount ++;
+    if( indicatorFreshCount > 50 )
+    {
+        indicatorFreshCount = 0;
+        MicoGpioOutputTrigger( MICO_GPIO_SYS_LED );
+    } 
 }

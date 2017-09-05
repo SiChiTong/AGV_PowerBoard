@@ -122,6 +122,8 @@ void PowerOnDevices( void )
       boardStatus->startTime = os_get_time();
       boardStatus->isPowerOnFinish = NO;
       boardStatus->setPowerOnoff(POWER_ALL, POWER_ON);
+      //boardStatus->setPowerOnoff(POWER_24V_PRINTER, POWER_OFF);
+      boardStatus->setPowerOnoff(POWER_VSYS_24V_NV, POWER_OFF);
       
       DLP_ControlSignal->isDeviceProcessOver = NO;
       PAD_ControlSignal->isDeviceProcessOver = NO;
@@ -737,11 +739,55 @@ uint32_t GetEachModuleStates( void )
   return states;
 }
 
+#define CHARGING_DEBAUNCE_TIME  500/SYSTICK_PERIOD
+void ChargeTick(void)
+{
+    extern const platform_gpio_t            platform_gpio_pins[];  
+    static uint8_t state = 0;
+    static uint32_t start_time = 0;
+    
+    switch(state)
+    {
+    case 0:
+      if(MicoGpioInputGet( MICO_GPIO_CHARGE_IN ) == 1)
+      {
+           start_time = os_get_time();
+           state = 1;
+      }
+      break;
+    case 1:
+      if(os_get_time() - start_time > CHARGING_DEBAUNCE_TIME)
+      {
+            state = 2;
+            boardStatus->sysStatus |= STATE_IS_CHARGER_IN;
+            platform_log("charge port plug in\r\n");
+            
+            
+      }
+      break;
+    case 2:
+      if(MicoGpioInputGet( MICO_GPIO_CHARGE_IN ) == 0)
+      {
+            state = 0;
+            platform_log("charge port not plug in\r\n");
+      }
+    default :
+      break;
+    }
+    
+    if(MicoGpioInputGet( MICO_GPIO_CHARGE_IN ) == 0)
+    {
+        state = 0;
+        boardStatus->sysStatus &= ~STATE_IS_CHARGER_IN;
+    }
+    
+}
 void Platform_Tick( void )
 {
   Switch_Tick();
   ControlSignal_Tick();
   BoardStatus_Tick();
+  ChargeTick();
 }
 
 void bsp_Init( void )

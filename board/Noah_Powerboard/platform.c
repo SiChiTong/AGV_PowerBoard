@@ -171,7 +171,12 @@ const platform_gpio_t platform_gpio_pins[] =
     [MICO_GPIO_5V_LEDS_ADC]         = { GPIOC, 5 },//new
     [MICO_GPIO_5V_MOTOR_ADC]        = { GPIOB, 0 },//new   
     [MICO_GPIO_24V_SLAM_ADC]        = { GPIOB, 1 },//new
-
+    
+    [MICO_GPIO_LED_MCU_POWER_EN]    = { GPIOE, 10},//V0.1
+    [MICO_GPIO_LED_MCU_RESET]       = { GPIOE, 11},//V0.1
+    
+    [MICO_GPIO_CHARGE_FAN_CTRL]     = { GPIOD, 1},//V0.1
+    
 };
 
 /*
@@ -379,16 +384,16 @@ const platform_uart_t platform_uart_peripherals[] =
     .pin_rts                      = NULL,
     .tx_dma_config =
     {
-      .controller                 = DMA1,
-      .channel                    = DMA1_Channel7,
+      .controller                 = DMA1,//NULL,//
+      .channel                    = DMA1_Channel7,//NULL,//
       .irq_vector                 = DMA1_Channel7_IRQn,
       .complete_flags             = DMA_ISR_TCIF7,
       .error_flags                = DMA_ISR_TEIF7,
     },
     .rx_dma_config =
     {
-      .controller                 = DMA1,
-      .channel                    = DMA1_Channel6,
+      .controller                 = DMA1,//NULL,//
+      .channel                    = DMA1_Channel6,//NULL,//
       .irq_vector                 = DMA1_Channel6_IRQn,
       .complete_flags             = DMA_ISR_TCIF6,
       .error_flags                = DMA_ISR_TEIF6,
@@ -410,8 +415,8 @@ platform_uart_driver_t platform_uart_drivers[] =
   [MICO_UART_2] = 
   {
     .uart_handle = &UartHandle[1],
-    .rx_dma_handle = &uart_rx_dmaHandle[1],
-    .tx_dma_handle = &uart_tx_dmaHandle[1],
+    .rx_dma_handle = &uart_rx_dmaHandle[1],//NULL,//
+    .tx_dma_handle = &uart_tx_dmaHandle[1],//NULL,//
   },
   [MICO_UART_3] = 
   {
@@ -671,16 +676,16 @@ void init_platform( void )
   pin_config.gpio_speed = GPIO_SPEED_MEDIUM;
   pin_config.gpio_mode = GPIO_MODE_OUTPUT_PP;
   pin_config.gpio_pull = GPIO_PULLUP;
-  
+
   //  Initialise system led
   MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_SYS_LED, &pin_config );
   MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_SYS_LED ); 
-  
+ 
   //  Initialise switch
   pin_config.gpio_speed = GPIO_SPEED_MEDIUM;
   pin_config.gpio_mode = GPIO_MODE_IT_RISING_FALLING;//GPIO_MODE_INPUT;//;
   pin_config.gpio_pull = GPIO_PULLDOWN;//GPIO_NOPULL;//GPIO_PULLDOWN;
-  //MicoGpioInitialize( MICO_GPIO_PWRKEY, &pin_config );
+
   MicoGpioEnableIRQ( MICO_GPIO_PWRKEY , IRQ_TRIGGER_BOTH_EDGES, _switch_irq_handler, NULL);
 }
 

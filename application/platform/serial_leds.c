@@ -6,6 +6,8 @@
 #include "app_platform.h"
 #include "mico.h"
 #include "voltage_detect.h"
+#include "serial_uart.h"
+#include "protocol.h"
 //#include "platform.h"
 //#include "platform_internal.h"
 //#include "platform_config.h"
@@ -83,7 +85,6 @@ enum {
   BLUE_LONG = 15,
 };
 
-static void send_data(void);
 static void style_water_function(void);
 static void style_star_function(void);
 static void style_doublestar_function(void);
@@ -156,6 +157,127 @@ static songLightsRhythmControl_t        *pRhythmControl = &RhythmControl;
 static songLightsRhythmRoutine_t        *pSongLightsRhythmRoutine = &songLightsRhythmRoutine;
 static void isNeedChangeStyleThenChange( songLightsRhythmControl_t *Rhythm );
 
+extern platform_uart_t platform_uart_peripherals[];
+extern platform_uart_driver_t platform_uart_drivers[];
+
+static const platform_uart_config_t serials_led_uart_config =
+{
+  .baud_rate    = SERIALS_LED_UART_BAUDRARE,
+  .data_width   = DATA_WIDTH_8BIT,
+  .parity       = NO_PARITY,
+  .stop_bits    = STOP_BITS_1,
+  .flow_control = FLOW_CONTROL_DISABLED,
+  .flags        = 0,
+};
+
+static  uint8_t    rx_buf[UART_RX_BUFFER_LENGTH];
+static  uint8_t    tx_buf[UART_TX_BUFFER_LENGTH];
+static recBuf_t                rxInfoInRam;
+
+static serial_t                serialDataInRam = {
+    .rx_buf = {
+        .pBuffer = rx_buf,
+        .offset = rx_buf + 3, //header,length,ctype
+        .bufferSize = UART_RX_BUFFER_LENGTH,
+    },
+    .tx_buf = {
+        .pBuffer = tx_buf,
+        .offset = tx_buf + 2, //header,length
+        .bufferSize = UART_TX_BUFFER_LENGTH,
+    },
+};
+
+USART_HandleTypeDef serials_led_uart_handle_ram;
+USART_HandleTypeDef *serials_led_uart_handle = &serials_led_uart_handle_ram;
+
+serial_t                leds_com_ram = {
+    .rx_buf = {
+        .pBuffer = rx_buf,
+        .offset = rx_buf + 3, //header,length,ctype
+        .bufferSize = UART_RX_BUFFER_LENGTH,
+    },
+    .tx_buf = {
+        .pBuffer = tx_buf,
+        .offset = tx_buf + 2, //header,length
+        .bufferSize = UART_TX_BUFFER_LENGTH,
+    },
+};
+serial_t * const leds_com = &leds_com_ram;
+
+static int uart_ser_open( uart_serial_t *uart_serial, uint32_t baudrate )
+{
+  int result = 0;
+#ifdef COMM_DMA_USE_INT
+  (void)uart_serial;
+  (void)baudrate;
+  ring_buffer_init  ( (ring_buffer_t*)&comm_rx_buffer, (uint8_t *)&comm_rx_buffer, COMM_BUFFER_SIZE );
+  MicoUartInitialize( SERIALS_LED_UART, &comm_uart_config, (ring_buffer_t*)&comm_rx_buffer );
+#else
+  MicoUartInitialize( SERIALS_LED_UART, &serials_led_uart_config, NULL );
+  //uart_serial->uartHandle = platform_uart_drivers[SERIALS_LED_UART].uart_handle;
+  //uart_serial->UARTx = platform_uart_drivers[SERIALS_LED_UART].peripheral->port;
+  CLEAR_BIT( platform_uart_drivers[SERIALS_LED_UART].uart_handle->Instance->CR1, UART_MODE_RX );
+#endif
+  return result;
+}
+
+
+void SerialsLedUartInit(USART_HandleTypeDef *handle)
+{
+#if 0
+    handle->Instance = platform_uart_peripherals[SERIALS_LED_UART].port;
+    handle->Init.BaudRate = serials_led_uart_config.baud_rate;
+    handle->Init.Parity = serials_led_uart_config.parity;
+    handle->Init.StopBits = serials_led_uart_config.stop_bits;
+    handle->Init.WordLength = serials_led_uart_config.data_width;
+    
+    HAL_USART_Init(handle);
+#endif
+    uart_ser_open(leds_com->uart_serial,115200);
+}
+
+static void irq_clear_err(UART_HandleTypeDef *huart)
+{
+  uint32_t tmp_flag = 0, tmp_it_source = 0;
+
+  tmp_flag = __HAL_UART_GET_FLAG(huart, UART_FLAG_PE);
+  tmp_it_source = __HAL_UART_GET_IT_SOURCE(huart, UART_IT_PE);  
+  /* UART parity error interrupt occurred ------------------------------------*/
+  if((tmp_flag != RESET) && (tmp_it_source != RESET))
+  { 
+    __HAL_UART_CLEAR_PEFLAG(huart);
+    
+    huart->ErrorCode |= HAL_UART_ERROR_PE;
+  }
+  
+  tmp_flag = __HAL_UART_GET_FLAG(huart, UART_FLAG_FE);
+  tmp_it_source = __HAL_UART_GET_IT_SOURCE(huart, UART_IT_ERR);
+  /* UART frame error interrupt occurred -------------------------------------*/
+  if((tmp_flag != RESET) && (tmp_it_source != RESET))
+  { 
+    __HAL_UART_CLEAR_FEFLAG(huart);
+    
+    huart->ErrorCode |= HAL_UART_ERROR_FE;
+  }
+  
+  tmp_flag = __HAL_UART_GET_FLAG(huart, UART_FLAG_NE);
+  /* UART noise error interrupt occurred -------------------------------------*/
+  if((tmp_flag != RESET) && (tmp_it_source != RESET))
+  { 
+    __HAL_UART_CLEAR_NEFLAG(huart);
+    
+    huart->ErrorCode |= HAL_UART_ERROR_NE;
+  }
+  
+  tmp_flag = __HAL_UART_GET_FLAG(huart, UART_FLAG_ORE);
+  /* UART Over-Run interrupt occurred ----------------------------------------*/
+  if((tmp_flag != RESET) && (tmp_it_source != RESET))
+  { 
+    __HAL_UART_CLEAR_OREFLAG(huart);
+    
+    huart->ErrorCode |= HAL_UART_ERROR_ORE;
+  }
+}
 OSStatus SerialLeds_Init( void )
 { 
   OSStatus err = kNoErr;
@@ -192,6 +314,29 @@ OSStatus SerialLeds_Init( void )
   
   serial_leds_log("serial leds init success!");
   
+  //SerialsLedUartInit(serials_led_uart_handle);
+   platform_uart_drivers[SERIALS_LED_UART].uart_handle->Instance = platform_uart_peripherals[SERIALS_LED_UART].port;
+   platform_uart_drivers[SERIALS_LED_UART].peripheral = &platform_uart_peripherals[SERIALS_LED_UART];
+ /*  
+   
+   leds_com->rx_info = &rxInfoInRam;
+  require_action( leds_com->rx_info , exit, err = kGeneralErr );
+  leds_com->uart_serial = &leds_com_ram;
+  require_action( leds_com->uart_serial , exit, err = kGeneralErr );
+
+  serial->rx_info->pData = 0;
+  serial->rx_info->rxBuffer = rx_buf;
+  serial->rx_info->rxCount = 0;
+
+  
+   uart_ser_open(leds_com->uart_serial,115200);
+   */ 
+#if 0
+    err = MicoUartInitialize( SERIALS_LED_UART, &serials_led_uart_config, NULL );
+  irq_clear_err( platform_uart_drivers[SERIALS_LED_UART].uart_handle );
+  __HAL_USART_CLEAR_FLAG( platform_uart_drivers[SERIALS_LED_UART].uart_handle, USART_IT_RXNE );
+  __HAL_USART_ENABLE_IT( platform_uart_drivers[SERIALS_LED_UART].uart_handle, USART_IT_RXNE );
+#endif 
   SetSerialLedsEffect( LIGHTS_MODE_NOMAL, NULL, 0 );
   
   return err;
@@ -308,15 +453,7 @@ void single_color_water_led(uint32_t color,uint8_t times)
 
 /*******************************************************************/
 
-static void send_data(void)
-{
-	uint8_t i = TOTAL;
-	
-	while(i--)
-	{
-		write_24bit(buff[i]);
-	}
-}
+
 
 static void style_water_function(void)
 {
@@ -958,6 +1095,11 @@ void CloseEyes(void)
 #define SHINE_LOW_SPEED_PERIOD          1000
 void SetSerialLedsEffect( light_mode_t light_mode, color_t *cur_color, uint8_t period )
 {
+    uint8_t test_data[] = {0x5a,0x06,0x01,0x00,0x61,0xa5};
+    //HAL_USART_Transmit(serials_led_uart_handle, test_data, sizeof(test_data), 10);
+    MicoUartSend( SERIALS_LED_UART, test_data,  sizeof(test_data) );
+    
+#if 0
     switch(light_mode)
     {
     case LIGHTS_MODE_NOMAL:
@@ -1102,7 +1244,7 @@ void SetSerialLedsEffect( light_mode_t light_mode, color_t *cur_color, uint8_t p
     default :
         break;
     }
-
+#endif
 }
 
 inline void WriteReset(mico_gpio_t gpio)

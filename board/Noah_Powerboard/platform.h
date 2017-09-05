@@ -102,6 +102,8 @@ POWERBOARD V1.2 platform pin definitions ...
 
 #define HW_V2_1
 
+#define NOAH_HW_V0_1
+
 typedef enum
 {    
     MICO_GPIO_CAN_RX,
@@ -207,6 +209,13 @@ typedef enum
     MICO_GPIO_24V_EXTEND_ADC,       //new
     MICO_GPIO_5V_LEDS_ADC,           //new
     MICO_GPIO_24V_SLAM_ADC,         //new
+    
+    MICO_GPIO_LED_MCU_POWER_EN,//V0.1
+    MICO_GPIO_LED_MCU_RESET,//V0.1
+    
+    MICO_GPIO_CHARGE_FAN_CTRL,
+    
+    
     
     
     
@@ -382,6 +391,11 @@ typedef enum
 
 #define BATT_UART           MICO_UART_4
 #define BATT_UART_BAUDRATE  (9600)  
+
+#ifdef NOAH_HW_V0_1
+#define SERIALS_LED_UART    MICO_UART_2
+#define SERIALS_LED_UART_BAUDRARE   (115200)
+#endif
 
 #ifdef __cplusplus
 } /*extern "C" */

@@ -92,6 +92,8 @@ typedef enum
   POWER_SYS_LED             = 0x00020000,
   POWER_RECHARGE_LED        = 0x00040000,
   POWER_SLAM                = 0x00080000,
+  
+  POWER_LED_MCU             = 0x00100000,
 
   POWER_ALL                 = 0x001FFFFF,
  

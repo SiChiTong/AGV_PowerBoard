@@ -172,7 +172,7 @@
           <state>STM32F103xE</state>
           <state>xSIZE_OPTIMIZE</state>
           <state>NO_MICO_RTOS</state>
-          <state>xMICO_DISABLE_WATCHDOG</state>
+          <state>MICO_DISABLE_WATCHDOG</state>
           <state>DEBUG=1</state>
           <state>NO_BLOCK_MENU</state>
           <state>xMIKE_TEST</state>
@@ -316,7 +316,7 @@
           <state>$PROJ_DIR$\..\..\..\..\platforms\include</state>
           <state>$PROJ_DIR$\..\..\..\..\include</state>
           <state>$PROJ_DIR$\..\..\..\..\include\MiCODrivers</state>
-          <state>$PROJ_DIR$\..\..\..\..\board\PowerBoard_V2</state>
+          <state>$PROJ_DIR$\..\..\..\..\board\Noah_Powerboard</state>
           <state>$PROJ_DIR$\..\..\..\..\platforms\Cortex-M3</state>
           <state>$PROJ_DIR$\..\..\..\..\platforms\MCUs\STM32F1xx\peripherals</state>
           <state>$PROJ_DIR$\..\..\..\..\library\utilities</state>
@@ -741,7 +741,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$PROJ_DIR$\..\..\..\..\board\PowerBoard_V2\applicationLinkerForIAR.icf</state>
+          <state>$PROJ_DIR$\..\..\..\..\board\Noah_Powerboard\applicationLinkerForIAR.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -3943,40 +3943,25 @@
   <group>
     <name>Board</name>
     <group>
-      <name>PowerBoard_V2</name>
+      <name>Noah_Powrboard</name>
       <file>
-        <name>$PROJ_DIR$\..\..\..\..\board\PowerBoard_V2\board_init.c</name>
+        <name>$PROJ_DIR$\..\..\..\..\board\Noah_Powerboard\board_init.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\..\..\..\board\PowerBoard_V2\key_switch.c</name>
-        <excluded>
-          <configuration>Debug</configuration>
-        </excluded>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\..\..\board\PowerBoard_V2\platform.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\..\..\board\PowerBoard_V2\platform.h</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\..\..\board\PowerBoard_V2\platform_config.h</name>
+        <name>$PROJ_DIR$\..\..\..\..\board\Noah_Powerboard\platform.c</name>
       </file>
     </group>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\board\PowerBoard_V2\backlight.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\board\PowerBoard_V2\multi_channel_detection.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\board\Noah_Powerboard\multi_channel_detection.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\board\PowerBoard_V2\stm32f1xx_powerboard.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\board\Noah_Powerboard\stm32f1xx_powerboard.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\board\PowerBoard_V2\stm32f1xx_powerboard.h</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\..\..\board\PowerBoard_V2\tps611xx_bl.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\board\Noah_Powerboard\tps611xx_bl.c</name>
     </file>
   </group>
   <group>

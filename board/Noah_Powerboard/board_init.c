@@ -51,7 +51,7 @@ void board_gpios_init( void )
 
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_RECHARGE_IN, &pin_config );
 
-    //MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_PWRKEY, &pin_config );
+
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_485_EN, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_IRLED_PWM, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_SYS_LED, &pin_config );
@@ -62,6 +62,9 @@ void board_gpios_init( void )
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_SLAM_EN , &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_24V_EXTEND_EN, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_24V_PRINTER_EN, &pin_config );
+    //MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_LED_MCU_RESET, &pin_config );
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_LED_MCU_POWER_EN, &pin_config );
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL, &pin_config );
 
 
 
@@ -87,7 +90,7 @@ void board_gpios_init( void )
     
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_CHARGE_IN );
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_RECHARGE_IN );
-    //MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_PWRKEY );
+
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_485_EN );
     
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_IRLED_PWM );
@@ -99,6 +102,12 @@ void board_gpios_init( void )
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_SLAM_EN);
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_24V_PRINTER_EN);
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_24V_EXTEND_EN);
+    
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL);
+    
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_LED_MCU_POWER_EN );
+    
+    //MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_LED_MCU_RESET );
     
 }
 #ifdef NOT_USE_TMP

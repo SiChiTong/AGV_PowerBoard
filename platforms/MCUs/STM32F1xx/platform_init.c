@@ -313,14 +313,13 @@ uint32_t mico_get_time_no_os(void)
 #include "serial_leds.h"
 #endif
 
+extern void SysLed(void);
 void sysTickHandler(void)
 {
-  HAL_IncTick();
-  no_os_tick ++;
-#ifndef BOOTLOADER  
-  serialLedsTick();
-#endif
-  platform_watchdog_kick( );
+    HAL_IncTick();
+    no_os_tick ++;
+    SysLed();
+    platform_watchdog_kick( );
 }
 
 #else

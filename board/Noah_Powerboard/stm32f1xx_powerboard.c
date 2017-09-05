@@ -92,6 +92,11 @@ void BSP_Power_OnOff(PowerEnable_TypeDef PowerEn, PowerOnOff_TypeDef OnOff)
     {
       MicoGpioOutputLow( MICO_GPIO_SLAM_EN);
     }
+    
+    if( PowerEn & POWER_LED_MCU )
+    {
+      MicoGpioOutputLow( MICO_GPIO_LED_MCU_POWER_EN);
+    }
    
   }
   else if( POWER_OFF == OnOff )
@@ -171,6 +176,11 @@ void BSP_Power_OnOff(PowerEnable_TypeDef PowerEn, PowerOnOff_TypeDef OnOff)
     if( PowerEn & POWER_SLAM )
     {
       MicoGpioOutputHigh( MICO_GPIO_SLAM_EN);
+    }
+    
+    if( PowerEn & POWER_LED_MCU )
+    {
+      MicoGpioOutputHigh( MICO_GPIO_LED_MCU_POWER_EN);
     }
   }
 }
