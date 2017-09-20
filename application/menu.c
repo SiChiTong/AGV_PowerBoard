@@ -46,6 +46,7 @@
 #include "protocol.h"
 #include "upgrade_flash.h"
 #include "app_platform.h"
+#include "battery.h"
    
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -522,6 +523,21 @@ void Main_Menu(void)
         printf("\r\n triggered 485_EN \r\n");
       }
       
+      
+      else if (findCommandPara(cmdbuf, "J", NULL, 0) != -1){
+        MicoGpioOutputTrigger( MICO_GPIO_5V_POLE_MOTOR_EN  );
+        printf("\r\n triggered 5V_POLE_MOTOR_EN \r\n");
+      }
+      else if (findCommandPara(cmdbuf, "K", NULL, 0) != -1){
+        MicoGpioOutputTrigger( MICO_GPIO_5V_KEYPAD_EN  );
+        printf("\r\n triggered 5V_KEYPAD_EN \r\n");
+      }
+      else if (findCommandPara(cmdbuf, "L", NULL, 0) != -1){
+        MicoGpioOutputTrigger( MICO_GPIO_CAMERA_LED_EN  );
+        printf("\r\n triggered CAMERA_LED_EN \r\n");
+      }
+
+      
 
 #endif
       else if (findCommandPara(cmdbuf, "P", NULL, 0) != -1){
@@ -602,8 +618,62 @@ void Main_Menu(void)
                       "8 -F: VSYS_24V_NV_EN\r\n"                      
                       "8 -G: RECHARGE_LED\r\n"
                       "8 -H: SLAM_EN nv\r\n"
-                      "8 -I: 485_EN\r\n");
+                      "8 -I: 485_EN\r\n"
+                      "8 -J: 5V_POLE_MOTOR_EN\r\n"
+                      "8 -K: 5V_KEYPAD_EN\r\n"
+                      "8 -L: CAMERA_LED_EN\r\n"
+                        
+                        );
       }
+      break;
+    }
+    
+    else if(strcmp(cmdname, "LEDS") == 0 || strcmp(cmdname, "L") == 0)  {
+      //static char sel_Str[5];
+      if (findCommandPara(cmdbuf, "0", NULL, 0) != -1){
+        SetSerialLedsEffect( (light_mode_t)0, NULL, 0 );
+        printf("\r\n led mode 0 \r\n");
+      }
+      else if(findCommandPara(cmdbuf, "1", NULL, 0) != -1){
+        SetSerialLedsEffect( (light_mode_t)1, NULL, 0 );
+        printf("\r\n led mode 1 \r\n");
+      }
+      else if(findCommandPara(cmdbuf, "2", NULL, 0) != -1){
+        SetSerialLedsEffect( (light_mode_t)2, NULL, 0 );
+        printf("\r\n led mode 2 \r\n");
+      }
+      else if(findCommandPara(cmdbuf, "3", NULL, 0) != -1){
+        SetSerialLedsEffect( (light_mode_t)3, NULL, 0 );
+        printf("\r\n led mode 3 \r\n");
+      }
+      else if(findCommandPara(cmdbuf, "4", NULL, 0) != -1){
+        SetSerialLedsEffect( (light_mode_t)4, NULL, 0 );
+        printf("\r\n led mode 4 \r\n");
+      }
+      else if(findCommandPara(cmdbuf, "5", NULL, 0) != -1){
+        SetSerialLedsEffect( (light_mode_t)5, NULL, 0 );
+        printf("\r\n led mode 5 \r\n");
+      }
+      else if(findCommandPara(cmdbuf, "6", NULL, 0) != -1){
+        SetSerialLedsEffect( (light_mode_t)6, NULL, 0 );
+        printf("\r\n led mode 6 \r\n");
+      }
+      else if(findCommandPara(cmdbuf, "7", NULL, 0) != -1){
+        SetSerialLedsEffect( (light_mode_t)7, NULL, 0 );
+        printf("\r\n led mode 7 \r\n");
+      }
+      else
+      {
+         printf("\r\nLIGHTS_MODE_NONE                    = 0, \r\n"
+                "  LIGHTS_MODE_NOMAL                   = 1, \r\n"
+                "  LIGHTS_MODE_ERROR                   = 2, \r\n"
+                "  LIGHTS_MODE_LOW_POWER               = 3, \r\n"
+                "  LIGHTS_MODE_CHARGING                = 4, \r\n"
+                "  LIGHTS_MODE_TURN_LEFT               = 5, \r\n"
+                "  LIGHTS_MODE_TURN_RIGHT              = 6, \r\n"
+                "  LIGHTS_MODE_EMERGENCY_STOP          = 7, \r\n");
+      }
+        
       break;
     }
     else if( strcmp(cmdname, "IRLED") == 0 || strcmp(cmdname, "9") == 0 )
@@ -638,50 +708,54 @@ void Main_Menu(void)
     }
     else if( strcmp(cmdname, "SHOW") == 0 || strcmp(cmdname, "A") == 0 )
     {
+      //uint8_t i = 1;
       voltageDebug.printType = PRINT_NO;
 #if 1
       printf("\r\nadc sequence num: (mV)\r\n");
       printf("1: _5V_reserve1_currents\r\n");
-      printf("2: _24V_nv_currents\r\n");
-      printf("3: _12V_nv_currents\r\n");
-      printf("4: _48V_extend_currents\r\n");
       
-      printf("5: _12V_extend_currents\r\n");
-      printf("6: motor_currents\r\n");
-      printf("7: slam_currents\r\n");
-      printf("8: _2_1_pa_currents\r\n");
+      printf("2: _48V_extend_currents\r\n");
       
-      printf("9: pad_currents\r\n");
-      printf("10: printer_currents\r\n");
-      printf("11: x86_currents\r\n");
-      printf("12: ir_led_currents\r\n");
+      printf("3: _12V_extend_currents\r\n");
+      printf("4: motor_currents\r\n");
+      printf("5: slam_currents\r\n");
+      printf("6: _2_1_pa_currents\r\n");
       
-      printf("13: _5V_leds_currents\r\n");
+      printf("7: pad_currents\r\n");
+      printf("8: printer_currents\r\n");
+      printf("9: x86_currents\r\n");
+      printf("10: ir_led_currents\r\n");
       
-      printf("14: recharge_currents\r\n");
-      printf("15: _24V_extend_currents\r\n");
-      printf("16: charge_currents\r\n");
-      printf("17: batin_currents\r\n");
+      printf("11: _5V_leds_currents\r\n");
       
-      printf("18: vbus_currents\r\n");
-      printf("19: bat_motor_currents\r\n");
+      printf("12: recharge_currents\r\n");
+      printf("13: _24V_extend_currents\r\n");
+      printf("14: charge_currents\r\n");
+      printf("15: batin_currents\r\n");
       
-      printf("20: _24V_temp\r\n");
-      printf("21: _12V_temp\r\n");
-      printf("22: _5V_temp\r\n");
-      printf("23: air_temp\r\n");
+      printf("16: vbus_currents\r\n");
+      printf("17: bat_motor_currents\r\n");
       
-      printf("24: _24V_all_currents\r\n");
-      printf("25: _12V_all_currents\r\n");
-      printf("26: _5V_all_currents\r\n");
-      printf("27: _24V_voltage\r\n");
+      printf("18: _24V_temp\r\n");
+      printf("19: _12V_temp\r\n");
+      printf("20: _5V_temp\r\n");
+      printf("21: air_temp\r\n");
       
-      printf("28: _12V_voltage\r\n");
-      printf("29: _5V_voltage\r\n");
-      printf("30: bat_voltage\r\n");
-      printf("31: sensor_board_currents\r\n");
+      printf("22: _24V_all_currents\r\n");
+      printf("23: _12V_all_currents\r\n");
+      printf("24: _5V_all_currents\r\n");
+      printf("25: _24V_voltage\r\n");
       
-      printf("32: _5V_router_currents\r\n");
+      printf("26: _12V_voltage\r\n");
+      printf("27: _5V_voltage\r\n");
+      printf("28: bat_voltage\r\n");
+      printf("29: sensor_board_currents\r\n");
+      
+      printf("30: _12V_router_currents\r\n");
+      
+      printf("31: _24V_nv_currents\r\n");
+      printf("32: _12V_nv_currents\r\n");
+      printf("33: keypad_currents\r\n");
 #endif
       break;
     }
@@ -704,6 +778,10 @@ void Main_Menu(void)
       break;
     }     
 #endif
+    else if(strcmp(cmdname, "BATTERY") == 0 || strcmp(cmdname, "T") == 0)  {
+      PrintBatInfo();
+      break;
+    }   
     else if(strcmp(cmdname, "HELP") == 0 || strcmp(cmdname, "?") == 0)	{
         printf ( menu, MODEL, SW_VERSION, HARDWARE_REVISION );  /* display command menu        */
       break;

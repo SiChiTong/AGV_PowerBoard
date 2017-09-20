@@ -145,10 +145,29 @@ OSStatus platform_pwm_start( const platform_pwm_t* pwm )
 //  TIM_CtrlPWMOutputs( pwm->tim, ENABLE );
   HAL_TIM_PWM_Start( pwm->tim_handle, pwm->channel);
   
+  
 exit:  
   platform_mcu_powersave_enable();
   return err;
 }
+
+OSStatus platform_pwm_start_ex( const platform_pwm_t* pwm )
+{
+  OSStatus err = kNoErr;
+  
+  platform_mcu_powersave_disable();
+
+  require_action_quiet( pwm != NULL, exit, err = kParamErr);
+//  TIM_Cmd( pwm->tim, ENABLE );
+//  TIM_CtrlPWMOutputs( pwm->tim, ENABLE );
+  HAL_TIMEx_PWMN_Start( pwm->tim_handle, pwm->channel);
+  
+  
+exit:  
+  platform_mcu_powersave_enable();
+  return err;
+}
+
 
 OSStatus platform_set_pwm_duty( const platform_pwm_t* pwm, float duty_cycle )
 {

@@ -122,8 +122,8 @@ void PowerOnDevices( void )
       boardStatus->startTime = os_get_time();
       boardStatus->isPowerOnFinish = NO;
       boardStatus->setPowerOnoff(POWER_ALL, POWER_ON);
-      //boardStatus->setPowerOnoff(POWER_24V_PRINTER, POWER_OFF);
-      boardStatus->setPowerOnoff(POWER_VSYS_24V_NV, POWER_OFF);
+      boardStatus->setPowerOnoff(POWER_24V_PRINTER, POWER_OFF);
+      //boardStatus->setPowerOnoff(POWER_VSYS_24V_NV, POWER_OFF);
       
       DLP_ControlSignal->isDeviceProcessOver = NO;
       PAD_ControlSignal->isDeviceProcessOver = NO;
@@ -138,7 +138,7 @@ void PowerOnDevices( void )
       platform_log("devices start to boot");
       boardStatus->sysStatus &= ~(STATE_RUN_BITS);
       boardStatus->sysStatus |= STATE_IS_POWER_ON;
-      setCurLedsMode(LIGHTS_MODE_WELCOME);
+      SetSerialLedsEffect( LIGHTS_MODE_NOMAL, NULL, 0 );
     }
   }
 }
@@ -164,7 +164,7 @@ void PowerOffDevices( void )
       platform_log("devices start to shutdown");
       boardStatus->sysStatus &= ~(STATE_RUN_BITS);
       boardStatus->sysStatus |= STATE_IS_POWER_OFF;
-      setCurLedsMode(LIGHTS_MODE_GOODEBYE);
+      SetSerialLedsEffect( LIGHTS_MODE_NOMAL, NULL, 0 );
     }
   }
 }
@@ -634,11 +634,11 @@ static void BoardStatus_Tick( void )
 
       if( serial->rx_info->startTime == 0 )
       {
-        setCurLedsMode(LIGHTS_MODE_COM_FAULT);
+        //SetSerialLedsEffect( LIGHTS_MODE_ERROR, NULL, 0 );
       }
       else
       {
-        setCurLedsMode(LIGHTS_MODE_IDLE);
+        SetSerialLedsEffect( LIGHTS_MODE_NOMAL, NULL, 0 );
       }
 
 #ifdef JOY_TEST
@@ -744,38 +744,51 @@ void ChargeTick(void)
 {
     extern const platform_gpio_t            platform_gpio_pins[];  
     static uint8_t state = 0;
-    static uint32_t start_time = 0;
+    static uint32_t plug_in_start_time = 0;
     
     switch(state)
     {
     case 0:
-      if(MicoGpioInputGet( MICO_GPIO_CHARGE_IN ) == 1)
+      if( (MicoGpioInputGet( MICO_GPIO_CHARGE_IN ) == 1) || (MicoGpioInputGet( MICO_GPIO_RECHARGE_IN ) == 1) )
       {
-           start_time = os_get_time();
+           plug_in_start_time = os_get_time();
            state = 1;
       }
       break;
     case 1:
-      if(os_get_time() - start_time > CHARGING_DEBAUNCE_TIME)
+      if(os_get_time() - plug_in_start_time > CHARGING_DEBAUNCE_TIME)
       {
             state = 2;
-            boardStatus->sysStatus |= STATE_IS_CHARGER_IN;
+            if(MicoGpioInputGet( MICO_GPIO_CHARGE_IN ) == 1)
+            {
+                boardStatus->sysStatus |= STATE_IS_CHARGER_IN;
+            }
+            if(MicoGpioInputGet( MICO_GPIO_RECHARGE_IN ) == 1)
+            {
+                boardStatus->sysStatus |= STATE_IS_RECHARGE_IN;
+            }
             platform_log("charge port plug in\r\n");
+            
+            
+            MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL);
             
             
       }
       break;
     case 2:
-      if(MicoGpioInputGet( MICO_GPIO_CHARGE_IN ) == 0)
+      if( (MicoGpioInputGet( MICO_GPIO_CHARGE_IN ) == 0) && (MicoGpioInputGet( MICO_GPIO_RECHARGE_IN ) == 0) )
       {
             state = 0;
             platform_log("charge port not plug in\r\n");
+            
+            
+            MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL);
       }
     default :
       break;
     }
     
-    if(MicoGpioInputGet( MICO_GPIO_CHARGE_IN ) == 0)
+    if( (MicoGpioInputGet( MICO_GPIO_CHARGE_IN ) == 0) && (MicoGpioInputGet( MICO_GPIO_RECHARGE_IN ) == 0) )
     {
         state = 0;
         boardStatus->sysStatus &= ~STATE_IS_CHARGER_IN;

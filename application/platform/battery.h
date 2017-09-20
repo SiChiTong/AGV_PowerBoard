@@ -30,6 +30,7 @@ typedef struct _battery_pack_t{
  uint16_t pack_totoal_soc;
  uint16_t pack_recharge_cycle;
  uint16_t pack_temperature[15];
+ uint8_t  percentage;
 } battery_pack_t;
 
 extern battery_pack_t battery_pack;
@@ -38,4 +39,5 @@ OSStatus battery_init( void );
 void battery_protocol_init( void );
 void battery_data_recieved( void );
 void battery_period( void );
+void PrintBatInfo(void);
 #endif

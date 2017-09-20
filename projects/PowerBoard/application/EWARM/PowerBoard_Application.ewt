@@ -358,13 +358,13 @@
         <name>$PROJ_DIR$\..\..\..\..\application\platform\can_protocol.h</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\..\..\..\application\platform\fan.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\..\..\application\platform\fifo.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\..\..\..\application\platform\protocol.h</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\..\..\application\platform\protocol_bak.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\..\..\application\platform\protocol_bak.h</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\..\..\application\platform\serial_leds.c</name>
@@ -408,6 +408,9 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\application\PowerBoard.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\application\stm32f1xx_hal_msp.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\application\Update_for_OTA.c</name>

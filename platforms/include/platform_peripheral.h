@@ -735,6 +735,7 @@ OSStatus platform_pwm_init( const platform_pwm_t* pwm, uint32_t frequency, float
  * @return @ref OSStatus
  */
 OSStatus platform_pwm_start( const platform_pwm_t* pwm );
+OSStatus platform_pwm_start_ex( const platform_pwm_t* pwm );
 
 OSStatus platform_set_pwm_duty( const platform_pwm_t* pwm, float duty_cycle );
 /**

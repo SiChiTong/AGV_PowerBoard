@@ -11,6 +11,7 @@
 //#include "nbosDriverFlash.h"
 #include "upgrade_flash.h"
 #include "tps611xx_bl.h"
+#include "battery.h"
 
 #define protocol_log(M, ...) custom_log("Protocol", M, ##__VA_ARGS__)
 #define protocol_log_trace() custom_log_trace("Protocol")
@@ -41,13 +42,13 @@ serial_t * const serial = &serialDataInRam;
 
 static OSStatus uart_frame_send( serial_t *serial, const uint8_t *pData, uint32_t size );
 static OSStatus RcvSerialLedsFrameProcess( serial_t *serial );
-static OSStatus AckSerialLedsFrameProcess( serial_t *serial, uint8_t mode, color_t *color, uint8_t period );
-static OSStatus recReadSysStatusVbatFrameProcess( serial_t *serial );
-static OSStatus ackReadSysStatusVbatFrameProcess( serial_t *serial, uint8_t cmd_num );
+OSStatus AckSerialLedsFrameProcess( serial_t *serial, uint8_t mode, color_t *color, uint8_t period );
+//static OSStatus recReadSysStatusVbatFrameProcess( serial_t *serial );
+//static OSStatus ackReadSysStatusVbatFrameProcess( serial_t *serial, uint8_t cmd_num );
 static OSStatus RcvReadModuleStatusFrameProcess( serial_t *serial );
 static OSStatus AckReadModuleStatusFrameProcess( serial_t *serial, uint8_t cmd_num );
-static OSStatus recReadFaultStatusFrameProcess( serial_t *serial );
-static OSStatus ackReadFaultStatusFrameProcess( serial_t *serial, uint8_t cmd_num );
+//static OSStatus recReadFaultStatusFrameProcess( serial_t *serial );
+//static OSStatus ackReadFaultStatusFrameProcess( serial_t *serial, uint8_t cmd_num );
 static OSStatus RcvModuleControlFrameProcess( serial_t *serial );
 static OSStatus ackModuleControlFrameProcess( serial_t *serial, uint32_t ack );
 static OSStatus ackNotSupportFrameProcess( serial_t *serial, uint8_t ctype );
@@ -55,6 +56,7 @@ static OSStatus recTestCurrentCmdFrame( serial_t *serial );
 static OSStatus ackReadErrChannelFrameProcess( serial_t *serial );
 static OSStatus RcvIRLedControlFrameProcess( serial_t *serial );
 static OSStatus ackIRLedControlFrameProcess( serial_t *serial );
+
 
 OSStatus Protocol_Init( void )//( serial_t *serial )
 {
@@ -64,13 +66,13 @@ OSStatus Protocol_Init( void )//( serial_t *serial )
   //require_action( serial , exit, err = kGeneralErr );  
   if( serial->isSerialInitialized )
   {    
-//    if( STATE_POWER_ON != (boardStatus->sysStatus & STATE_RUN_BITS) )
+
     {
       goto exit;
     }
-    MicoUartFinalize( COMM_UART );
-    serial->isSerialInitialized = 0;
-//    protocol_log("protocol had initialized, deinit and init again");
+    //MicoUartFinalize( COMM_UART );
+    //serial->isSerialInitialized = 0;
+
   }
   
   
@@ -140,13 +142,13 @@ static OSStatus RcvSerialLedsFrameProcess( serial_t *serial )
  
   //ack_serial_leds_frame->color = color;
   
-  err = AckSerialLedsFrameProcess( serial, ligth_mode, color, period );
+  //err = AckSerialLedsFrameProcess( serial, ligth_mode, color, period );
 
 exit:
   return err;
 }
 
-static OSStatus AckSerialLedsFrameProcess( serial_t *serial, uint8_t mode, color_t *color, uint8_t period )
+OSStatus AckSerialLedsFrameProcess( serial_t *serial, uint8_t mode, color_t *color, uint8_t period )
 {
   OSStatus err = kNoErr;
   uint8_t  length = sizeof(ack_serial_leds_frame_t);
@@ -206,6 +208,7 @@ exit:
   return err;
 }
 
+#if 0
 static OSStatus recReadSysStatusVbatFrameProcess( serial_t *serial )
 {
   OSStatus err = kNoErr;
@@ -220,6 +223,7 @@ static OSStatus recReadSysStatusVbatFrameProcess( serial_t *serial )
 exit:
   return err;
 }
+#endif
 
 
 static OSStatus AckReadSysStatusVbatFrameProcess( serial_t *serial, uint8_t cmd_num )
@@ -267,7 +271,7 @@ static OSStatus AckReadVbatFrameProcess( serial_t *serial, uint8_t cmd_num )
     }
     else if(cmd_num == 2)
     {
-        bat_status_frame->bat_status = 80;  //test code
+        bat_status_frame->bat_status = battery_pack.percentage;  //test code
     }
     
     err = uart_frame_send( serial, (uint8_t *)bat_status_frame, length );
@@ -286,6 +290,7 @@ exit:
     return err;   
 }
 
+#if 0
 static OSStatus ackReadSysStatusVbatFrameProcess( serial_t *serial, uint8_t cmd_num )
 {
   OSStatus err = kNoErr;
@@ -321,7 +326,7 @@ static OSStatus ackReadSysStatusVbatFrameProcess( serial_t *serial, uint8_t cmd_
 exit:
   return err;
 }
-
+#endif
 static OSStatus RcvReadModuleStatusFrameProcess( serial_t *serial )
 {
   OSStatus err = kNoErr;
@@ -372,6 +377,7 @@ exit:
   return err;
 }
 
+#if 0
 static OSStatus recReadFaultStatusFrameProcess( serial_t *serial )
 {
   OSStatus err = kNoErr;
@@ -386,7 +392,9 @@ static OSStatus recReadFaultStatusFrameProcess( serial_t *serial )
 exit:
   return err;
 }
+#endif
 
+#if 0
 static OSStatus ackReadFaultStatusFrameProcess( serial_t *serial, uint8_t cmd_num )
 {
   OSStatus err = kNoErr;
@@ -417,6 +425,8 @@ static OSStatus ackReadFaultStatusFrameProcess( serial_t *serial, uint8_t cmd_nu
 exit:
   return err;
 }
+#endif
+
 #ifdef NOT_USE_TMP
 static void setModulePowerOnOff( uint8_t module, uint8_t onoff )
 {
@@ -557,6 +567,10 @@ static OSStatus RcvModuleControlFrameProcess( serial_t *serial )
 {
   OSStatus err = kNoErr;
   rcv_module_control_frame_t *rcv_module_control_frame;
+  uint32_t state = 0;
+  uint8_t on_off;
+  uint32_t module;
+  
 
   require_action( serial, exit, err = kGeneralErr );
   require_action( serial->uart_serial , exit, err = kGeneralErr );
@@ -564,9 +578,11 @@ static OSStatus RcvModuleControlFrameProcess( serial_t *serial )
   rcv_module_control_frame = (rcv_module_control_frame_t *)serial->rx_buf.offset;
   require_action( rcv_module_control_frame , exit, err = kGeneralErr );
   
-    if((rcv_module_control_frame->module < POWER_SLAM * 2) && (rcv_module_control_frame->module > 0) )
+  on_off = rcv_module_control_frame->control;
+  module = rcv_module_control_frame->module;
+    if((rcv_module_control_frame->module < POWER_ALL ) && (rcv_module_control_frame->module > 0) )
     {
-        BSP_Power_OnOff((PowerEnable_TypeDef)rcv_module_control_frame->module, (PowerOnOff_TypeDef)rcv_module_control_frame->control);
+        BSP_Power_OnOff((PowerEnable_TypeDef)module, (PowerOnOff_TypeDef)on_off);
     }
     else
     {
@@ -633,8 +649,20 @@ static OSStatus RcvModuleControlFrameProcess( serial_t *serial )
       break;
   }
 #endif
-    
-  err = ackModuleControlFrameProcess( serial, GetModulePowerState(POWER_ALL) );
+  
+  
+  state =  GetModulePowerState(POWER_ALL);
+#if 0
+  if(on_off == POWER_ON)
+  {
+    state |= module;
+  }
+  if(on_off == POWER_OFF)
+  {
+    state &= ~module;
+  }
+#endif
+  err = ackModuleControlFrameProcess( serial, state );
 
 exit:
   return err;
@@ -1164,7 +1192,7 @@ void protocol_period( void )
     {
       if( STATE_POWER_ON == (boardStatus->sysStatus & STATE_RUN_BITS) )
       {
-        setCurLedsMode( LIGHTS_MODE_IDLE );
+        SetSerialLedsEffect( LIGHTS_MODE_NOMAL, NULL, 0 );
       }
       protocol_log( "start communicating" );
     }
@@ -1180,7 +1208,7 @@ void protocol_period( void )
       protocol_log( "communicate timeout" );
       if( STATE_POWER_ON == (boardStatus->sysStatus & STATE_RUN_BITS) )
       {
-        setCurLedsMode( LIGHTS_MODE_COM_FAULT );
+        SetSerialLedsEffect( LIGHTS_MODE_ERROR, NULL, 0 );
       }      
 #ifdef COMM_DMA_USE_INT
       stopDmaRecive( serial->uart_serial->uartHandle );

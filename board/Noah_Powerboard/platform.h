@@ -178,14 +178,14 @@ typedef enum
     MICO_GPIO_24V_EXTEND_EN,    //new
     
 
-    
+#if 0    
     MICO_GPIO_FRONT_LEFT_LED,
     MICO_GPIO_FRONT_RIGHT_LED,
     MICO_GPIO_BACK_LEFT_LED,
     MICO_GPIO_BACK_RIGHT_LED,
     MICO_GPIO_LEFT_EYE_LED,
     MICO_GPIO_RIGHT_EYE_LED,
-    
+#endif  
     
 
     MICO_GPIO_CHARGE_ADC,           //new     
@@ -204,6 +204,7 @@ typedef enum
     MICO_GPIO_MULTI_CHANNEL_ADC,    //new
     MICO_GPIO_VSYS_24V_NV_ADC,      //new
     MICO_GPIO_48V_EXTEND_ADC,       //new
+    MICO_GPIO_5V_POLE_MOTOR_ADC,    //V0.1
     MICO_GPIO_12V_EXTEND_ADC,       //new
     MICO_GPIO_RECHARGE_ADC,         //new
     MICO_GPIO_24V_EXTEND_ADC,       //new
@@ -214,6 +215,14 @@ typedef enum
     MICO_GPIO_LED_MCU_RESET,//V0.1
     
     MICO_GPIO_CHARGE_FAN_CTRL,
+    
+    MICO_GPIO_FAN_1_CTRL,
+    MICO_GPIO_FAN_2_CTRL,
+    MICO_GPIO_FAN_3_CTRL,
+    MICO_GPIO_5V_POLE_MOTOR_EN,
+    MICO_GPIO_5V_KEYPAD_EN,
+    
+    MICO_GPIO_CAMERA_LED_EN,
     
     
     
@@ -241,6 +250,7 @@ typedef enum
 typedef enum
 {
     MICO_PWM_IRLED,
+    MICO_PWM_1,
     MICO_PWM_2,
     MICO_PWM_3,
     MICO_PWM_MAX, /* Denotes the total number of PWM port aliases. Not a valid PWM alias */
@@ -271,9 +281,9 @@ typedef enum
    
     MICO_ADC_5V_RESERVE_C,      //0
     
-    MICO_ADC_24V_NV_C,       //2
-    MICO_ADC_12V_NV_C,       //3
-    
+    //MICO_ADC_24V_NV_C,       //2
+    //MICO_ADC_12V_NV_C,       //3
+    MICO_ADC_5V_POLE_MOTOR_C, //1
     MICO_ADC_48V_EXTEND_C,  //4
     MICO_ADC_12V_EXTEND_C,  //5
     MICO_ADC_RECHARGE_C,    //6
@@ -335,7 +345,11 @@ typedef enum
     MICO_ADC_5V_V,              //9
     MICO_ADC_BAT_V,             //10
     MICO_ADC_5V_SENSOR_BOARD_C, //11
-    MICO_ADC_5V_ROUTER_C,       //12
+    MICO_ADC_12V_ROUTER_C,       //12
+    
+    MICO_ADC_NV_24V_C,          //13
+    MICO_ADC_NV_12V_C,          //14
+    MICO_ADC_KEYPAD_C,          //15
 #endif  
     /* end of vitual adc */
     MICO_ADC_MAX, /* Denotes the total number of ADC port aliases. Not a valid ADC alias */

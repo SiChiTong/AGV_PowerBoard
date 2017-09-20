@@ -14,7 +14,7 @@
 #define   FILTER_TIMES          (5)
 #define   ADC1_DMA_BURRER_SIZE   (ADC1_DMA_CHANNELS_NUM*FILTER_TIMES)
 
-#define   ADC3_DMA_CHANNELS_NUM  (6)
+#define   ADC3_DMA_CHANNELS_NUM  (5)
 #define   FILTER_TIMES          (5)
 #define   ADC3_DMA_BURRER_SIZE   (ADC3_DMA_CHANNELS_NUM*FILTER_TIMES)
 
@@ -125,9 +125,28 @@ OSStatus select_multi_channel( mico_adc_t adc )
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_SWITCH_SEL2 );
     MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_SWITCH_SEL3 );
     break;
-  case MICO_ADC_5V_ROUTER_C:
+  case MICO_ADC_12V_ROUTER_C:
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_SWITCH_SEL0 );
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_SWITCH_SEL1 );
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_SWITCH_SEL2 );
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_SWITCH_SEL3 );
+    break;
+    
+    case MICO_ADC_NV_24V_C:
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_SWITCH_SEL0 );
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_SWITCH_SEL1 );
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_SWITCH_SEL2 );
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_SWITCH_SEL3 );
+    break;
+    case MICO_ADC_NV_12V_C:
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_SWITCH_SEL0 );
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_SWITCH_SEL1 );
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_SWITCH_SEL2 );
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_SWITCH_SEL3 );
+    break;
+    case MICO_ADC_KEYPAD_C:
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_SWITCH_SEL0 );
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_SWITCH_SEL1 );
     MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_SWITCH_SEL2 );
     MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_SWITCH_SEL3 );
     break;
@@ -138,7 +157,7 @@ OSStatus select_multi_channel( mico_adc_t adc )
 }
 
 #define ADC1_USED_CHANNELELS    (14)
-#define ADC3_USED_CHANNELELS    (6)
+#define ADC3_USED_CHANNELELS    (5)
 #define SAMPLE_CYCLE            (235)
 
 OSStatus multi_channel_adc_dma_init( void )
@@ -151,26 +170,38 @@ OSStatus multi_channel_adc_dma_init( void )
   err = MicoAdcStreamAddChannel( MICO_ADC_5V_RESERVE_C, SAMPLE_CYCLE );
   require_noerr_quiet( err, exit );
   
-  err = MicoAdcStreamAddChannel( MICO_ADC_24V_NV_C, SAMPLE_CYCLE );
+  err = MicoAdcStreamAddChannel( MICO_ADC_5V_POLE_MOTOR_C, SAMPLE_CYCLE );
   require_noerr_quiet( err, exit );
-  err = MicoAdcStreamAddChannel( MICO_ADC_12V_NV_C, SAMPLE_CYCLE );
-  require_noerr_quiet( err, exit );
+  
   err = MicoAdcStreamAddChannel( MICO_ADC_48V_EXTEND_C, SAMPLE_CYCLE );
   require_noerr_quiet( err, exit );
+  
   err = MicoAdcStreamAddChannel( MICO_ADC_12V_EXTEND_C, SAMPLE_CYCLE );
   require_noerr_quiet( err, exit );
+  
+  
+    err = MicoAdcStreamAddChannel( MICO_ADC_RECHARGE_C, SAMPLE_CYCLE );
+  require_noerr_quiet( err, exit );  
+  err = MicoAdcStreamAddChannel( MICO_ADC_24V_EXTEND_C, SAMPLE_CYCLE );
+  require_noerr_quiet( err, exit );
+  
+  
   err = MicoAdcStreamAddChannel( MICO_ADC_5V_MOTOR_C, SAMPLE_CYCLE );
   require_noerr_quiet( err, exit );
+  
   err = MicoAdcStreamAddChannel( MICO_ADC_24V_SLAM_C, SAMPLE_CYCLE );
   require_noerr_quiet( err, exit );
+  
   err = MicoAdcStreamAddChannel( MICO_ADC_12V_2_1_PA_C, SAMPLE_CYCLE );
   require_noerr_quiet( err, exit );
   err = MicoAdcStreamAddChannel( MICO_ADC_12V_PAD_C, SAMPLE_CYCLE );
   require_noerr_quiet( err, exit );
+  
   err = MicoAdcStreamAddChannel( MICO_ADC_24V_PRINTER_C, SAMPLE_CYCLE );
   require_noerr_quiet( err, exit );
   err = MicoAdcStreamAddChannel( MICO_ADC_12V_X86_C, SAMPLE_CYCLE );
   require_noerr_quiet( err, exit );
+  
   err = MicoAdcStreamAddChannel( MICO_ADC_IRLED_C, SAMPLE_CYCLE );
   require_noerr_quiet( err, exit );
   err = MicoAdcStreamAddChannel( MICO_ADC_5V_LEDS_C, SAMPLE_CYCLE );
@@ -180,13 +211,14 @@ OSStatus multi_channel_adc_dma_init( void )
   err = MicoAdcStreamInitializeLate( MICO_ADC_5V_LEDS_C, (void *)adc1_dma_buffer, ADC1_DMA_BURRER_SIZE );
   require_noerr_quiet( err, exit );
 /*----------------------------------------------------------------------------*/  
-  err = MicoAdcStreamInitializeEarly( MICO_ADC_24V_EXTEND_C, ADC3_USED_CHANNELELS );
+  err = MicoAdcStreamInitializeEarly( MICO_ADC_CHARGE_C, ADC3_USED_CHANNELELS );
   require_noerr_quiet( err, exit );
   
-  err = MicoAdcStreamAddChannel( MICO_ADC_24V_EXTEND_C, SAMPLE_CYCLE );
-  require_noerr_quiet( err, exit );
-  err = MicoAdcStreamAddChannel( MICO_ADC_24V_EXTEND_C, SAMPLE_CYCLE );
-  require_noerr_quiet( err, exit );
+  //err = MicoAdcStreamAddChannel( MICO_ADC_24V_EXTEND_C, SAMPLE_CYCLE );
+  //require_noerr_quiet( err, exit );
+  //err = MicoAdcStreamAddChannel( MICO_ADC_24V_EXTEND_C, SAMPLE_CYCLE );
+  //require_noerr_quiet( err, exit );
+  
   err = MicoAdcStreamAddChannel( MICO_ADC_CHARGE_C, SAMPLE_CYCLE );
   require_noerr_quiet( err, exit );
   err = MicoAdcStreamAddChannel( MICO_ADC_BATIN_C, SAMPLE_CYCLE );
@@ -219,7 +251,7 @@ uint16_t  read_channel_values_mV( mico_adc_t adc )
     temp_total /= FILTER_TIMES;
     return (uint16_t)(temp_total/4096.0*3.3*1000);
   }
-  else if ( adc > MICO_ADC_MULTI_CHANNAL && adc <=  MICO_ADC_5V_ROUTER_C )
+  else if ( adc > MICO_ADC_MULTI_CHANNAL && adc <=  MICO_ADC_KEYPAD_C )
   {    
     for( uint8_t i = 0; i < FILTER_TIMES; i++ )
     {

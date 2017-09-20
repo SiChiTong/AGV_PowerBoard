@@ -70,16 +70,16 @@
         <option>
           <name>GRuntimeLibSelect</name>
           <version>0</version>
-          <state>1</state>
+          <state>2</state>
         </option>
         <option>
           <name>GRuntimeLibSelectSlave</name>
           <version>0</version>
-          <state>1</state>
+          <state>2</state>
         </option>
         <option>
           <name>RTDescription</name>
-          <state>Use the normal configuration of the C/C++ runtime library. No locale interface, C locale, no file descriptor support, no multibytes in printf and scanf, and no hex floats in strtod.</state>
+          <state>Use the full configuration of the C/C++ runtime library. Full locale interface, C locale, file descriptor support, multibytes in printf and scanf, and hex floats in strtod.</state>
         </option>
         <option>
           <name>OGProductVersion</name>
@@ -133,7 +133,7 @@
         </option>
         <option>
           <name>RTConfigPath2</name>
-          <state>$TOOLKIT_DIR$\INC\c\DLib_Config_Normal.h</state>
+          <state>$TOOLKIT_DIR$\INC\c\DLib_Config_Full.h</state>
         </option>
         <option>
           <name>GFPUCoreSlave</name>
@@ -172,7 +172,7 @@
           <state>STM32F103xE</state>
           <state>xSIZE_OPTIMIZE</state>
           <state>NO_MICO_RTOS</state>
-          <state>MICO_DISABLE_WATCHDOG</state>
+          <state>xMICO_DISABLE_WATCHDOG</state>
           <state>DEBUG=1</state>
           <state>NO_BLOCK_MENU</state>
           <state>xMIKE_TEST</state>
@@ -304,6 +304,7 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
+          <state>$PROJ_DIR$\..\..\..\..\platforms\MCUs\STM32F1xx\peripherals\libraries</state>
           <state>$PROJ_DIR$\..\..\..\..\platforms\MCUs\STM32F1xx\peripherals\libraries\STM32F1xx_HAL_Driver\Inc</state>
           <state>$PROJ_DIR$\..\..\..\..\platforms\MCUs\STM32F1xx</state>
           <state>$PROJ_DIR$\..\..\..\..\board</state>
@@ -311,7 +312,6 @@
           <state>$PROJ_DIR$\..\..\..\..\bootloader</state>
           <state>$PROJ_DIR$\..\..\..\..\platforms\MCUs\STM32F1xx\EWARM</state>
           <state>$PROJ_DIR$\..\..\..\..\platforms\Cortex-M3\CMSIS\Include</state>
-          <state>$PROJ_DIR$\..\..\..\..\platforms\MCUs\STM32F1xx\peripherals\libraries</state>
           <state>$PROJ_DIR$\..\..\..\..\platforms\Cortex-M3\CMSIS\Device\ST\STM32F1xx\Include</state>
           <state>$PROJ_DIR$\..\..\..\..\platforms\include</state>
           <state>$PROJ_DIR$\..\..\..\..\include</state>
@@ -3869,19 +3869,13 @@
         <name>$PROJ_DIR$\..\..\..\..\application\platform\can_protocol.h</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\..\..\..\application\platform\fan.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\..\..\application\platform\fifo.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\..\..\..\application\platform\protocol.h</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\..\..\application\platform\protocol_bak.c</name>
-        <excluded>
-          <configuration>Debug</configuration>
-        </excluded>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\..\..\application\platform\protocol_bak.h</name>
-        <excluded>
-          <configuration>Debug</configuration>
-        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\..\..\application\platform\serial_leds.c</name>
@@ -3931,6 +3925,12 @@
       <excluded>
         <configuration>Debug</configuration>
         <configuration>test</configuration>
+      </excluded>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\application\stm32f1xx_hal_msp.c</name>
+      <excluded>
+        <configuration>Debug</configuration>
       </excluded>
     </file>
     <file>

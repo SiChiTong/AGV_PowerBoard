@@ -351,6 +351,13 @@ OSStatus MicoPwmStart( mico_pwm_t pwm )
     return kUnsupportedErr;
   return (OSStatus) platform_pwm_start( &platform_pwm_peripherals[pwm] );
 }
+    
+OSStatus MicoPwmStartEx( mico_pwm_t pwm )
+{
+  if ( pwm >= MICO_PWM_NONE )
+    return kUnsupportedErr;
+  return (OSStatus) platform_pwm_start_ex( &platform_pwm_peripherals[pwm] );
+}
 
 OSStatus MicoPwmSetDuty( mico_pwm_t pwm, float duty_cycle )
 {

@@ -45,7 +45,7 @@
 #define READ_PROTOCOL_VERSION           0x01
 
 #define HW_VERSION                      "00"
-#define SW_VERSION                      "NOAHC001M08B004"
+#define SW_VERSION                      "NOAHC001M08B006"
 #define PROTOCOL_VERSION                "20170619P0001"
 
 typedef struct _serial_frame_t {
@@ -297,6 +297,16 @@ typedef struct _errInfoFrame_t {
   uint8_t               errChannel;
   uint16_t              errData;  
 } errInfoFrame_t;
+
+
+typedef struct
+{
+    uint8_t start_flag;
+    uint8_t end_flag;
+    uint8_t data_len;
+    uint8_t rcv_cnt;
+    uint8_t rcv_buf[50];
+}led_com_opt_t;
 
 /***************** end of upgrade defines *********************/
 extern serial_t * const serial;

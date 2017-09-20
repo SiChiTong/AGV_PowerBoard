@@ -59,14 +59,14 @@ typedef enum {
 
 typedef enum 
 {
-    //LIGHTS_MODE_DEFAULT                 = 0,
+    LIGHTS_MODE_NONE                    = 0,
     LIGHTS_MODE_NOMAL                   = 1,
     LIGHTS_MODE_ERROR                   = 2,
     LIGHTS_MODE_LOW_POWER,
     LIGHTS_MODE_CHARGING,
     LIGHTS_MODE_TURN_LEFT,
     LIGHTS_MODE_TURN_RIGHT,
-    LIGHTS_MODE_COM_ERROR,
+    //LIGHTS_MODE_COM_ERROR,
     LIGHTS_MODE_EMERGENCY_STOP,
     
     
@@ -249,21 +249,14 @@ void reset_led(void);
 //void delay_400ns(void);
 //void delay_900ns(void);
 
-OSStatus SerialLeds_Init( void );
 
-uint32_t change_led(uint32_t word,uint8_t level);
 
-void single_color_water_led(uint32_t color,uint8_t times);
-
-void style_charge_function( uint32_t color );
 //void test_nsDelay(void);
 
 void SetSerialLedsEffect( light_mode_t lightsMode, color_t *color, uint8_t period );
 
-void setCurLedsMode( lightsMode_t lightsMode );
 
-void startDanceLedsMode( void );
-void stopDanceLedsMode( void );
-void serialLedsTick( void );
+
+void leds_protocol_period(void);
 #endif
 

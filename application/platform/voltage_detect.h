@@ -11,11 +11,12 @@
 #include "Mico.h"
 #define  VOLTAGE_DEBUG
 
-#define VBAT_POWER_ON_LEVEL          4500//x10mV
-#define VBAT_LOW_POWER_LEVEL         4600//x10mV
-#define VBAT_POWER_OFF_LEVEL         4450//x10mV
-#define VBAT_FULL_POWER_LEVEL        5800//x10mV
-#define VBAT_POWER_OFF_PERCENTAGE    10//x10mV
+#define VBAT_POWER_ON_LEVEL                 4500//x10mV
+#define VBAT_LOW_POWER_LEVEL                4600//x10mV
+#define VBAT_POWER_OFF_LEVEL                4450//x10mV
+#define VBAT_FULL_POWER_LEVEL               5800//x10mV
+#define VBAT_POWER_OFF_PERCENTAGE           10  // %
+#define VBAT_POWER_LOW_WARNING_PERCENTAGE   20  // %
 
 #define   CURRENT_THRESHOLD_H_PRINTER_MA          2500
 #define   CURRENT_THRESHOLD_L_PRINTER_MA          0
@@ -71,8 +72,8 @@ struct convert_adc_data {
 #pragma pack(1)
 typedef struct _VoltageData_t {
   uint16_t              _5V_reserve1_currents;
-  uint16_t              _24V_nv_currents;
-  uint16_t              _12V_nv_currents;
+  //uint16_t              _24V_nv_currents;
+  //uint16_t              _12V_nv_currents;
   uint16_t              _48V_extend_currents;
   
   uint16_t              _12V_extend_currents;
@@ -111,7 +112,12 @@ typedef struct _VoltageData_t {
   uint16_t               bat_voltage;
   uint16_t               sensor_board_currents;
   
-  int16_t               _5V_router_currents;
+  int16_t               _12V_router_currents;
+  
+  uint16_t              _24V_nv_currents;
+  uint16_t              _12V_nv_currents;
+  uint16_t              keypad_currents;
+  
 } voltageData_t;
 #pragma pack()
 

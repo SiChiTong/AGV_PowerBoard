@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32f1xx_hal_uart.c
   * @author  MCD Application Team
-  * @version V1.0.1
-  * @date    31-July-2015
+  * @version V1.0.0
+  * @date    15-December-2014
   * @brief   UART HAL module driver.
   *          This file provides firmware functions to manage the following 
   *          functionalities of the Universal Asynchronous Receiver Transmitter (UART) peripheral:
@@ -127,7 +127,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -269,7 +269,7 @@ HAL_StatusTypeDef HAL_UART_Init(UART_HandleTypeDef *huart)
   if(huart->State == HAL_UART_STATE_RESET)
   {  
     /* Allocate lock resource and initialize it */
-    huart->Lock = HAL_UNLOCKED;
+    huart-> Lock = HAL_UNLOCKED;
     
     /* Init the low level hardware */
     HAL_UART_MspInit(huart);
@@ -321,9 +321,6 @@ HAL_StatusTypeDef HAL_HalfDuplex_Init(UART_HandleTypeDef *huart)
 
   if(huart->State == HAL_UART_STATE_RESET)
   {   
-    /* Allocate lock resource and initialize it */
-    huart->Lock = HAL_UNLOCKED;
-
     /* Init the low level hardware */
     HAL_UART_MspInit(huart);
   }
@@ -383,9 +380,6 @@ HAL_StatusTypeDef HAL_LIN_Init(UART_HandleTypeDef *huart, uint32_t BreakDetectLe
   
   if(huart->State == HAL_UART_STATE_RESET)
   {   
-    /* Allocate lock resource and initialize it */
-    huart->Lock = HAL_UNLOCKED;  
-
     /* Init the low level hardware */
     HAL_UART_MspInit(huart);
   }
@@ -451,9 +445,6 @@ HAL_StatusTypeDef HAL_MultiProcessor_Init(UART_HandleTypeDef *huart, uint8_t Add
 
   if(huart->State == HAL_UART_STATE_RESET)
   {   
-    /* Allocate lock resource and initialize it */
-    huart->Lock = HAL_UNLOCKED;
-
     /* Init the low level hardware */
     HAL_UART_MspInit(huart);
   }
@@ -534,9 +525,36 @@ HAL_StatusTypeDef HAL_UART_DeInit(UART_HandleTypeDef *huart)
   */
  __weak void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 {
-  /* NOTE: This function should not be modified, when the callback is needed,
-           the HAL_UART_MspInit can be implemented in the user file
-   */ 
+  GPIO_InitTypeDef GPIO_InitStruct;
+  if(huart->Instance==USART2)
+  {
+  /* USER CODE BEGIN USART2_MspInit 0 */
+
+  /* USER CODE END USART2_MspInit 0 */
+    /* Peripheral clock enable */
+    __HAL_RCC_USART2_CLK_ENABLE();
+  
+    /**USART2 GPIO Configuration    
+    PA2     ------> USART2_TX
+    PA3     ------> USART2_RX 
+    */
+    GPIO_InitStruct.Pin = GPIO_PIN_2;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = GPIO_PIN_3;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    /* USART2 interrupt Init */
+    HAL_NVIC_SetPriority(USART2_IRQn, 7, 0);
+    HAL_NVIC_EnableIRQ(USART2_IRQn);
+  /* USER CODE BEGIN USART2_MspInit 1 */
+
+  /* USER CODE END USART2_MspInit 1 */
+  }
 }
 
 /**

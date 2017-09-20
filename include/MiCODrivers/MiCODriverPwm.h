@@ -84,6 +84,7 @@ OSStatus MicoPwmInitialize(mico_pwm_t pwm, uint32_t frequency, float duty_cycle)
  * @return    kGeneralErr   : if an error occurred with any step
  */
 OSStatus MicoPwmStart(mico_pwm_t pwm);
+OSStatus MicoPwmStartEx(mico_pwm_t pwm);
 
 OSStatus MicoPwmSetDuty( mico_pwm_t pwm, float duty_cycle );
 /**@brief Stops output on a PWM pin

@@ -542,9 +542,9 @@ CAN_TXDATA_STRUCT  CommandProcessing( uint32_t func_ID, uint8_t* dstPtr, uint8_t
           ptx_data = tx_data;
           break;
         case CAN_CMD_LEDS_CONTROL:
-          *tx_data++ = serial_leds->modeType;
-          *tx_data++ = (serial_leds->effectType & 0xff00) >> 8;
-          *tx_data++ = (serial_leds->effectType & 0x00ff);
+          //*tx_data++ = serial_leds->modeType;
+          //*tx_data++ = (serial_leds->effectType & 0xff00) >> 8;
+          //*tx_data++ = (serial_leds->effectType & 0x00ff);
           tx_len = 3;
           break;
         default :

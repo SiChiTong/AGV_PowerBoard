@@ -1,3 +1,9 @@
+
+
+#include "main.h"
+#include "stm32f1xx_hal.h"
+
+
 #include "mico.h"
 #include "platform.h"
 #include "platform_internal.h"
@@ -12,6 +18,8 @@
 #include "can_protocol.h"
 
 #include "battery.h"
+#include "fifo.h"
+#include "fan.h"
 
 #define os_PowerBoard_log(format, ...)  custom_log("PowerBoard", format, ##__VA_ARGS__)
 
@@ -58,32 +66,52 @@ int8_t isNeedAutoBoot( void );
 void test_power_tick( void );
 #endif
 void OneWireLedTest(void);
-int main( void )
+
+/* Private variables ---------------------------------------------------------*/
+UART_HandleTypeDef huart2;
+uint8_t test_data[] = {0x5a,8,1,1,1,1,0x66,0xa5};
+uint8_t rcv_buf[50];
+HAL_StatusTypeDef uart_err;
+ 
+
+/* Private function prototypes -----------------------------------------------*/
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_USART2_UART_Init(void);
+
+int main(void)
 {
-    delay_us(5000);
+    HAL_Init();
+
     init_clocks();
-    bsp_Init();
+    bsp_Init(); 
     init_architecture();
     init_platform();
     printf ( menu, MODEL, SW_VERSION, HARDWARE_REVISION );
 
     os_PowerBoard_log( "System clock = %d Hz",HAL_RCC_GetHCLKFreq() );
-      
+
     Platform_Init();
-    SerialLeds_Init();
+    
     VolDetect_Init();
     Protocol_Init();
     startTps611xx();
+    FanInit();
     
     battery_init();
     
+    FifoInit(fifo, fifo_data_in_ram, RCV_DATA_LEN_MAX);
+      
     MicoCanInitialize( MICO_CAN1 );
     if( !isNeedAutoBoot() )
     {
         PowerOnDevices();
     } 
 
-    //PowerOnDevices();
+    MX_GPIO_Init();
+    MX_USART2_UART_Init();
+    
+    if(HAL_UART_Receive_IT(&huart2,rcv_buf,1)!=HAL_OK)Error_Handler();
     for(;;)
     {
         Platform_Tick();
@@ -91,18 +119,10 @@ int main( void )
         VolDetect_Tick();
         can_protocol_period();
         Main_Menu();
-        
-        
-        OneWireLedTest();//////////////test code
-        
-        
-        //in normal version must get battery info
-        //battery_period();
-        
-        
-        
-        
+        battery_period(); 
+        leds_protocol_period();
     }
+
 }
 
 
@@ -118,7 +138,7 @@ color_t color_test[] =
 
 void OneWireLedTest(void)
 {
-#define ONE_WIRE_LED_TEST_PERIOD    500/SYSTICK_PERIOD//10s
+#define ONE_WIRE_LED_TEST_PERIOD    2500/SYSTICK_PERIOD//10s
 
     static uint32_t start_time = 0;
     static uint8_t new_tick = 0;
@@ -147,9 +167,9 @@ void OneWireLedTest(void)
     {
         if(new_tick != last_tick)
         {
-            //SetSerialLedsEffect( (light_mode_t)new_tick, NULL, 50 );
-            SetSerialLedsEffect(LIGHTS_MODE_SETTING, &color_test[new_tick], 200);
-            printf("hello hello");
+            SetSerialLedsEffect( (light_mode_t)new_tick, NULL, 50 );
+            //SetSerialLedsEffect(LIGHTS_MODE_SETTING, &color_test[new_tick], 200);
+            //printf("hello hello");
         }    
     }
     last_tick = new_tick;
@@ -175,6 +195,178 @@ int8_t isNeedAutoBoot( void )
   return -1;
 }
 
+
+/** System Clock Configuration
+*/
+void SystemClock_Config(void)
+{
+
+  RCC_OscInitTypeDef RCC_OscInitStruct;
+  RCC_ClkInitTypeDef RCC_ClkInitStruct;
+
+    /**Initializes the CPU, AHB and APB busses clocks 
+    */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+    /**Initializes the CPU, AHB and APB busses clocks 
+    */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+    /**Configure the Systick interrupt time 
+    */
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+
+    /**Configure the Systick 
+    */
+  HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
+
+  /* SysTick_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+}
+
+/* USART2 init function */
+static void MX_USART2_UART_Init(void)
+{
+
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  HAL_NVIC_SetPriority(USART2_IRQn, 6, 0);
+  HAL_NVIC_EnableIRQ(USART2_IRQn);
+}
+
+/** Configure pins as 
+        * Analog 
+        * Input 
+        * Output
+        * EVENT_OUT
+        * EXTI
+*/
+static void MX_GPIO_Init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct;
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  
+  /*Configure GPIO pin : PA2 */
+  GPIO_InitStruct.Pin = GPIO_PIN_2;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PA3 */
+  GPIO_InitStruct.Pin = GPIO_PIN_3;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  
+#if 0
+  __HAL_RCC_GPIOE_CLK_ENABLE();
+  
+  /*Configure GPIO pin : PE10 */
+  GPIO_InitStruct.Pin = GPIO_PIN_10;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_MEDIUM;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_10, GPIO_PIN_RESET);
+  
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  
+  /*Configure GPIO pin : PC9 */
+  GPIO_InitStruct.Pin = GPIO_PIN_9;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_MEDIUM;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+#endif
+
+}
+
+/* USER CODE BEGIN 4 */
+
+/* USER CODE END 4 */
+
+/**
+  * @brief  This function is executed in case of error occurrence.
+  * @param  None
+  * @retval None
+  */
+void _Error_Handler(char * file, int line)
+{
+  /* USER CODE BEGIN Error_Handler_Debug */
+  /* User can add his own implementation to report the HAL error return state */
+  while(1) 
+  {
+  }
+  /* USER CODE END Error_Handler_Debug */ 
+}
+
+#ifdef USE_FULL_ASSERT
+
+/**
+   * @brief Reports the name of the source file and the source line number
+   * where the assert_param error has occurred.
+   * @param file: pointer to the source file name
+   * @param line: assert_param error line source number
+   * @retval None
+   */
+void assert_failed(uint8_t* file, uint32_t line)
+{
+  /* USER CODE BEGIN 6 */
+  /* User can add his own implementation to report the file name and line number,
+    ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+  /* USER CODE END 6 */
+
+}
+
+#endif
+
+/**
+  * @}
+  */ 
+
+/**
+  * @}
+*/ 
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+
+
+
+
+
+#if 1
 static uint32_t    indicatorFreshCount = 0;
 void SysLed(void)
 {
@@ -185,3 +377,4 @@ void SysLed(void)
         MicoGpioOutputTrigger( MICO_GPIO_SYS_LED );
     } 
 }
+#endif

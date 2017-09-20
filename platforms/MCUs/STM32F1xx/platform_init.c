@@ -313,6 +313,8 @@ uint32_t mico_get_time_no_os(void)
 #include "serial_leds.h"
 #endif
 
+
+
 extern void SysLed(void);
 void sysTickHandler(void)
 {
@@ -322,14 +324,37 @@ void sysTickHandler(void)
     platform_watchdog_kick( );
 }
 
+
+
+
 #else
 
+
+
+#if 0
 void sysTickHandler(void)
 {
 //  osSystickHandler();
   HAL_IncTick();
   platform_watchdog_kick( );
 }
+#else
+
+/**
+* @brief This function handles System tick timer.
+*/
+void SysTick_Handler(void)
+{
+  /* USER CODE BEGIN SysTick_IRQn 0 */
+
+  /* USER CODE END SysTick_IRQn 0 */
+  HAL_IncTick();
+  HAL_SYSTICK_IRQHandler();
+  /* USER CODE BEGIN SysTick_IRQn 1 */
+
+  /* USER CODE END SysTick_IRQn 1 */
+}
+#endif
 
 #endif
 

@@ -68,8 +68,8 @@ typedef enum {
 #else
   //ADC 1
     CURRENTS_5V_RES = 0,
-    CURRENTS_24V_NV,
-    CURRENTS_12V_NV,
+    //CURRENTS_24V_NV,
+    //CURRENTS_12V_NV,
     CURRENTS_48V_EXTEND,
     
     CURRENTS_12V_EXTEND,
@@ -110,7 +110,11 @@ typedef enum {
     VOLTAGE_BAT,
     CURRENTS_SENSOR_BOARD,
     
-    CURRENTS_5V_ROUTER,
+    CURRENTS_12V_ROUTER,
+    CURRENTS_24V_NV,
+    CURRENTS_12V_NV,
+    CURRENTS_KEYPAD,
+    
 
 #endif
 } adc_channel_t ;
@@ -130,30 +134,16 @@ struct convert_adc_data convert_data[] = {
     .err_channel        = 0x01,
     .fault_bit_mask_num = RES_5V_CURRENTS_FAULT_BIT_MASK_NUM,
   },
-  [CURRENTS_24V_NV] = 
-  {
-    .adc_type           = MICO_ADC_24V_NV_C,
-    .convert_type       = CONVERT_TYPE_CURRENTS,
-    .isNeedDelay        = 'N',
-    .convert_factor     = ADC_FACTOR_5,//5.95,//5,
-    .threshold_low      = 0,
-    .threshold_high     = 0xFFFF,
-    .err_duration_time  = 300/SYSTICK_PERIOD,
-    .err_channel        = 0x02,
-    .fault_bit_mask_num = RES_12V_CURRENTS_FAULT_BIT_MASK_NUM,
-  },
-  [CURRENTS_12V_NV] = 
-  {
-    .adc_type           = MICO_ADC_12V_NV_C    ,
-    .convert_type       = CONVERT_TYPE_CURRENTS,
-    .isNeedDelay        = 'N',
-    .convert_factor     = ADC_FACTOR_5,
-    .threshold_low      = 0,
-    .threshold_high     = 0xFFFF,
-    .err_duration_time  = 300/SYSTICK_PERIOD,
-    .err_channel        = 0x04,
-    .fault_bit_mask_num = SYS_CURRENTS_FAULT_BIT_MASK_NUM, 
-  },
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   //DH12V
   //DH5V
   [CURRENTS_48V_EXTEND] = 
@@ -467,7 +457,7 @@ struct convert_adc_data convert_data[] = {
     .adc_type           = MICO_ADC_12V_V,
     .convert_type       = CONVERT_TYPE_VOLTAGE,
     .isNeedDelay        = 'Y',
-    .convert_factor     = 11,
+    .convert_factor     = 21,
     .threshold_low      = 0,
     .threshold_high     = 0xFFFF,
     .err_duration_time  = 300/SYSTICK_PERIOD,
@@ -510,9 +500,9 @@ struct convert_adc_data convert_data[] = {
     .err_channel        = 0,
     .fault_bit_mask_num = 0,
   },
-  [CURRENTS_5V_ROUTER] = 
+  [CURRENTS_12V_ROUTER] = 
   {
-    .adc_type           = MICO_ADC_5V_ROUTER_C,
+    .adc_type           = MICO_ADC_12V_ROUTER_C,
     .convert_type       = CONVERT_TYPE_CURRENTS,
     .isNeedDelay        = 'Y',
     .convert_factor     = ADC_FACTOR_5,//5,
@@ -521,6 +511,46 @@ struct convert_adc_data convert_data[] = {
     .err_duration_time  = 300/SYSTICK_PERIOD,
     .err_channel        = 0,
     .fault_bit_mask_num = 0,
+  },
+  
+  
+  
+  
+  [CURRENTS_24V_NV] = 
+  {
+    .adc_type           = MICO_ADC_NV_24V_C,
+    .convert_type       = CONVERT_TYPE_CURRENTS,
+    .isNeedDelay        = 'Y',
+    .convert_factor     = ADC_FACTOR_5,//5.95,//5,
+    .threshold_low      = 0,
+    .threshold_high     = 0xFFFF,
+    .err_duration_time  = 300/SYSTICK_PERIOD,
+    .err_channel        = 0x02,
+    .fault_bit_mask_num = RES_12V_CURRENTS_FAULT_BIT_MASK_NUM,
+  },
+  [CURRENTS_12V_NV] = 
+  {
+    .adc_type           = MICO_ADC_NV_12V_C    ,
+    .convert_type       = CONVERT_TYPE_CURRENTS,
+    .isNeedDelay        = 'Y',
+    .convert_factor     = ADC_FACTOR_5,
+    .threshold_low      = 0,
+    .threshold_high     = 0xFFFF,
+    .err_duration_time  = 300/SYSTICK_PERIOD,
+    .err_channel        = 0x04,
+    .fault_bit_mask_num = SYS_CURRENTS_FAULT_BIT_MASK_NUM, 
+  },
+    [CURRENTS_KEYPAD] = 
+  {
+    .adc_type           = MICO_ADC_KEYPAD_C    ,
+    .convert_type       = CONVERT_TYPE_CURRENTS,
+    .isNeedDelay        = 'Y',
+    .convert_factor     = ADC_FACTOR_5,
+    .threshold_low      = 0,
+    .threshold_high     = 0xFFFF,
+    .err_duration_time  = 300/SYSTICK_PERIOD,
+    .err_channel        = 0x04,
+    .fault_bit_mask_num = SYS_CURRENTS_FAULT_BIT_MASK_NUM, 
   },
 };
 
@@ -608,8 +638,8 @@ static void computeVoltage( void )
   //boardStatus->vBatLevel = get_percentage_from_battery_voltage( voltageConvert->bat_voltage );
   
   voltageConvert->_5V_reserve1_currents = processChannelsData( CURRENTS_5V_RES );
-  voltageConvert->_24V_nv_currents = processChannelsData( CURRENTS_24V_NV );  
-  voltageConvert->_12V_nv_currents = processChannelsData( CURRENTS_12V_NV );
+  //voltageConvert->_24V_nv_currents = processChannelsData( CURRENTS_24V_NV );  
+  //voltageConvert->_12V_nv_currents = processChannelsData( CURRENTS_12V_NV );
   voltageConvert->_48V_extend_currents = processChannelsData( CURRENTS_48V_EXTEND );
   
   voltageConvert->_12V_extend_currents = processChannelsData( CURRENTS_12V_EXTEND );
@@ -680,10 +710,26 @@ static void computeVoltage( void )
   break;
   case CURRENTS_SENSOR_BOARD:
     voltageConvert->sensor_board_currents = processChannelsData( CURRENTS_SENSOR_BOARD );
-    sample_index = CURRENTS_5V_ROUTER;
+    sample_index = CURRENTS_12V_ROUTER;
   break;
-  case CURRENTS_5V_ROUTER:
-    voltageConvert->_5V_router_currents = processChannelsData( CURRENTS_5V_ROUTER );
+  case CURRENTS_12V_ROUTER:
+    voltageConvert->_12V_router_currents = processChannelsData( CURRENTS_12V_ROUTER );
+    sample_index = CURRENTS_24V_NV;
+  break;
+  
+  
+  
+  
+  case CURRENTS_24V_NV:
+    voltageConvert->_24V_nv_currents = processChannelsData( CURRENTS_24V_NV );
+    sample_index = CURRENTS_12V_NV;
+  break;
+  case CURRENTS_12V_NV:
+    voltageConvert->_12V_nv_currents = processChannelsData( CURRENTS_12V_NV );
+    sample_index = CURRENTS_KEYPAD;
+  break;
+  case CURRENTS_KEYPAD:
+    voltageConvert->keypad_currents = processChannelsData( CURRENTS_KEYPAD );
     sample_index = TEMP_24V_TS;
   break;
   }
@@ -703,7 +749,11 @@ void PrintAdcData(void)
     }     
     printf("\r\n");
 }
-static uint32_t lowVoltageStartTime = 0;
+
+#define LOW_POWER_WARNING_DEBAUNCE_TIME     10*1000/SYSTICK_PERIOD
+#define LOW_POWER_POEWR_OFF_DEBAUNCE_TIME   10*1000/SYSTICK_PERIOD
+static uint32_t low_power_warning_start_time = 0;
+static uint32_t low_power_power_off_start_time = 0;
 //static uint32_t  batteryPercentageStartTime = 0;
 void VolDetect_Tick( void )
 {
@@ -776,38 +826,65 @@ void VolDetect_Tick( void )
 #endif //#ifdef  VOLTAGE_DEBUG
     if( SWITCH_ON == switch_user->switchOnOff )
     {
-        if( voltageConvert->bat_voltage < VBAT_LOW_POWER_LEVEL )
+        //if( voltageConvert->bat_voltage < VBAT_LOW_POWER_LEVEL )
         {
-            boardStatus->sysStatus |= STATE_IS_LOW_POWER;
+            //boardStatus->sysStatus |= STATE_IS_LOW_POWER;
         }
-        else
+        //else
         {
-            boardStatus->sysStatus &= ~STATE_IS_LOW_POWER;
+            //boardStatus->sysStatus &= ~STATE_IS_LOW_POWER;
         }
 
 #if 1
         if( (battery_pack.pack_totoal_soc > 0) && (battery_pack.pack_voltage > 0) )
         {
-            percentage = battery_pack.pack_current_soc * 100 / battery_pack.pack_totoal_soc;
-            if( percentage < VBAT_POWER_OFF_PERCENTAGE )
+            battery_pack.percentage = battery_pack.pack_current_soc * 100 / battery_pack.pack_totoal_soc;
+            percentage = battery_pack.percentage;
+            if( (percentage <= VBAT_POWER_LOW_WARNING_PERCENTAGE) && percentage > VBAT_POWER_OFF_PERCENTAGE )
             {
-                if( lowVoltageStartTime == 0)
+                if( low_power_warning_start_time == 0)
                 {
-                    lowVoltageStartTime = os_get_time();
+                    low_power_warning_start_time = os_get_time();
                 }
-                if( os_get_time() - lowVoltageStartTime >= 7000/SYSTICK_PERIOD )
+                if( os_get_time() - low_power_warning_start_time >= LOW_POWER_WARNING_DEBAUNCE_TIME )
                 {
-                    vol_detect_log(" Low Power ! ! \r\n Power is %d", percentage);
+                    vol_detect_log(" Low power ! ! \r\n Power is %d%", percentage);
+                    SetSerialLedsEffect( LIGHTS_MODE_LOW_POWER, NULL, 0 );
+                    
+                    low_power_warning_start_time = 0;
+                    boardStatus->sysStatus |= STATE_IS_LOW_POWER;
+                }
+                
+            }
+            else if(percentage > VBAT_POWER_LOW_WARNING_PERCENTAGE)
+            {
+                if( low_power_warning_start_time != 0 )
+                {
+                    low_power_warning_start_time = 0;
+                }
+                boardStatus->sysStatus &= ~STATE_IS_LOW_POWER;
+                SetSerialLedsEffect( LIGHTS_MODE_NOMAL, NULL, 0 );
+            }
+            
+            if( percentage <= VBAT_POWER_OFF_PERCENTAGE )
+            {
+                if( low_power_power_off_start_time == 0)
+                {
+                    low_power_power_off_start_time = os_get_time();
+                }
+                if( os_get_time() - low_power_power_off_start_time >= LOW_POWER_POEWR_OFF_DEBAUNCE_TIME )
+                {
+                    vol_detect_log(" Going to power off ! ! \r\n Power is %d%", percentage);
                     
                     PowerOffDevices();
-                    lowVoltageStartTime = 0;
+                    low_power_power_off_start_time = 0;
                 }
             }
             else
             {
-                if( lowVoltageStartTime != 0 )
+                if( low_power_power_off_start_time != 0 )
                 {
-                    lowVoltageStartTime = 0;
+                    low_power_power_off_start_time = 0;
                 }
             }
         }

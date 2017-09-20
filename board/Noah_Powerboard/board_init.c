@@ -62,11 +62,20 @@ void board_gpios_init( void )
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_SLAM_EN , &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_24V_EXTEND_EN, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_24V_PRINTER_EN, &pin_config );
-    //MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_LED_MCU_RESET, &pin_config );
+    
+    //MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_LED_MCU_RESET, &pin_config );//LED_MCU_RESET
+    
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_LED_MCU_POWER_EN, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL, &pin_config );
-
-
+    
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_5V_POLE_MOTOR_EN, &pin_config );
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_5V_KEYPAD_EN, &pin_config );
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_CAMERA_LED_EN, &pin_config );
+    
+    //MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_FAN_1_CTRL, &pin_config );
+    //MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_FAN_2_CTRL, &pin_config );
+    //MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_FAN_3_CTRL, &pin_config );
+    
 
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_5V_MOTOR_EN );
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_5V_RECHARGE_EN );
@@ -103,11 +112,26 @@ void board_gpios_init( void )
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_24V_PRINTER_EN);
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_24V_EXTEND_EN);
     
+    
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL);
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_LED_MCU_POWER_EN );
     
-    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_LED_MCU_POWER_EN );
     
-    //MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_LED_MCU_RESET );
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_5V_KEYPAD_EN );
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_5V_POLE_MOTOR_EN );
+    
+    //MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL);  
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_CAMERA_LED_EN);  
+    
+    
+    //MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_LED_MCU_RESET );//LED_MCU_RESET
+    
+    
+    
+    //MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_FAN_1_CTRL );
+    //MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_FAN_2_CTRL );
+    //MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_FAN_3_CTRL );
+    
     
 }
 #ifdef NOT_USE_TMP
@@ -168,12 +192,12 @@ void charger_detect_init( void )
   pin_config.gpio_pull = GPIO_PULLDOWN;
 
 
-#ifdef HW_V2_1
+
   MicoGpioInitialize( MICO_GPIO_CHARGE_IN, &pin_config );
   MicoGpioInitialize( MICO_GPIO_RECHARGE_IN, &pin_config );
   MicoGpioEnableIRQ( MICO_GPIO_CHARGE_IN , IRQ_TRIGGER_BOTH_EDGES, _charger_irq_handler, NULL);
   MicoGpioEnableIRQ( MICO_GPIO_RECHARGE_IN , IRQ_TRIGGER_BOTH_EDGES, _recharger_irq_handler, NULL);
-#endif
+
 }
 
 #ifdef HW_V2_0
@@ -212,7 +236,7 @@ static void charger_detect_interrupt_cb( void )
   }
   if( previous_charge_io_state = MicoGpioInputGet( MICO_GPIO_CHARGE_IN ) )
   {    
-    setCurLedsMode( LIGHTS_MODE_IS_CHARGING );//called before the following line
+    SetSerialLedsEffect( LIGHTS_MODE_CHARGING, NULL, 0 );//called before the following line
     boardStatus->sysStatus |= (uint16_t)STATE_IS_CHARGER_IN;
     board_log("charger pin is high");
   }
@@ -235,7 +259,7 @@ static void recharger_detect_interrupt_cb( void )
   }
   if( previous_recharge_io_state = MicoGpioInputGet( MICO_GPIO_RECHARGE_IN ) )
   {
-    setCurLedsMode( LIGHTS_MODE_IS_CHARGING );//called before the following line
+    SetSerialLedsEffect( LIGHTS_MODE_CHARGING, NULL, 0 );//called before the following line
     boardStatus->sysStatus |= (uint16_t)STATE_IS_CHARGER_IN;
     board_log("recharger pin is high");
 #ifdef MIKE_TEST
