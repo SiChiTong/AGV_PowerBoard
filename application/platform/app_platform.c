@@ -122,8 +122,9 @@ void PowerOnDevices( void )
       boardStatus->startTime = os_get_time();
       boardStatus->isPowerOnFinish = NO;
       boardStatus->setPowerOnoff(POWER_ALL, POWER_ON);
-      boardStatus->setPowerOnoff(POWER_24V_PRINTER, POWER_OFF);
-      //boardStatus->setPowerOnoff(POWER_VSYS_24V_NV, POWER_OFF);
+      boardStatus->setPowerOnoff(POWER_VSYS_24V_NV, POWER_OFF);
+      boardStatus->setPowerOnoff(POWER_CAMERA_LED, POWER_OFF);
+      
       
       DLP_ControlSignal->isDeviceProcessOver = NO;
       PAD_ControlSignal->isDeviceProcessOver = NO;

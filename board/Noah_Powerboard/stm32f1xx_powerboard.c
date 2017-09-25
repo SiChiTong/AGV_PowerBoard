@@ -78,7 +78,7 @@ void BSP_Power_OnOff(PowerEnable_TypeDef PowerEn, PowerOnOff_TypeDef OnOff)
     }
     if( PowerEn & POWER_VSYS_24V_NV )
     {
-      //MicoGpioOutputLow( MICO_GPIO_VSYS_24V_NV_EN );
+      MicoGpioOutputLow( MICO_GPIO_VSYS_24V_NV_EN );
     }
     if( PowerEn & POWER_485 )
     {

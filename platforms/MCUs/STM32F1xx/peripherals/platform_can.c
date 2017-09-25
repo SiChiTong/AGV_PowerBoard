@@ -175,7 +175,7 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
   HAL_CAN_Receive_IT( hcan, CAN_FIFO0);
 //  memcpy( &RxMessage, hcan->pRxMsg, sizeof(CanRxMsgTypeDef) );
   
-#if 1
+#if 0
   can_tx_msg = hcan->pTxMsg;
   can_rx_msg = hcan->pRxMsg;
   
