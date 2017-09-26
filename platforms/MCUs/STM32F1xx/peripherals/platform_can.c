@@ -19,11 +19,8 @@ typedef unsigned int    u32;
 
 #define CAN_FILTER_ID       (CAN_NOAH_PB_ID << 13)
 #define CAN_FILTER_MASK     (0x00ff << 13)
-//extern uint8_t GetCanMacId(void);
-static inline void rbuf_enqueue(CanRxMsgTypeDef *msg);
-static inline CanRxMsgTypeDef rbuf_dequeue(void);
-static inline bool is_rbuf_has_data(void);
-static inline void rbuf_clear(void);
+
+
 
 OSStatus platform_can_init( const platform_can_driver_t* can )
 {
@@ -65,7 +62,6 @@ OSStatus platform_can_init( const platform_can_driver_t* can )
       require_action_quiet( NULL, exit, err = kParamErr );
     }
     
-    rbuf_clear();
     
     can->handle->Instance               = can->port;
     can->handle->Init.Prescaler         = 9;
@@ -174,7 +170,7 @@ exit:
     return err; 
 }
 #endif
-#if 0
+#if 1
 OSStatus platform_can_receive_message( const platform_can_driver_t* can, uint8_t *msg )
 {
   OSStatus    err = kNoErr;
@@ -217,57 +213,14 @@ void platform_can_rx_irq( platform_can_driver_t* can_driver )
   if( can_driver->handle )
   {
     HAL_CAN_IRQHandler( can_driver->handle );
-    //rbuf_enqueue( can_driver->handle->pRxMsg);
     CanFifoPutCanPkg(can_fifo,can_pkg_tmp);
     __HAL_CAN_ENABLE_IT( can_driver->handle, CAN_IT_FMP0 );
   }
-  //can_driver->rx_complete = 1;  
-  //if ( is_rbuf_has_data() )
-  {
-    //can_driver->rx_complete += 1;
-  }
+
 }
 
 
-#define RBUF_SIZE 10
-static CanRxMsgTypeDef rbuf[RBUF_SIZE];
-static uint8_t  rbuf_head = 0;
-static uint8_t  rbuf_tail = 0;
 
-static inline void rbuf_enqueue(CanRxMsgTypeDef *msg)
-{
-  uint8_t next = (rbuf_head + 1) % RBUF_SIZE;
-  if (next != rbuf_tail)
-  {
-    memcpy(&rbuf[rbuf_head], msg, sizeof(CanRxMsgTypeDef));
-    rbuf_head = next;
-  }
-#if 0
-  else
-  {
-    printf("rxCanMsgBuf: full!\n");
-  }
-#endif
-}
 
-static inline CanRxMsgTypeDef rbuf_dequeue(void)
-{
-  CanRxMsgTypeDef val;
-  
-  if (rbuf_head != rbuf_tail)
-  {
-    memcpy(&val, &rbuf[rbuf_tail], sizeof(CanRxMsgTypeDef));
-    rbuf_tail = (rbuf_tail + 1) % RBUF_SIZE;
-  }
-  return val;
-}
 
-static inline bool is_rbuf_has_data(void)
-{
-  return (rbuf_head != rbuf_tail);
-}
 
-static inline void rbuf_clear(void)
-{
-  rbuf_head = rbuf_tail = 0;
-}

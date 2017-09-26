@@ -76,7 +76,7 @@ CALLBACK_T* FuncIdHandle(uint32_t funcid)
 }
 
 #define ONLYONCE       0x00
-#define BEGIAN         0x01
+#define BEGIN         0x01
 #define TRANSING       0x02
 #define END            0x03
 
@@ -122,7 +122,7 @@ void CanTX(mico_can_t can_type, uint32_t CANx_ID,uint8_t* pdata,uint16_t len)
         //SET SEGPOLO				
                 if( num == 0)
                 {
-                    TxMsg.CanData_Struct.SegPolo = BEGIAN;
+                    TxMsg.CanData_Struct.SegPolo = BEGIN;
                 }
                 else
                 {
@@ -422,8 +422,6 @@ void CanLongBufInit(void)
     can_long_frame_buf->GetTheBufById = GetTheBufById;
     can_long_frame_buf->FreeBuf = FreeBuf;
     
-    //my_id = GetCanMacId();//test 
-    
     CanFifoInit(can_fifo, can_pkg, CAN_FIFO_SIZE);
 }
 
@@ -456,7 +454,7 @@ void can_protocol_period( void )
     uint8_t buf_index;
     uint8_t seg_polo;
     uint8_t seg_num;
-    uint8_t test_data[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28};
+    uint8_t test_data[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
     while(IsCanFifoEmpty(can_fifo) == FALSE)
     {
         CanFifoGetCanPkg(can_fifo, &can_pkg_tmp); 
@@ -496,7 +494,7 @@ void can_protocol_period( void )
                 }
             }
             
-            if(seg_polo == BEGIAN)
+            if(seg_polo == BEGIN)
             {
                 buf_index = can_long_frame_buf->GetTheBufById(id.CANx_ID);
                 if(buf_index == CAN_BUF_NO_THIS_ID)
@@ -535,8 +533,13 @@ void can_protocol_period( void )
                 if(seg_polo == END)
                 {
                     memcpy(&can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf[seg_num*CAN_ONE_FRAME_DATA_LENTH], rx_buf.CanData_Struct.Data, rx_len - 1);
-                    can_long_frame_buf->can_rcv_buf[buf_index].used_len += rx_len - 1; 
+                    can_long_frame_buf->can_rcv_buf[buf_index].used_len += rx_len - 1;
                     
+                    printf("long frame receive complete\r\n");
+                    for(uint8_t j = 0; j < can_long_frame_buf->can_rcv_buf[buf_index].used_len; j++)
+                    {
+                      printf("data[%d]: %d\r\n",j,can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf[j]);
+                    }
                     //process the data here//
                     /**********************/
                     //process the data here//

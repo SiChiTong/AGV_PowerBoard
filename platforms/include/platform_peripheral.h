@@ -854,8 +854,8 @@ OSStatus platform_flash_disable_protect( const platform_flash_t *peripheral, uin
 OSStatus platform_can_init( const platform_can_driver_t* can );
 OSStatus platform_can_loop_message( const platform_can_driver_t* can );
 OSStatus platform_can_send_message( const platform_can_driver_t* can, const CanTxMsgTypeDef *msg);
-//OSStatus platform_can_receive_message( const platform_can_driver_t* can, uint8_t *msg );
-OSStatus platform_can_receive_message( const platform_can_driver_t* can, CanRxMsgTypeDef *msg );
+OSStatus platform_can_receive_message( const platform_can_driver_t* can, uint8_t *msg );
+//OSStatus platform_can_receive_message( const platform_can_driver_t* can, CanRxMsgTypeDef *msg );
 
 #ifdef __cplusplus
 } /*"C" */

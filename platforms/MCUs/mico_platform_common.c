@@ -771,7 +771,7 @@ OSStatus MicoCanMessageSend( mico_can_t can, const CanTxMsgTypeDef *msg)
 }
 #endif
 
-#if 0
+#if 1
 OSStatus MicoCanMessageRead( mico_can_t can, const void *msg )
 {
   if ( can >= MICO_CAN_NONE )
