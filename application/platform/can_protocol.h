@@ -4,17 +4,37 @@
 */
 
 #ifndef __CAN_PROTOOCOL_H
+#define __CAN_PROTOOCOL_H
 
 #include "mico.h"
 
-#define CAN_ID          (0x434D0000)      //CM
-#define CAN_LOCAL_ID    (0x06)            //local ID
+#define CAN_USED    CAN1
+
+
+
+
+#define DESTID          0x02
+#define CAN_NOAH_PB_ID   0x51
+#define SRCID           0x06
+
 
 
 #define CAN_CMD_READ_VERSION            0x01
 #define CAN_CMD_LEDS_CONTROL            0x20
 #define CAN_CMD_S_SYS_V_BAT             0x21
 #define CAN_CMD_
+
+
+#define SOURCE_ID_PREPARE_UPDATE        0x10
+#define SOURCE_ID_TRANSMIT_UPDATE       0x11
+#define SOURCE_ID_CHECK_TRANSMIT        0x12
+
+
+
+#define CAN_FIFO_SIZE                   250
+
+
+
 typedef union
 {
 	 struct{
@@ -36,123 +56,82 @@ typedef struct
 	uint8_t *pdata;
 }CAN_TXDATA_STRUCT;
 
-typedef struct {
-	uint32_t ID;
-	uint32_t TimeStamp;
-	uint8_t TimeFlag;
-	uint8_t SendType;
-	uint8_t RemoteFlag;
-	uint8_t ExternFlag;
-	uint8_t DataLen;
-	uint8_t Data[8];
-	uint8_t Reserved[3];
 
-} CM_CAN_T;
 
-typedef struct {
-	uint32_t AccCode;
-	uint32_t AccMask;
-	uint32_t Filter;
-	uint32_t Bundrate;
-	uint8_t Mode;
-	
-} CM_CAN_CONFIG_T;
 
-typedef enum 
+typedef union
 {
-	 FrameTypeBit = 28,
-	 SrcIdBit = 27,
-	 DestIdBit = 16,
-	 AckBit_U = 15,
-	/*固件升级MASK*/
-	 ResendFlagBit_U= 14,
-         SegmentNumBit_U = 13,
-	/*控制指令MASK*/
-	 PropertyBit_D = 14,
-	 FuncIdBit_D = 7,
-	 SegmentNumBit_D = 3,
-	 AckBit_D = 2,
-	 EndFlagBit_D = 1,
-	 ResendFlagBit_D = 0,
-} CM_CAN_ID_BIT;	
+	struct
+	{
+		uint32_t SourceID  : 8;
+		uint32_t FUNC_ID   : 4;
+		uint32_t ACK       : 1;
+		uint32_t DestMACID : 8;
+		uint32_t SrcMACID  : 8;
+		uint32_t res       : 3;
+	}CanID_Struct;
+	uint32_t  CANx_ID;
+}CAN_ID_UNION;
 
-typedef enum 
+typedef union
 {
-	 FrameTypeMask = 0x10000000,
-	 SrcIdMask = 0x0fc00000,
-	 DestIdMask = 0x003f0000,
-	 AckMask_U = 0x00008000,
-	/*固件升级MASK*/
-	 ResendFlagMask_U= 0x00004000,
-	 SegmentNumMask_U = 0x00003fff,
-	/*控制指令MASK*/
-	 PropertyMask_D = 0x0000c000,
-	 FuncIdMask_D = 0x00003f80,
-	 SegmentNumMask_D = 0x00000078,
-	 AckMask_D = 0x00000004,
-	 EndFlagMask_D = 0x00000002,
-	 ResendFlagMask_D = 0x00000001,
-} CM_CAN_ID_MASK;
+	struct
+	{
+        uint8_t SegNum  : 6;
+        uint8_t SegPolo : 2;
+		uint8_t Data[7];
+	}CanData_Struct;
+	uint8_t CanData[8];
+}CAN_DATA_UNION;
 
+#define CAN_ONE_FRAME_DATA_LENTH    7
+#define CAN_SEG_NUM_MAX             64
+#define CAN_LONG_FRAME_LENTH_MAX    (CAN_ONE_FRAME_DATA_LENTH*CAN_SEG_NUM_MAX)
 typedef struct
 {
-	uint32_t ID;
-	uint8_t FrameMode;
-	uint8_t FrameType;
-	uint8_t DataLen;
-	uint8_t Data[8];	
-}CM_CAN_FRAME_T;
+    uint32_t can_id;
+    uint32_t start_time; 
+    uint16_t used_len;
+    uint8_t rcv_buf[CAN_LONG_FRAME_LENTH_MAX];   
+}CAN_RCV_BUFFER_T;
 
-typedef struct 
-{
-	uint32_t Ack;
-	uint32_t ResendFlag;
-	uint32_t SegmentNum;
-	uint32_t ID;
-} CM_CAN_ID_U_T;
+typedef uint8_t (*GetOneFreeBufFn)(void);
+typedef uint8_t (*GetTheBufByIdFn)(uint32_t);
+typedef void (*FreeBufFn)(uint8_t);
 
-typedef struct 
-{
-	uint32_t Property;
-	uint32_t FuncId;
-	uint32_t SegmentNum;
-	uint32_t Ack;
-	uint32_t EndFlag;
-	uint32_t ResendFlag;
-	uint32_t ID;
-} CM_CAN_ID_D_T;
-
+#define CAN_LONG_BUF_NUM    2
 typedef struct
 {
-	uint32_t FrameType;
-	uint32_t SrcId;
-	uint32_t DestId;
-	CM_CAN_ID_D_T CanID_D;
-	CM_CAN_ID_U_T CanID_U;
-} CM_CAN_ID_T;
+    CAN_RCV_BUFFER_T can_rcv_buf[CAN_LONG_BUF_NUM];
+    GetOneFreeBufFn GetOneFreeBuf; 
+    GetTheBufByIdFn GetTheBufById;
+    FreeBufFn FreeBuf;
+}CAN_LONG_BUF_T;
 
-//extern CanTxMsgTypeDef TxMessage;
-//extern CanRxMsgTypeDef RxMessage;
+
+#if 0
 extern uint8_t CanUpdataBuff[64];
 extern uint8_t CanRxdataBuff[64];
+#endif
+
+
+
 
 void RxMsgHandle(uint32_t ID,uint8_t* pdata);
 
 void CM_CAN_Init(void);
 void RxMsgHandle(uint32_t ID,uint8_t* pdata);
-//void CAN_SetMsg(uint32_t ID,uint8_t IDE, uint8_t RTR,uint8_t DLC,uint8_t* Data);
-void CAN_SetMsg(void);
-//uint32_t TxIdBuild(uint32_t type,uint32_t SrcId, uint32_t DestId,uint32_t ack,uint32_t EndFlag,uint32_t SegmentNum,uint32_t FuncId);
-void CM_CanSetMsg(uint32_t id,uint8_t ide,uint8_t rtr,uint8_t dlc,uint8_t* pdata);
-void CM_CAN_Tx( mico_can_t can_type, CM_CAN_ID_T id, uint8_t* pdata, uint16_t len );
-//CM_CAN_ID_T RxIdPrase(uint32_t id);
-CM_CAN_ID_T RxIdPrase(uint32_t id);
-//uint32_t TxIdBuild(uint32_t type,uint32_t SrcId, uint32_t DestId,uint32_t ack,uint32_t EndFlag,uint32_t SegmentNum,uint32_t FuncId,uint32_t ResendFlag);
-//uint32_t TxIdBuild_U(uint32_t type,uint32_t SrcId, uint32_t DestId,uint32_t ack,uint32_t ResendFlag,uint32_t SegmentNum);
-//uint32_t TxIdBuild_D(uint32_t type,uint32_t SrcId, uint32_t DestId,uint32_t Property, uint32_t FuncId,uint32_t SegmentNum,uint32_t ack,uint32_t EndFlag,uint32_t ResendFlag);
 
-uint32_t TxIdBuild(CM_CAN_ID_T* CanId);
+void CAN_SetMsg(void);
+
+void CM_CanSetMsg(uint32_t id,uint8_t ide,uint8_t rtr,uint8_t dlc,uint8_t* pdata);
+void CM_CAN_Tx( mico_can_t can_type, CAN_ID_UNION id, uint8_t* pdata, uint16_t len );
+
+void UploadAdcData(void);
+
 void can_protocol_period( void );
+
+void CanLongBufInit(void);
 
 /*******************  Bit definition for ExtId bytes  ********************/
 #define EXTID_FRAME_TYPE_BITS						((uint32_t)0x10000000)

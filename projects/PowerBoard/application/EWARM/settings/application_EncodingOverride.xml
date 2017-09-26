@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<userOverrides>
+  <override>
+    <path>E:\c\Noah_Powerboard_HW_01\powerboard\application\platform\can_protocol.c</path>
+    <encoding>System</encoding>
+  </override>
+  <override>
+    <path>F:\mg\Noah_PowerBoard\application\platform\can_protocol.c</path>
+    <encoding>System</encoding>
+  </override>
+</userOverrides>
+
+

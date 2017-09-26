@@ -544,8 +544,7 @@ OSStatus MicoUartSend( mico_uart_t uart, const void* data, uint32_t size )
 {
   if ( uart >= MICO_UART_NONE )
     return kUnsupportedErr;
-  
-  
+
   return (OSStatus) platform_uart_transmit_bytes( &platform_uart_drivers[uart], (const uint8_t*) data, size );
 }
 
@@ -756,19 +755,37 @@ OSStatus MicoCanInitialize( mico_can_t can )
   return (OSStatus) platform_can_init( &platform_can_drivers[ can ] );
 }
 
+#if 0
 OSStatus MicoCanMessageSend( mico_can_t can, const void *msg, uint8_t len )
 {
   if ( can >= MICO_CAN_NONE )
     return kUnsupportedErr;
   return (OSStatus) platform_can_send_message( &platform_can_drivers[ can ], (uint8_t *)msg, len );
 }
+#else
+OSStatus MicoCanMessageSend( mico_can_t can, const CanTxMsgTypeDef *msg)
+{
+  if ( can >= MICO_CAN_NONE )
+    return kUnsupportedErr;
+  return (OSStatus) platform_can_send_message( &platform_can_drivers[ can ], msg);
+}
+#endif
 
+#if 0
 OSStatus MicoCanMessageRead( mico_can_t can, const void *msg )
 {
   if ( can >= MICO_CAN_NONE )
     return kUnsupportedErr;
   return (OSStatus) platform_can_receive_message( &platform_can_drivers[ can ], (uint8_t *)msg );
 }
+#else
+OSStatus MicoCanMessageRead( mico_can_t can, const CanRxMsgTypeDef *msg )
+{
+  if ( can >= MICO_CAN_NONE )
+    return kUnsupportedErr;
+  return (OSStatus) platform_can_receive_message( &platform_can_drivers[ can ], (CanRxMsgTypeDef *)msg );
+}
+#endif
 
 void MicoNanosendDelay( uint64_t delayns )
 {

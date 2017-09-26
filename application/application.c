@@ -102,7 +102,7 @@ int main(void)
     
     FifoInit(fifo, fifo_data_in_ram, RCV_DATA_LEN_MAX);
       
-    //MicoCanInitialize( MICO_CAN1 );
+    MicoCanInitialize( MICO_CAN1 );
     if( !isNeedAutoBoot() )
     {
         PowerOnDevices();
@@ -117,7 +117,7 @@ int main(void)
         Platform_Tick();
         protocol_period(); 
         VolDetect_Tick();
-        //can_protocol_period();
+        can_protocol_period();
         Main_Menu();
         battery_period(); 
         leds_protocol_period();

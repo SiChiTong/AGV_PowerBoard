@@ -352,6 +352,9 @@
         <name>$PROJ_DIR$\..\..\..\..\application\platform\battery.c</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\..\..\..\application\platform\can_fifo.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\..\..\..\application\platform\can_protocol.c</name>
       </file>
       <file>
