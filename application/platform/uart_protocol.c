@@ -11,6 +11,7 @@
 //#include "nbosDriverFlash.h"
 #include "upgrade_flash.h"
 #include "tps611xx_bl.h"
+#include "battery.h"
 
 #define protocol_log(M, ...) custom_log("Protocol", M, ##__VA_ARGS__)
 #define protocol_log_trace() custom_log_trace("Protocol")
@@ -222,7 +223,7 @@ exit:
 }
 
 
-static OSStatus AckReadSysStatusVbatFrameProcess( serial_t *serial, uint8_t cmd_num )
+OSStatus AckReadSysStatusFrameProcess( serial_t *serial, uint8_t cmd_num )
 {
     OSStatus err = kNoErr;
     uint8_t  length = sizeof(ack_sys_status_t);
@@ -245,7 +246,7 @@ static OSStatus RcvReadSysStatusFrameProcess(serial_t *serial)
     require_action( serial , exit, err = kGeneralErr );
     require_action( serial->uart_serial , exit, err = kGeneralErr );
     cmd_num = *(uint8_t *)serial->rx_buf.offset;
-    err = AckReadSysStatusVbatFrameProcess( serial , cmd_num);
+    err = AckReadSysStatusFrameProcess( serial , cmd_num);
 exit:
     return err;
 }
@@ -267,7 +268,7 @@ static OSStatus AckReadVbatFrameProcess( serial_t *serial, uint8_t cmd_num )
     }
     else if(cmd_num == 2)
     {
-        bat_status_frame->bat_status = 80;  //test code
+        bat_status_frame->bat_status = battery_pack.percentage;  //test code
     }
     
     err = uart_frame_send( serial, (uint8_t *)bat_status_frame, length );
@@ -557,6 +558,10 @@ static OSStatus RcvModuleControlFrameProcess( serial_t *serial )
 {
   OSStatus err = kNoErr;
   rcv_module_control_frame_t *rcv_module_control_frame;
+  uint32_t state = 0;
+  uint8_t on_off;
+  uint32_t module;
+  
 
   require_action( serial, exit, err = kGeneralErr );
   require_action( serial->uart_serial , exit, err = kGeneralErr );
@@ -564,9 +569,11 @@ static OSStatus RcvModuleControlFrameProcess( serial_t *serial )
   rcv_module_control_frame = (rcv_module_control_frame_t *)serial->rx_buf.offset;
   require_action( rcv_module_control_frame , exit, err = kGeneralErr );
   
-    if((rcv_module_control_frame->module < POWER_SLAM * 2) && (rcv_module_control_frame->module > 0) )
+  on_off = rcv_module_control_frame->control;
+  module = rcv_module_control_frame->module;
+    if((rcv_module_control_frame->module < POWER_ALL ) && (rcv_module_control_frame->module > 0) )
     {
-        BSP_Power_OnOff((PowerEnable_TypeDef)rcv_module_control_frame->module, (PowerOnOff_TypeDef)rcv_module_control_frame->control);
+        BSP_Power_OnOff((PowerEnable_TypeDef)module, (PowerOnOff_TypeDef)on_off);
     }
     else
     {
@@ -633,8 +640,20 @@ static OSStatus RcvModuleControlFrameProcess( serial_t *serial )
       break;
   }
 #endif
-    
-  err = ackModuleControlFrameProcess( serial, GetModulePowerState(POWER_ALL) );
+  
+  
+  state =  GetModulePowerState(POWER_ALL);
+#if 0
+  if(on_off == POWER_ON)
+  {
+    state |= module;
+  }
+  if(on_off == POWER_OFF)
+  {
+    state &= ~module;
+  }
+#endif
+  err = ackModuleControlFrameProcess( serial, state );
 
 exit:
   return err;
@@ -645,15 +664,19 @@ static OSStatus ackModuleControlFrameProcess( serial_t *serial, uint32_t ack )
   OSStatus err = kNoErr;
   uint8_t  length = sizeof( ackGeneralFrame_t );
   ackGeneralFrame_t *ackGeneralFrame;
-
+  
+  
   require_action( serial, exit, err = kGeneralErr );
   require_action( serial->uart_serial , exit, err = kGeneralErr );
   
-
+  //delay_ms(50);
   ackGeneralFrame = (ackGeneralFrame_t *)serial->tx_buf.offset;
   require_action( ackGeneralFrame , exit, err = kGeneralErr );
 
   ackGeneralFrame->ctype = FRAME_TYPE_MODULE_CONTROL;
+  
+  
+  
   ackGeneralFrame->ack = ack;
 
   err = uart_frame_send( serial, (uint8_t *)ackGeneralFrame, length );

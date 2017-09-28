@@ -226,7 +226,8 @@ static void recharger_detect_interrupt_cb( void )
   }
   if( previous_recharge_io_state = MicoGpioInputGet( MICO_GPIO_RECHARGE_IN ) )
   {
-    setCurLedsMode( LIGHTS_MODE_IS_CHARGING );//called before the following line
+    //setCurLedsMode( LIGHTS_MODE_IS_CHARGING );//called before the following line
+    SetSerialLedsEffect( LIGHTS_MODE_CHARGING, NULL, 0 );
     boardStatus->sysStatus |= (uint16_t)STATE_IS_CHARGER_IN;
     board_log("recharger pin is high");
 #ifdef MIKE_TEST

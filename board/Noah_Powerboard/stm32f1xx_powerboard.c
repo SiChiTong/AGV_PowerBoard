@@ -177,7 +177,7 @@ void BSP_Power_OnOff(PowerEnable_TypeDef PowerEn, PowerOnOff_TypeDef OnOff)
 
 uint32_t GetModulePowerState( PowerEnable_TypeDef PowerEn )
 {
-    uint32_t pinState;
+    volatile uint32_t pinState;
     
     pinState = (uint32_t)0;
 

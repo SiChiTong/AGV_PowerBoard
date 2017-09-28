@@ -59,7 +59,7 @@ typedef enum {
 
 typedef enum 
 {
-    //LIGHTS_MODE_DEFAULT                 = 0,
+    LIGHTS_MODE_NONE                    = 0,
     LIGHTS_MODE_NOMAL                   = 1,
     LIGHTS_MODE_ERROR                   = 2,
     LIGHTS_MODE_LOW_POWER,

@@ -88,6 +88,7 @@ typedef struct _boardStatus_t {
 #define                 STATE_IS_LOW_POWER      0x20
 #define                 STATE_IS_AUTO_UPLOAD    0x40
 #define                 STATE_IS_CHARGER_IN     0x80
+#define                 STATE_IS_RECHARGE_IN    0x0100
 #define                 SYSTEM_IS_SLEEP         0x00 //set 0x00 to no use
   uint8_t            devicesOnOff;
 #define                 DEVICES_OFF    0x00

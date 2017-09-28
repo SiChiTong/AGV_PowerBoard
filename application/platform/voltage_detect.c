@@ -703,7 +703,11 @@ void PrintAdcData(void)
     }     
     printf("\r\n");
 }
-static uint32_t lowVoltageStartTime = 0;
+
+#define LOW_POWER_WARNING_DEBAUNCE_TIME     10*1000/SYSTICK_PERIOD
+#define LOW_POWER_POEWR_OFF_DEBAUNCE_TIME   10*1000/SYSTICK_PERIOD
+static uint32_t low_power_warning_start_time = 0;
+static uint32_t low_power_power_off_start_time = 0;
 //static uint32_t  batteryPercentageStartTime = 0;
 void VolDetect_Tick( void )
 {
@@ -776,38 +780,65 @@ void VolDetect_Tick( void )
 #endif //#ifdef  VOLTAGE_DEBUG
     if( SWITCH_ON == switch_user->switchOnOff )
     {
-        if( voltageConvert->bat_voltage < VBAT_LOW_POWER_LEVEL )
+        //if( voltageConvert->bat_voltage < VBAT_LOW_POWER_LEVEL )
         {
-            boardStatus->sysStatus |= STATE_IS_LOW_POWER;
+            //boardStatus->sysStatus |= STATE_IS_LOW_POWER;
         }
-        else
+        //else
         {
-            boardStatus->sysStatus &= ~STATE_IS_LOW_POWER;
+            //boardStatus->sysStatus &= ~STATE_IS_LOW_POWER;
         }
 
 #if 1
         if( (battery_pack.pack_totoal_soc > 0) && (battery_pack.pack_voltage > 0) )
         {
-            percentage = battery_pack.pack_current_soc * 100 / battery_pack.pack_totoal_soc;
-            if( percentage < VBAT_POWER_OFF_PERCENTAGE )
+            battery_pack.percentage = battery_pack.pack_current_soc * 100 / battery_pack.pack_totoal_soc;
+            percentage = battery_pack.percentage;
+            if( (percentage <= VBAT_POWER_LOW_WARNING_PERCENTAGE) && percentage > VBAT_POWER_OFF_PERCENTAGE )
             {
-                if( lowVoltageStartTime == 0)
+                if( low_power_warning_start_time == 0)
                 {
-                    lowVoltageStartTime = os_get_time();
+                    low_power_warning_start_time = os_get_time();
                 }
-                if( os_get_time() - lowVoltageStartTime >= 7000/SYSTICK_PERIOD )
+                if( os_get_time() - low_power_warning_start_time >= LOW_POWER_WARNING_DEBAUNCE_TIME )
                 {
-                    vol_detect_log(" Low Power ! ! \r\n Power is %d", percentage);
+                    vol_detect_log(" Low power ! ! \r\n Power is %d%", percentage);
+                    SetSerialLedsEffect( LIGHTS_MODE_LOW_POWER, NULL, 0 );
+                    
+                    low_power_warning_start_time = 0;
+                    boardStatus->sysStatus |= STATE_IS_LOW_POWER;
+                }
+                
+            }
+            else if(percentage > VBAT_POWER_LOW_WARNING_PERCENTAGE)
+            {
+                if( low_power_warning_start_time != 0 )
+                {
+                    low_power_warning_start_time = 0;
+                }
+                boardStatus->sysStatus &= ~STATE_IS_LOW_POWER;
+                SetSerialLedsEffect( LIGHTS_MODE_NOMAL, NULL, 0 );
+            }
+            
+            if( percentage <= VBAT_POWER_OFF_PERCENTAGE )
+            {
+                if( low_power_power_off_start_time == 0)
+                {
+                    low_power_power_off_start_time = os_get_time();
+                }
+                if( os_get_time() - low_power_power_off_start_time >= LOW_POWER_POEWR_OFF_DEBAUNCE_TIME )
+                {
+                    vol_detect_log(" Going to power off ! ! \r\n Power is %d%", percentage);
                     
                     PowerOffDevices();
-                    lowVoltageStartTime = 0;
+                    low_power_power_off_start_time = 0;
                 }
             }
             else
             {
-                if( lowVoltageStartTime != 0 )
+                if( low_power_power_off_start_time != 0 )
                 {
-                    lowVoltageStartTime = 0;
+                    low_power_power_off_start_time = 0;
                 }
             }
         }

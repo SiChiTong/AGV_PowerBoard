@@ -46,6 +46,7 @@
 #include "protocol.h"
 #include "upgrade_flash.h"
 #include "app_platform.h"
+#include "battery.h"
    
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -704,6 +705,10 @@ void Main_Menu(void)
       break;
     }     
 #endif
+    else if(strcmp(cmdname, "BATTERY") == 0 || strcmp(cmdname, "T") == 0)  {
+      PrintBatInfo();
+      break;
+    }   
     else if(strcmp(cmdname, "HELP") == 0 || strcmp(cmdname, "?") == 0)	{
         printf ( menu, MODEL, SW_VERSION, HARDWARE_REVISION );  /* display command menu        */
       break;

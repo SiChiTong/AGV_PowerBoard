@@ -83,7 +83,7 @@ enum {
   BLUE_LONG = 15,
 };
 
-static void send_data(void);
+//static void send_data(void);
 static void style_water_function(void);
 static void style_star_function(void);
 static void style_doublestar_function(void);
@@ -307,7 +307,7 @@ void single_color_water_led(uint32_t color,uint8_t times)
 }
 
 /*******************************************************************/
-
+#if 0
 static void send_data(void)
 {
 	uint8_t i = TOTAL;
@@ -317,7 +317,7 @@ static void send_data(void)
 		write_24bit(buff[i]);
 	}
 }
-
+#endif
 static void style_water_function(void)
 {
 	static uint8_t i = 0;
@@ -957,7 +957,30 @@ void CloseEyes(void)
 #define SHINE_MEDIUM_SPEED_PERIOD       600
 #define SHINE_LOW_SPEED_PERIOD          1000
 void SetSerialLedsEffect( light_mode_t light_mode, color_t *cur_color, uint8_t period )
-{
+{   
+    static  light_mode_t pre_mode = LIGHTS_MODE_NONE;
+    static  color_t      pre_color;
+    static  uint8_t      pre_period;
+    if((light_mode == pre_mode) && (light_mode != LIGHTS_MODE_SETTING))
+    {
+        return;
+    }
+    if(light_mode == LIGHTS_MODE_SETTING)
+    {
+          if( (pre_color.b == cur_color->b)  && (pre_color.g == cur_color->g) && (pre_color.r == cur_color->r))
+          {
+                if(pre_period == period)
+                {
+                    return;
+                }
+                  
+          }
+    }
+ 
+    pre_mode = light_mode;
+    memcpy(&pre_color, cur_color, sizeof(color_t));
+    pre_period = period;
+    
     switch(light_mode)
     {
     case LIGHTS_MODE_NOMAL:

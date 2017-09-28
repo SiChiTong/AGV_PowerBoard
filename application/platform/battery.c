@@ -412,13 +412,14 @@ void  battery_parse_rx_buffer( const uint8_t * const hex_rx_buf )
   ptr_rx += 2;
   battery_pack.pack_recharge_cycle = ReadBig16( ptr_rx );
 }
-static void PrintBatInfo(void)
+void PrintBatInfo(void)
 {
     battery_log("battery current is %d",battery_pack.pack_current);
     battery_log("battery voltage is %d",battery_pack.pack_voltage);
     battery_log("battery recharge cycle is %d",battery_pack.pack_recharge_cycle);
     battery_log("battery total soc is %d",battery_pack.pack_totoal_soc);
-    battery_log("battery current soc is %d",battery_pack.pack_current_soc);              
+    battery_log("battery current soc is %d",battery_pack.pack_current_soc);  
+    battery_log("battery percent is %d",battery_pack.pack_current_soc * 100 / battery_pack.pack_totoal_soc);           
 }
 
 #define BAT_SOI     0x7E
@@ -440,10 +441,10 @@ void battery_period( void )
         pBatteryData->pRxData = (uint8_t *)pBatteryData->rx_data_buff;
         pBatteryData->isDetectedSOI = 0;
         //MicoUartSend( STDIO_UART, (uint8_t *)pBatteryData->rx_data_buff, recvDataLength );
-        battery_log("reveiced right data:%s\r\n", pBatteryData->rx_data_buff);
+        //battery_log("reveiced right data:%s\r\n", pBatteryData->rx_data_buff);
         if( !isDataCheckRight( pBatteryData->rx_data_buff, recvDataLength, information ) )
         {
-            battery_log("check data pass");
+            //battery_log("check data pass");
             if( pBatteryData->cmd_type == 0x42 )
             {
                 battery_parse_rx_buffer(information);
@@ -470,7 +471,7 @@ void battery_period( void )
         }
         else
         {
-            PrintBatInfo();
+            //PrintBatInfo();
         }
         
     }

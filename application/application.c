@@ -68,7 +68,7 @@ int main( void )
     printf ( menu, MODEL, SW_VERSION, HARDWARE_REVISION );
 
     os_PowerBoard_log( "System clock = %d Hz",HAL_RCC_GetHCLKFreq() );
-     
+      
     Platform_Init();
     SerialLeds_Init();
     VolDetect_Init();
