@@ -164,7 +164,7 @@ OSStatus platform_can_send_message( const platform_can_driver_t* can, const CanT
   
   memcpy(can->handle->pTxMsg, msg, sizeof(CanTxMsgTypeDef));
   
-  require_action_quiet( HAL_CAN_Transmit( can->handle, 0 ) == HAL_OK, exit, err = kGeneralErr );
+  require_action_quiet( HAL_CAN_Transmit( can->handle, 10 ) == HAL_OK, exit, err = kGeneralErr );
   
 exit:
     return err; 
@@ -206,13 +206,14 @@ void platform_can_rx_irq( platform_can_driver_t* can_driver )
 {
     can_pkg_t can_pkg_tmp;
     
-    can_pkg_tmp.id.CANx_ID = can_driver->handle->pRxMsg->ExtId;
-    can_pkg_tmp.len = can_driver->handle->pRxMsg->DLC;
-    memcpy(can_pkg_tmp.data.CanData, can_driver->handle->pRxMsg->Data, can_driver->handle->pRxMsg->DLC);
+    
     
   if( can_driver->handle )
   {
     HAL_CAN_IRQHandler( can_driver->handle );
+    can_pkg_tmp.id.CANx_ID = can_driver->handle->pRxMsg->ExtId;
+    can_pkg_tmp.len = can_driver->handle->pRxMsg->DLC;
+    memcpy(can_pkg_tmp.data.CanData, can_driver->handle->pRxMsg->Data, can_driver->handle->pRxMsg->DLC);
     CanFifoPutCanPkg(can_fifo,can_pkg_tmp);
     __HAL_CAN_ENABLE_IT( can_driver->handle, CAN_IT_FMP0 );
   }

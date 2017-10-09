@@ -226,7 +226,7 @@ exit:
 #endif
 
 
-static OSStatus AckReadSysStatusVbatFrameProcess( serial_t *serial, uint8_t cmd_num )
+OSStatus AckReadSysStatusFrameProcess( serial_t *serial, uint8_t cmd_num )
 {
     OSStatus err = kNoErr;
     uint8_t  length = sizeof(ack_sys_status_t);
@@ -249,7 +249,7 @@ static OSStatus RcvReadSysStatusFrameProcess(serial_t *serial)
     require_action( serial , exit, err = kGeneralErr );
     require_action( serial->uart_serial , exit, err = kGeneralErr );
     cmd_num = *(uint8_t *)serial->rx_buf.offset;
-    err = AckReadSysStatusVbatFrameProcess( serial , cmd_num);
+    err = AckReadSysStatusFrameProcess( serial , cmd_num);
 exit:
     return err;
 }

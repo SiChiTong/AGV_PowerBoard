@@ -178,11 +178,16 @@ void CanTX(mico_can_t can_type, uint32_t CANx_ID,uint8_t* pdata,uint16_t len)
 
 //////  source id define  //////
 #define CAN_SOURCE_ID_READ_VERSION      0x01
-#define CAN_SOURCE_ID_MODULE_STATE      0x81
-#define CAN_SOURCE_ID_ERROR_STATE       0x82
-#define CAN_SOURCE_ID_READ_ADC_DATA     0x83
-#define CAN_SOURCE_ID_READ_RK_STATE     0x84
-#define CAN_SOURCE_ID_PWM_LED           0x85        
+
+#define CAN_SOURCE_ID_SET_MODULE_STATE      0x81
+#define CAN_SOURCE_ID_GET_MODULE_STATE      0x82
+#define CAN_SOURCE_ID_GET_SYS_STATE         0x83
+#define CAN_SOURCE_ID_GET_ERR_STATE         0x84
+#define CAN_SOURCE_ID_GET_BAT_STATE         0x85
+#define CAN_SOURCE_ID_GET_ADC_DATA          0x86
+#define CAN_SOURCE_ID_SET_IR_LED_LIGHTNESS  0x87
+#define CAN_SOURCE_ID_GET_IR_LED_LIGHTNESS  0x88
+      
 
 
 #define CAN_READ_DATA               0x80
@@ -193,7 +198,7 @@ void UploadAdcData(void)
     id.CanID_Struct.ACK = 1;
     id.CanID_Struct.DestMACID = 0;////
     id.CanID_Struct.FUNC_ID = CAN_FUN_ID_TRIGGER;
-    id.CanID_Struct.SourceID = CAN_SOURCE_ID_READ_ADC_DATA;
+    id.CanID_Struct.SourceID = CAN_SOURCE_ID_GET_ADC_DATA;
     id.CanID_Struct.SrcMACID = CAN_NOAH_PB_ID;////
 
     CanTX( MICO_CAN1, id.CANx_ID, (uint8_t *)voltageConvert, sizeof(voltageData_t) );
@@ -241,10 +246,10 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
                 case CAN_READ_DATA:
                 
                     break;
-                case CAN_SOURCE_ID_MODULE_STATE:
-#if 0
+                case CAN_SOURCE_ID_SET_MODULE_STATE:
+
                     data_out[0] = data_in[0];
-                    if(data_in[0] == 1)//write
+                    
                     {
                         if(data_in[1] == 1)//group num = 1
                         {
@@ -253,9 +258,12 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
                             BSP_Power_OnOff((PowerEnable_TypeDef)module,(PowerOnOff_TypeDef)data_in[6]);
                             uint32_t tmp = GetModulePowerState(POWER_ALL);
                             data_out[1] = data_in[1];
-                            memcpy( &data_out[2],(uint8_t *)(&tmp) , 4 );
-                            return 6;
-                        }   
+                            *(uint32_t*)&data_out[2] = module;
+                            *(uint32_t*)&data_out[6] = tmp;
+                            //memcpy( &data_out[2],(uint8_t *)(&tmp) , 4 );
+                            return 10;
+                        }
+#if 0
                         if(data_in[1] == 2)//group num = 2
                         {
 
@@ -267,30 +275,27 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
                             memcpy( &data_out[2],(uint8_t *)(&tmp) , 4 );
                             return 6;
                         }
+#endif
                     }
-                    else if(data_in[0] == 2)//read
+                    return CMD_NOT_FOUND;
+                    
+                case CAN_SOURCE_ID_GET_MODULE_STATE:
+                         
                     {
                         
                         if(data_in[1] == 1)//group num = 1
                         {
                             uint32_t tmp = GetModulePowerState(POWER_ALL);
                             data_out[1] = 1;
-                            memcpy( &data_out[2],(uint8_t *)(&tmp) , 4 );
+                            *(uint32_t*)&data_out[2] = tmp;
+                            //memcpy( &data_out[2],(uint8_t *)(&tmp) , 4 );
                             
                             return 6;
-                        }
-                        if(data_in[1] == 2)//group num = 2
-                        {
-                            uint32_t tmp = GetModulePowerStateEx(POWER_ALL_2);
-                            data_out[1] = 2;
-                            memcpy( &data_out[2],(uint8_t *)(&tmp) , 4 );
-                            
-                            return 6;
-                        }               
+                        }       
                     }
                     return CMD_NOT_FOUND;
-#endif
-                    break;
+                  
+#if 0
                 case CAN_SOURCE_ID_ERROR_STATE: 
                     memcpy( data_out, voltageConvertData->faultBitTemp, 5 );
                     return 5;
@@ -300,78 +305,12 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
                     voltageDebug.uploadRate = data_in[0];
                     return 0;
                 case CAN_SOURCE_ID_READ_RK_STATE:
-#if 0
-                  #define DATA_NONE       0xff
-                    if(data_in[0] == 1)//read
-                    {
-                        data_out[1] = GetRkState(POWER_HEAD_RK);
-                        data_out[2] = GetRkState(POWER_CHEST_RK);
-                    }
-                    if(data_in[0] == 2)//write
-                    {
-                        if(data_in[1] != DATA_NONE)
-                        {
-                            data_out[1] = SetRkState(POWER_HEAD_RK, data_in[1]);
-                        }
-                        if(data_in[2] != DATA_NONE)
-                        {
-                            data_out[2] = SetRkState(POWER_CHEST_RK, data_in[2]);
-                        }       
-                    }
-                     data_out[0] = data_in[0];
-                     return 3;
-#endif
+
                      break;
                 case CAN_SOURCE_ID_PWM_LED:
-#if 0
-                    #define DATA_NONE       0xff
-                    data_out[0] = data_in[0];
-                    if(data_in[0] == 1)//read brightness
-                    {
-                        
-                        if(data_in[1] != DATA_NONE)
-                        {
-                            data_out[1] = GetLedBrightness(LED1);
-                        }
-                        else
-                        {
-                            data_out[1] = DATA_NONE;
-                        }   
-                        
-                        if(data_in[2] != DATA_NONE)
-                        {
-                            data_out[2] = GetLedBrightness(LED2);
-                        }
-                        else
-                        {
-                            data_out[2] = DATA_NONE;
-                        }
-                        
-                    }
-                    if(data_in[0] == 2)//write
-                    {
-                        if(data_in[1] != DATA_NONE)
-                        {
-                            data_out[1] = SetLedBrightness(LED1,data_in[1]);
-                        }
-                        else
-                        {
-                            data_out[1] = DATA_NONE;
-                        }
-                        
-                        
-                        if(data_in[2] != DATA_NONE)
-                        {
-                            data_out[2] = SetLedBrightness(LED2,data_in[2]);
-                        }
-                        else
-                        {
-                            data_out[2] = DATA_NONE;
-                        }
-                    }
-                    return 3;
-#endif
+
                     break;
+#endif
                 default :
                     break;
             }
@@ -454,7 +393,11 @@ void can_protocol_period( void )
     uint8_t buf_index;
     uint8_t seg_polo;
     uint8_t seg_num;
-    uint8_t test_data[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
+    uint8_t test_data[50];
+    for(uint8_t i = 0; i < sizeof(test_data); i++)
+    {
+        test_data[i] = i + 1;
+    }
     while(IsCanFifoEmpty(can_fifo) == FALSE)
     {
         CanFifoGetCanPkg(can_fifo, &can_pkg_tmp); 
@@ -490,6 +433,7 @@ void can_protocol_period( void )
                     if(os_get_time() - can_long_frame_buf->can_rcv_buf[i].start_time > CAN_LONG_FRAME_TIME_OUT)
                     {
                         can_long_frame_buf->FreeBuf(i);
+                        CanProtocolLog("LONG FRAME RCV TIMEOUT! ! ! !\r\n");      
                     }
                 }
             }

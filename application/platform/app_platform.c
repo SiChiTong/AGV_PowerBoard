@@ -740,7 +740,27 @@ uint32_t GetEachModuleStates( void )
   return states;
 }
 
-#define CHARGING_DEBAUNCE_TIME  500/SYSTICK_PERIOD
+extern OSStatus AckReadSysStatusFrameProcess( serial_t *serial, uint8_t cmd_num );
+void ChargerPlugInCallback(void)
+{
+    if(MicoGpioInputGet( MICO_GPIO_CHARGE_IN ) == 1)
+    {
+        boardStatus->sysStatus |= STATE_IS_CHARGER_IN;
+    }
+    if(MicoGpioInputGet( MICO_GPIO_RECHARGE_IN ) == 1)
+    {
+        boardStatus->sysStatus |= STATE_IS_RECHARGE_IN;
+    }
+    AckReadSysStatusFrameProcess(serial, 0);
+    
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL);//charger plug in fan ctrl
+}
+
+void ChargerUnplugCallback(void)
+{
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL);//charger unplug fan ctrl
+}
+#define CHARGING_DEBAUNCE_TIME  20/SYSTICK_PERIOD
 void ChargeTick(void)
 {
     extern const platform_gpio_t            platform_gpio_pins[];  
@@ -760,20 +780,10 @@ void ChargeTick(void)
       if(os_get_time() - plug_in_start_time > CHARGING_DEBAUNCE_TIME)
       {
             state = 2;
-            if(MicoGpioInputGet( MICO_GPIO_CHARGE_IN ) == 1)
-            {
-                boardStatus->sysStatus |= STATE_IS_CHARGER_IN;
-            }
-            if(MicoGpioInputGet( MICO_GPIO_RECHARGE_IN ) == 1)
-            {
-                boardStatus->sysStatus |= STATE_IS_RECHARGE_IN;
-            }
+            
             platform_log("charge port plug in\r\n");
-            
-            
-            MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL);
-            
-            
+            ChargerPlugInCallback();
+               
       }
       break;
     case 2:
@@ -781,9 +791,8 @@ void ChargeTick(void)
       {
             state = 0;
             platform_log("charge port not plug in\r\n");
+            ChargerUnplugCallback();            
             
-            
-            MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL);
       }
     default :
       break;
@@ -793,6 +802,7 @@ void ChargeTick(void)
     {
         state = 0;
         boardStatus->sysStatus &= ~STATE_IS_CHARGER_IN;
+        boardStatus->sysStatus &= ~STATE_IS_RECHARGE_IN;
     }
     
 }
