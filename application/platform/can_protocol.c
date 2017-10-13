@@ -14,6 +14,7 @@
 
 
 #include "can_fifo.h"
+#include "battery.h"
 
 #define CanProtocolLog(format, ...)  custom_log("can protocol", format, ##__VA_ARGS__)
 
@@ -168,28 +169,6 @@ void CanTX(mico_can_t can_type, uint32_t CANx_ID,uint8_t* pdata,uint16_t len)
 
 
 
-
-//////  function id define  //////
-#define CAN_FUN_ID_RESET        0x06
-#define CAN_FUN_ID_WRITE        0x01
-#define CAN_FUN_ID_READ         0x02
-#define CAN_FUN_ID_TRIGGER      0x03
-
-
-//////  source id define  //////
-#define CAN_SOURCE_ID_READ_VERSION      0x01
-
-#define CAN_SOURCE_ID_SET_MODULE_STATE      0x81
-#define CAN_SOURCE_ID_GET_MODULE_STATE      0x82
-#define CAN_SOURCE_ID_GET_SYS_STATE         0x83
-#define CAN_SOURCE_ID_GET_ERR_STATE         0x84
-#define CAN_SOURCE_ID_GET_BAT_STATE         0x85
-#define CAN_SOURCE_ID_GET_ADC_DATA          0x86
-#define CAN_SOURCE_ID_SET_IR_LED_LIGHTNESS  0x87
-#define CAN_SOURCE_ID_GET_IR_LED_LIGHTNESS  0x88
-      
-
-
 #define CAN_READ_DATA               0x80
 
 void UploadAdcData(void)
@@ -253,7 +232,8 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
                     {
                         if(data_in[1] == 1)//group num = 1
                         {
-                            uint32_t module = (data_in[5]) | (data_in[4]<<8) | (data_in[3] << 16) | (data_in[2] << 24);
+                            //uint32_t module = (data_in[5]) | (data_in[4]<<8) | (data_in[3] << 16) | (data_in[2] << 24);
+                          uint32_t module = *(uint32_t *)&data_in[2];
                             module &= 0xffffffff;
                             BSP_Power_OnOff((PowerEnable_TypeDef)module,(PowerOnOff_TypeDef)data_in[6]);
                             uint32_t tmp = GetModulePowerState(POWER_ALL);
@@ -294,6 +274,26 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
                         }       
                     }
                     return CMD_NOT_FOUND;
+                    
+                case CAN_SOURCE_ID_GET_BAT_STATE:
+                    if(battery_pack.pack_voltage == 0)
+                    {
+                        *(uint16_t*)&data_out[1] = voltageConvert->bat_voltage;
+                    }
+                    else
+                    {
+                        *(uint16_t*)&data_out[1] = battery_pack.pack_voltage;
+                    }
+                    
+                    *(uint16_t*)&data_out[3] = battery_pack.percentage;
+                    return 5;
+                      
+                    break;
+                case CAN_SOURCE_ID_GET_SYS_STATE:
+                    *(uint16_t*)&data_out[1] = boardStatus->sysStatus;
+                    return 3;
+                    break;
+              
                   
 #if 0
                 case CAN_SOURCE_ID_ERROR_STATE: 
@@ -393,7 +393,7 @@ void can_protocol_period( void )
     uint8_t buf_index;
     uint8_t seg_polo;
     uint8_t seg_num;
-    uint8_t test_data[50];
+    uint8_t test_data[30];
     for(uint8_t i = 0; i < sizeof(test_data); i++)
     {
         test_data[i] = i + 1;
@@ -418,10 +418,10 @@ void can_protocol_period( void )
                     //process the data here//
                     if(tx_len > 0)
                     {
-                        //CanTX( MICO_CAN1, id.CANx_ID, CanTxdataBuff, tx_len );
+                        CanTX( MICO_CAN1, id.CANx_ID, CanTxdataBuff, tx_len );
                     }
                     
-                    CanTX( MICO_CAN1, id.CANx_ID, test_data, sizeof(test_data) );
+                    //CanTX( MICO_CAN1, id.CANx_ID, test_data, sizeof(test_data) );
             }
         }
         else //long frame

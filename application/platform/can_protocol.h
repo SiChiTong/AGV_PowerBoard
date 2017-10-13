@@ -11,18 +11,7 @@
 #define CAN_USED    CAN1
 
 
-
-
-#define DESTID          0x02
-#define CAN_NOAH_PB_ID   0x51
-#define SRCID           0x06
-
-
-
-#define CAN_CMD_READ_VERSION            0x01
-#define CAN_CMD_LEDS_CONTROL            0x20
-#define CAN_CMD_S_SYS_V_BAT             0x21
-#define CAN_CMD_
+#define CAN_NOAH_PB_ID   0x52
 
 
 #define SOURCE_ID_PREPARE_UPDATE        0x10
@@ -30,6 +19,24 @@
 #define SOURCE_ID_CHECK_TRANSMIT        0x12
 
 
+//////  function id define  //////
+#define CAN_FUN_ID_RESET        0x06
+#define CAN_FUN_ID_WRITE        0x01
+#define CAN_FUN_ID_READ         0x02
+#define CAN_FUN_ID_TRIGGER      0x03
+
+
+//////  source id define  //////
+#define CAN_SOURCE_ID_READ_VERSION      0x01
+
+#define CAN_SOURCE_ID_SET_MODULE_STATE      0x81
+#define CAN_SOURCE_ID_GET_MODULE_STATE      0x82
+#define CAN_SOURCE_ID_GET_SYS_STATE         0x83
+#define CAN_SOURCE_ID_GET_ERR_STATE         0x84
+#define CAN_SOURCE_ID_GET_BAT_STATE         0x85
+#define CAN_SOURCE_ID_GET_ADC_DATA          0x86
+#define CAN_SOURCE_ID_SET_IR_LED_LIGHTNESS  0x87
+#define CAN_SOURCE_ID_GET_IR_LED_LIGHTNESS  0x88
 
 #define CAN_FIFO_SIZE                   250
 

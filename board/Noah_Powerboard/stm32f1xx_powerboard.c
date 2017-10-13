@@ -415,7 +415,7 @@ uint32_t GetModulePowerState( PowerEnable_TypeDef PowerEn )
     }
     if( PowerEn & POWER_CAMERA_LED )
     {
-      if( !MicoGpioInputGet( MICO_GPIO_CAMERA_LED_EN  ) )
+      if( MicoGpioInputGet( MICO_GPIO_CAMERA_LED_EN  ) )
       {
         pinState |= POWER_CAMERA_LED;
       }
