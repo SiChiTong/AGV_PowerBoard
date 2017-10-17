@@ -15,6 +15,7 @@
 
 #include "can_fifo.h"
 #include "battery.h"
+#include "tps611xx_bl.h"
 
 #define CanProtocolLog(format, ...)  custom_log("can protocol", format, ##__VA_ARGS__)
 
@@ -234,14 +235,20 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
                         {
                             //uint32_t module = (data_in[5]) | (data_in[4]<<8) | (data_in[3] << 16) | (data_in[2] << 24);
                           uint32_t module = *(uint32_t *)&data_in[2];
+                          PowerOnOff_TypeDef on_off;
+                            if((data_in[6] != POWER_OFF) && (data_in[6] != POWER_ON))
+                            {
+                                return 0;
+                            }
+                            on_off = (PowerOnOff_TypeDef)data_in[6];
                             module &= 0xffffffff;
-                            BSP_Power_OnOff((PowerEnable_TypeDef)module,(PowerOnOff_TypeDef)data_in[6]);
+                            BSP_Power_OnOff((PowerEnable_TypeDef)module, on_off);
                             uint32_t tmp = GetModulePowerState(POWER_ALL);
                             data_out[1] = data_in[1];
                             *(uint32_t*)&data_out[2] = module;
                             *(uint32_t*)&data_out[6] = tmp;
-                            //memcpy( &data_out[2],(uint8_t *)(&tmp) , 4 );
-                            return 10;
+                            data_out[10] = on_off;
+                            return 11;
                         }
 #if 0
                         if(data_in[1] == 2)//group num = 2
@@ -293,6 +300,23 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
                     *(uint16_t*)&data_out[1] = boardStatus->sysStatus;
                     return 3;
                     break;
+                case CAN_SOURCE_ID_SET_IR_LED_LIGHTNESS:
+                    {
+#if 1
+                        uint8_t duty = data_in[1];
+                        if(duty > 100)
+                        {
+                            duty = 100;
+                        }
+                        //brightness_dimming( 50000,  duty);
+                        boardStatus->irled_duty = duty;
+                        data_out[0] = data_in[0];
+                        data_out[1] = duty;
+                        return 2;
+#endif
+                        break;
+                    }
+                    
               
                   
 #if 0
