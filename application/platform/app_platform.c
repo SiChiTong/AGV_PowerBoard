@@ -741,24 +741,53 @@ uint32_t GetEachModuleStates( void )
 }
 
 extern OSStatus AckReadSysStatusFrameProcess( serial_t *serial, uint8_t cmd_num );
+extern void UploadSysState(void);
 void ChargerPlugInCallback(void)
 {
     if(MicoGpioInputGet( MICO_GPIO_CHARGE_IN ) == 1)
     {
         boardStatus->sysStatus |= STATE_IS_CHARGER_IN;
     }
+    else
+    {
+        boardStatus->sysStatus &= ~STATE_IS_CHARGER_IN;
+    }
     if(MicoGpioInputGet( MICO_GPIO_RECHARGE_IN ) == 1)
     {
         boardStatus->sysStatus |= STATE_IS_RECHARGE_IN;
     }
-    AckReadSysStatusFrameProcess(serial, 0);
+    else
+    {
+        boardStatus->sysStatus &= ~STATE_IS_RECHARGE_IN;
+    }
+    //AckReadSysStatusFrameProcess(serial, 0);
+    
+    UploadSysState();
     
     MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL);//charger plug in fan ctrl
 }
 
 void ChargerUnplugCallback(void)
 {
+    if(MicoGpioInputGet( MICO_GPIO_CHARGE_IN ) == 1)
+    {
+        boardStatus->sysStatus |= STATE_IS_CHARGER_IN;
+    }
+    else
+    {
+        boardStatus->sysStatus &= ~STATE_IS_CHARGER_IN;
+    }
+    if(MicoGpioInputGet( MICO_GPIO_RECHARGE_IN ) == 1)
+    {
+        boardStatus->sysStatus |= STATE_IS_RECHARGE_IN;
+    }
+    else
+    {
+        boardStatus->sysStatus &= ~STATE_IS_RECHARGE_IN;
+    }
+    
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL);//charger unplug fan ctrl
+    UploadSysState();
 }
 #define CHARGING_DEBAUNCE_TIME  20/SYSTICK_PERIOD
 void ChargeTick(void)

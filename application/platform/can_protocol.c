@@ -175,13 +175,27 @@ void CanTX(mico_can_t can_type, uint32_t CANx_ID,uint8_t* pdata,uint16_t len)
 void UploadAdcData(void)
 {
     CAN_ID_UNION id;
-    id.CanID_Struct.ACK = 1;
+    id.CanID_Struct.ACK = 0;
     id.CanID_Struct.DestMACID = 0;////
     id.CanID_Struct.FUNC_ID = CAN_FUN_ID_TRIGGER;
     id.CanID_Struct.SourceID = CAN_SOURCE_ID_GET_ADC_DATA;
     id.CanID_Struct.SrcMACID = CAN_NOAH_PB_ID;////
 
     CanTX( MICO_CAN1, id.CANx_ID, (uint8_t *)voltageConvert, sizeof(voltageData_t) );
+}
+
+void UploadSysState(void)
+{
+    CAN_ID_UNION id;
+    uint8_t tx_buf[3];
+    id.CanID_Struct.ACK = 0;
+    id.CanID_Struct.DestMACID = 0;////
+    id.CanID_Struct.FUNC_ID = CAN_FUN_ID_TRIGGER;
+    id.CanID_Struct.SourceID = CAN_SOURCE_ID_GET_SYS_STATE;
+    id.CanID_Struct.SrcMACID = CAN_NOAH_PB_ID;////
+    tx_buf[0] = 0;
+    *(uint16_t*)&tx_buf[1] = boardStatus->sysStatus;
+    CanTX( MICO_CAN1, id.CANx_ID, tx_buf, sizeof(tx_buf) );
 }
 
 #define CMD_NOT_FOUND   0
@@ -299,6 +313,11 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
                 case CAN_SOURCE_ID_GET_SYS_STATE:
                     *(uint16_t*)&data_out[1] = boardStatus->sysStatus;
                     return 3;
+                    break;
+                    
+                case CAN_SOURCE_ID_GET_ADC_DATA:
+                    memcpy(data_out, (uint8_t *)voltageConvert, sizeof(voltageData_t));
+                    return sizeof(voltageData_t);
                     break;
                 case CAN_SOURCE_ID_SET_IR_LED_LIGHTNESS:
                     {
