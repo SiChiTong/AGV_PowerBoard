@@ -37,6 +37,7 @@
 #define CAN_SOURCE_ID_GET_ADC_DATA          0x86
 #define CAN_SOURCE_ID_SET_IR_LED_LIGHTNESS  0x87
 #define CAN_SOURCE_ID_GET_IR_LED_LIGHTNESS  0x88
+#define CAN_SOURCE_ID_SET_LED_EFFECT        0x89
 
 #define CAN_FIFO_SIZE                   250
 
@@ -135,6 +136,7 @@ void CM_CanSetMsg(uint32_t id,uint8_t ide,uint8_t rtr,uint8_t dlc,uint8_t* pdata
 void CM_CAN_Tx( mico_can_t can_type, CAN_ID_UNION id, uint8_t* pdata, uint16_t len );
 
 void UploadAdcData(void);
+
 
 void can_protocol_period( void );
 

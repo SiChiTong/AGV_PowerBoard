@@ -865,10 +865,16 @@ void VolDetect_Tick( void )
                 {
                     low_power_warning_start_time = 0;
                 }
+                if( low_power_power_off_start_time != 0 )
+                {
+                    low_power_power_off_start_time = 0;
+                }
+                
                 if(os_get_time() - start_time > NORMAL_POWER_DEBAUNCE_TIME)
                 {
                     boardStatus->sysStatus &= ~STATE_IS_LOW_POWER;
                     SetSerialLedsEffect( LIGHTS_MODE_NOMAL, NULL, 0 );
+                    start_time = os_get_time();
                 }
                 
             }

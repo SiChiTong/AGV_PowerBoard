@@ -162,9 +162,11 @@ void AckLedsFrame(light_mode_t light_mode, color_t *cur_color, uint8_t period )
 }
 
 extern OSStatus AckSerialLedsFrameProcess( serial_t *serial, uint8_t mode, color_t *color, uint8_t period );
+extern void AckLedsEffect(light_mode_t light_mode, color_t *cur_color, uint8_t period);
 void SerialLedsProc(light_mode_t light_mode, color_t *cur_color, uint8_t period)
 {
     //AckSerialLedsFrameProcess( serial, light_mode, cur_color, period );
+    AckLedsEffect(light_mode, cur_color, period);
 }
 led_com_opt_t led_com_opt = {0};
 

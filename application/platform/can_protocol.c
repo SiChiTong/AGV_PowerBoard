@@ -198,6 +198,24 @@ void UploadSysState(void)
     CanTX( MICO_CAN1, id.CANx_ID, tx_buf, sizeof(tx_buf) );
 }
 
+void AckLedsEffect(light_mode_t light_mode, color_t *cur_color, uint8_t period)
+{
+    CAN_ID_UNION id;
+    uint8_t tx_buf[7];
+    id.CanID_Struct.ACK = 1;
+    id.CanID_Struct.DestMACID = 0;////
+    id.CanID_Struct.FUNC_ID = CAN_FUN_ID_TRIGGER;
+    id.CanID_Struct.SourceID = CAN_SOURCE_ID_SET_LED_EFFECT;
+    id.CanID_Struct.SrcMACID = CAN_NOAH_PB_ID;////
+    
+    tx_buf[0] = 0;
+    tx_buf[1] = 0;
+    tx_buf[2] = light_mode;
+    *(color_t *)&tx_buf[3] = *cur_color;
+    tx_buf[6] = period;
+    
+    CanTX( MICO_CAN1, id.CANx_ID, tx_buf, sizeof(tx_buf) );
+}
 #define CMD_NOT_FOUND   0
 uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t data_in_len, uint8_t *data_out)
 {
@@ -335,6 +353,20 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
 #endif
                         break;
                     }
+                    
+                case CAN_SOURCE_ID_SET_LED_EFFECT:
+                    if(data_in[0] == 0)
+                    {
+                        light_mode_t mode;
+                        uint8_t period = data_in[5];
+                        color_t *color;
+                        mode =  (light_mode_t)data_in[1]; 
+                        color = (color_t*)&data_in[2];
+                        SetSerialLedsEffect(mode, color, period);
+                        return 0;
+                    }
+                    return 0;
+                    break;
                     
               
                   
