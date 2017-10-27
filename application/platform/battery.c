@@ -411,6 +411,11 @@ void  battery_parse_rx_buffer( const uint8_t * const hex_rx_buf )
   battery_pack.pack_totoal_soc = ReadBig16( ptr_rx );
   ptr_rx += 2;
   battery_pack.pack_recharge_cycle = ReadBig16( ptr_rx );
+  
+  if(battery_pack.pack_totoal_soc > 0)
+  {
+      battery_pack.percentage = battery_pack.pack_current_soc * 100 / battery_pack.pack_totoal_soc;
+  }
 }
 void PrintBatInfo(void)
 {
@@ -428,7 +433,7 @@ void PrintBatInfo(void)
 #define BATTERY_READ_PERIOD             (3000/SYSTICK_PERIOD)
 static uint32_t battery_period_start_time;
 static uint8_t battery_com_err_cnt = 0;
-//uint8_t test_buf[] = {0x7e, 0x32, 0x35, 0x30,     0x31, 0x34, 0x36, 0x43,     0x31, 0x30, 0x30, 0x30,     0x30, 0x46, 0x44, 0x39,     0x41, 0x0d};
+extern void UploadBatInfo(void);
 void battery_period( void )
 {
     uint8_t recvDataLength;
@@ -449,6 +454,7 @@ void battery_period( void )
             {
                 battery_parse_rx_buffer(information);
                 battery_com_err_cnt = 0;
+                battery_pack.com_status = true;
             }
             pBatteryData->cmd_type = 0x00;
             StartDmaReciveEx( BATT_UART, (uint8_t *)rx_data , RX_MAX_DATA_LENGTH);
@@ -456,7 +462,8 @@ void battery_period( void )
     }
 
     if( os_get_time() - battery_period_start_time >= BATTERY_READ_PERIOD  )
-    {
+    {   
+        static uint8_t err_cnt = 0;
         battery_period_start_time = os_get_time();  
         battery_com_err_cnt++;
         
@@ -468,10 +475,18 @@ void battery_period( void )
         if(battery_com_err_cnt >= BATTERY_COM_ERR_DEBOUNCE_CNT)
         {
             battery_log(" CAN NOT GET BATTERY INFO ! ! !\r\n");
+            if(err_cnt++ >= 3)
+            {
+                battery_pack.com_status = false;
+                err_cnt = 0;
+                UploadBatInfo();
+            }
+            
         }
         else
         {
             //PrintBatInfo();
+            err_cnt = 0;
         }
         
     }
