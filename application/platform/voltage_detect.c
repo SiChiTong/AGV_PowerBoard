@@ -842,7 +842,7 @@ void VolDetect_Tick( void )
                 if( os_get_time() - low_power_warning_start_time >= LOW_POWER_WARNING_DEBAUNCE_TIME )
                 {
                     vol_detect_log(" Low power ! ! \r\n Power is %d%", percentage);
-                    SetSerialLedsEffect( LIGHTS_MODE_LOW_POWER, NULL, 0 );
+                    //SetSerialLedsEffect( LIGHTS_MODE_LOW_POWER, NULL, 0 );
                     
                     low_power_warning_start_time = 0;
                     boardStatus->sysStatus |= STATE_IS_LOW_POWER;
@@ -867,7 +867,7 @@ void VolDetect_Tick( void )
                 if(os_get_time() - normal_power_start_time > NORMAL_POWER_DEBAUNCE_TIME)
                 {
                     boardStatus->sysStatus &= ~STATE_IS_LOW_POWER;
-                    SetSerialLedsEffect( LIGHTS_MODE_NOMAL, NULL, 0 );
+                    //SetSerialLedsEffect( LIGHTS_MODE_NOMAL, NULL, 0 );
                     normal_power_start_time = os_get_time();
                 }
                 

@@ -340,16 +340,17 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
                     return CMD_NOT_FOUND;
                     
                 case CAN_SOURCE_ID_GET_BAT_STATE:
-                    if(battery_pack.pack_voltage == 0)
+                    if(battery_pack.com_status == false)
                     {
                         *(uint16_t*)&data_out[1] = voltageConvert->bat_voltage;
+                        *(uint16_t*)&data_out[3] = 0;
                     }
                     else
                     {
                         *(uint16_t*)&data_out[1] = battery_pack.pack_voltage;
+                        *(uint16_t*)&data_out[3] = battery_pack.percentage;
                     }
-                    
-                    *(uint16_t*)&data_out[3] = battery_pack.percentage;
+                     
                     return 5;
                       
                     break;
@@ -482,7 +483,8 @@ void HAL_CAN_ErrorCallback(CAN_HandleTypeDef *hcan)
 #define CAN_COMM_TIME_OUT           5000
 uint32_t can_comm_start_time;
 
-
+#define CAN_COM_TIME_OUT    10000/SYSTICK_PERIOD
+static uint32_t can_com_start_time = 0;
 void can_protocol_period( void )
 {   
     static CAN_ID_UNION id;
@@ -493,11 +495,25 @@ void can_protocol_period( void )
     uint8_t buf_index;
     uint8_t seg_polo;
     uint8_t seg_num;
-    uint8_t test_data[30];
-    for(uint8_t i = 0; i < sizeof(test_data); i++)
+    static uint8_t set_led_flag = 0;
+    if(boardStatus->sysStatus & STATE_POWER_ON)
     {
-        test_data[i] = i + 1;
+        
+        if(os_get_time() - can_com_start_time >= CAN_COM_TIME_OUT)
+        {
+            SetSerialLedsEffect( LIGHTS_MODE_COM_ERROR, NULL, 0 );
+            set_led_flag = 0;
+        }
+        else
+        {
+            if(set_led_flag == 0)
+            {
+                SetSerialLedsEffect( LIGHTS_MODE_NOMAL, NULL, 0 );
+                set_led_flag = 1;
+            }
+        }
     }
+
     while(IsCanFifoEmpty(can_fifo) == FALSE)
     {
         CanFifoGetCanPkg(can_fifo, &can_pkg_tmp); 
@@ -508,91 +524,99 @@ void can_protocol_period( void )
         seg_polo = rx_buf.CanData_Struct.SegPolo;
         seg_num = rx_buf.CanData_Struct.SegNum;
         
-        if(rx_buf.CanData_Struct.SegPolo == ONLYONCE)
+        if(id.CanID_Struct.DestMACID == CAN_NOAH_PB_ID)
         {
-            
-            //if( (id.CanID_Struct.SourceID < SOURCE_ID_PREPARE_UPDATE) && (id.CanID_Struct.SourceID > SOURCE_ID_CHECK_TRANSMIT) )
+            can_com_start_time = os_get_time();
+            if(rx_buf.CanData_Struct.SegPolo == ONLYONCE)
             {
-                    //process the data here//
-                    tx_len = CmdProcessing(&id, rx_buf.CanData_Struct.Data, rx_len - 1, CanTxdataBuff );
-                    //process the data here//
-                    if(tx_len > 0)
-                    {
-                        CanTX( MICO_CAN1, id.CANx_ID, CanTxdataBuff, tx_len );
-                    }
-                    
-                    //CanTX( MICO_CAN1, id.CANx_ID, test_data, sizeof(test_data) );
-            }
-        }
-        else //long frame
-        {
-            for(uint8_t i = 0; i < CAN_LONG_BUF_NUM; i++)
-            {
-                if(can_long_frame_buf->can_rcv_buf[i].used_len > 0)
+                
+                //if( (id.CanID_Struct.SourceID < SOURCE_ID_PREPARE_UPDATE) && (id.CanID_Struct.SourceID > SOURCE_ID_CHECK_TRANSMIT) )
                 {
-                    if(os_get_time() - can_long_frame_buf->can_rcv_buf[i].start_time > CAN_LONG_FRAME_TIME_OUT)
-                    {
-                        can_long_frame_buf->FreeBuf(i);
-                        CanProtocolLog("LONG FRAME RCV TIMEOUT! ! ! !\r\n");      
-                    }
+                        //process the data here//
+                        tx_len = CmdProcessing(&id, rx_buf.CanData_Struct.Data, rx_len - 1, CanTxdataBuff );
+                        //process the data here//
+                        if(tx_len > 0)
+                        {
+                            CanTX( MICO_CAN1, id.CANx_ID, CanTxdataBuff, tx_len );
+                        }
+                        
+                        //CanTX( MICO_CAN1, id.CANx_ID, test_data, sizeof(test_data) );
                 }
             }
-            
-            if(seg_polo == BEGIN)
+            else //long frame
             {
-                buf_index = can_long_frame_buf->GetTheBufById(id.CANx_ID);
-                if(buf_index == CAN_BUF_NO_THIS_ID)
+                for(uint8_t i = 0; i < CAN_LONG_BUF_NUM; i++)
                 {
-                    buf_index = can_long_frame_buf->GetOneFreeBuf();
-                }
-                else
-                {
-                    //
+                    if(can_long_frame_buf->can_rcv_buf[i].used_len > 0)
+                    {
+                        if(os_get_time() - can_long_frame_buf->can_rcv_buf[i].start_time > CAN_LONG_FRAME_TIME_OUT)
+                        {
+                            can_long_frame_buf->FreeBuf(i);
+                            CanProtocolLog("LONG FRAME RCV TIMEOUT! ! ! !\r\n");      
+                        }
+                    }
                 }
                 
-                if( (buf_index == CAN_LONG_BUF_FULL) || (buf_index >= CAN_LONG_BUF_NUM) )
+                if(seg_polo == BEGIN)
                 {
-                    CanProtocolLog("LONG FRAME RCV BUF IS FULL! ! ! !\r\n");              
-                    goto exit;
-                }
-                memcpy(&can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf[0], rx_buf.CanData_Struct.Data, CAN_ONE_FRAME_DATA_LENTH);
-                can_long_frame_buf->can_rcv_buf[buf_index].used_len = CAN_ONE_FRAME_DATA_LENTH;
-                can_long_frame_buf->can_rcv_buf[buf_index].can_id = id.CANx_ID;
-                can_long_frame_buf->can_rcv_buf[buf_index].start_time = os_get_time();
-            }
-            else if((seg_polo == TRANSING) || (seg_polo == END))
-            {
-                buf_index = can_long_frame_buf->GetTheBufById(id.CANx_ID);
-                if((buf_index == CAN_BUF_NO_THIS_ID) || (buf_index >= CAN_LONG_BUF_NUM))
-                {
-                    CanProtocolLog("ERROR ! !\r\n");
-                    goto exit;
-                }
-                can_long_frame_buf->can_rcv_buf[buf_index].start_time = os_get_time();
-                if(seg_polo == TRANSING)
-                {
-                    memcpy(&can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf[seg_num*CAN_ONE_FRAME_DATA_LENTH], rx_buf.CanData_Struct.Data, CAN_ONE_FRAME_DATA_LENTH);
-                    can_long_frame_buf->can_rcv_buf[buf_index].used_len += CAN_ONE_FRAME_DATA_LENTH;
-                }
-                if(seg_polo == END)
-                {
-                    memcpy(&can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf[seg_num*CAN_ONE_FRAME_DATA_LENTH], rx_buf.CanData_Struct.Data, rx_len - 1);
-                    can_long_frame_buf->can_rcv_buf[buf_index].used_len += rx_len - 1;
-                    
-                    printf("long frame receive complete\r\n");
-                    for(uint8_t j = 0; j < can_long_frame_buf->can_rcv_buf[buf_index].used_len; j++)
+                    buf_index = can_long_frame_buf->GetTheBufById(id.CANx_ID);
+                    if(buf_index == CAN_BUF_NO_THIS_ID)
                     {
-                      printf("data[%d]: %d\r\n",j,can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf[j]);
+                        buf_index = can_long_frame_buf->GetOneFreeBuf();
                     }
-                    //process the data here//
-                    /**********************/
-                    //process the data here//
+                    else
+                    {
+                        //
+                    }
                     
-                    CanTX( MICO_CAN1, id.CANx_ID, can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf, can_long_frame_buf->can_rcv_buf[buf_index].used_len);  // test :send the data back;             
-                    can_long_frame_buf->FreeBuf(buf_index);
-                }       
+                    if( (buf_index == CAN_LONG_BUF_FULL) || (buf_index >= CAN_LONG_BUF_NUM) )
+                    {
+                        CanProtocolLog("LONG FRAME RCV BUF IS FULL! ! ! !\r\n");              
+                        goto exit;
+                    }
+                    memcpy(&can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf[0], rx_buf.CanData_Struct.Data, CAN_ONE_FRAME_DATA_LENTH);
+                    can_long_frame_buf->can_rcv_buf[buf_index].used_len = CAN_ONE_FRAME_DATA_LENTH;
+                    can_long_frame_buf->can_rcv_buf[buf_index].can_id = id.CANx_ID;
+                    can_long_frame_buf->can_rcv_buf[buf_index].start_time = os_get_time();
+                }
+                else if((seg_polo == TRANSING) || (seg_polo == END))
+                {
+                    buf_index = can_long_frame_buf->GetTheBufById(id.CANx_ID);
+                    if((buf_index == CAN_BUF_NO_THIS_ID) || (buf_index >= CAN_LONG_BUF_NUM))
+                    {
+                        CanProtocolLog("ERROR ! !\r\n");
+                        goto exit;
+                    }
+                    can_long_frame_buf->can_rcv_buf[buf_index].start_time = os_get_time();
+                    if(seg_polo == TRANSING)
+                    {
+                        memcpy(&can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf[seg_num*CAN_ONE_FRAME_DATA_LENTH], rx_buf.CanData_Struct.Data, CAN_ONE_FRAME_DATA_LENTH);
+                        can_long_frame_buf->can_rcv_buf[buf_index].used_len += CAN_ONE_FRAME_DATA_LENTH;
+                    }
+                    if(seg_polo == END)
+                    {
+                        memcpy(&can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf[seg_num*CAN_ONE_FRAME_DATA_LENTH], rx_buf.CanData_Struct.Data, rx_len - 1);
+                        can_long_frame_buf->can_rcv_buf[buf_index].used_len += rx_len - 1;
+                        
+                        printf("long frame receive complete\r\n");
+                        for(uint8_t j = 0; j < can_long_frame_buf->can_rcv_buf[buf_index].used_len; j++)
+                        {
+                          printf("data[%d]: %d\r\n",j,can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf[j]);
+                        }
+                        //process the data here//
+                        /**********************/
+                        //process the data here//
+                        
+                        CanTX( MICO_CAN1, id.CANx_ID, can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf, can_long_frame_buf->can_rcv_buf[buf_index].used_len);  // test :send the data back;             
+                        can_long_frame_buf->FreeBuf(buf_index);
+                    }       
+                }
             }
+            
         }
+        
+        
+        
     }
     //MicoCanMessageRead( MICO_CAN1, &RxMessage);
 

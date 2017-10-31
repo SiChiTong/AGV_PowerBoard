@@ -236,7 +236,7 @@ static void charger_detect_interrupt_cb( void )
   }
   if( previous_charge_io_state = MicoGpioInputGet( MICO_GPIO_CHARGE_IN ) )
   {    
-    SetSerialLedsEffect( LIGHTS_MODE_CHARGING, NULL, 0 );//called before the following line
+    //SetSerialLedsEffect( LIGHTS_MODE_CHARGING, NULL, 0 );//called before the following line
     boardStatus->sysStatus |= (uint16_t)STATE_IS_CHARGER_IN;
     board_log("charger pin is high");
   }
@@ -259,7 +259,7 @@ static void recharger_detect_interrupt_cb( void )
   }
   if( previous_recharge_io_state = MicoGpioInputGet( MICO_GPIO_RECHARGE_IN ) )
   {
-    SetSerialLedsEffect( LIGHTS_MODE_CHARGING, NULL, 0 );//called before the following line
+    //SetSerialLedsEffect( LIGHTS_MODE_CHARGING, NULL, 0 );//called before the following line
     boardStatus->sysStatus |= (uint16_t)STATE_IS_CHARGER_IN;
     board_log("recharger pin is high");
 #ifdef MIKE_TEST
