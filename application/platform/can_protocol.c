@@ -495,7 +495,9 @@ void can_protocol_period( void )
     uint8_t buf_index;
     uint8_t seg_polo;
     uint8_t seg_num;
+#if 0 
     static uint8_t set_led_flag = 0;
+  
     if(boardStatus->sysStatus & STATE_POWER_ON)
     {
         
@@ -513,6 +515,7 @@ void can_protocol_period( void )
             }
         }
     }
+#endif
 
     while(IsCanFifoEmpty(can_fifo) == FALSE)
     {

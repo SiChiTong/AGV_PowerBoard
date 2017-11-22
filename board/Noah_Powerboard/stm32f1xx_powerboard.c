@@ -120,6 +120,7 @@ void BSP_Power_OnOff(PowerEnable_TypeDef PowerEn, PowerOnOff_TypeDef OnOff)
     if( PowerEn & POWER_CAMERA_LED )
     {
       MicoGpioOutputHigh( MICO_GPIO_CAMERA_LED_EN);
+      MicoGpioOutputHigh( MICO_GPIO_CAMERA_LED_FRONT_EN);
     }
     
     
@@ -230,6 +231,7 @@ void BSP_Power_OnOff(PowerEnable_TypeDef PowerEn, PowerOnOff_TypeDef OnOff)
     if( PowerEn & POWER_CAMERA_LED )
     {
       MicoGpioOutputLow( MICO_GPIO_CAMERA_LED_EN);
+      MicoGpioOutputLow( MICO_GPIO_CAMERA_LED_FRONT_EN);
     }
     
   }

@@ -187,6 +187,7 @@ const platform_gpio_t platform_gpio_pins[] =
     [MICO_GPIO_5V_POLE_MOTOR_EN]    = { GPIOC, 6},//V0.1
     [MICO_GPIO_5V_KEYPAD_EN]        = { GPIOC, 7},//V0.1
     [MICO_GPIO_CAMERA_LED_EN]       = { GPIOG, 13},//V0.1
+    [MICO_GPIO_CAMERA_LED_FRONT_EN] = { GPIOG, 14},//V0.2
     
     
 };

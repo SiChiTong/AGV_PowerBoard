@@ -534,6 +534,7 @@ void Main_Menu(void)
       }
       else if (findCommandPara(cmdbuf, "L", NULL, 0) != -1){
         MicoGpioOutputTrigger( MICO_GPIO_CAMERA_LED_EN  );
+        MicoGpioOutputTrigger( MICO_GPIO_CAMERA_LED_FRONT_EN  );
         printf("\r\n triggered CAMERA_LED_EN \r\n");
       }
 

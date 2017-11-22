@@ -253,7 +253,7 @@ void setModulePowerSignalOnOff( uint8_t module, uint8_t onoff )
 
 static void Switch_Tick( void )
 {
-#if 1
+#if 0
   if( /*(YES != switch_user->isSwitchOver) && */(switch_user->getSwitchState != NULL) )
   {
     if( (switch_user->startTime != 0) && ((os_get_time() - switch_user->startTime) >= SWITCH_DEBOUNCE_TIME) )
@@ -291,12 +291,11 @@ static void Switch_Tick( void )
   }
 #else
     
-#define DEVICE_STATE_POWER_ON       1  
-#define DEVICE_STATE_POWER_OFF      0
+//#define DEVICE_STATE_POWER_ON       1  
+//#define DEVICE_STATE_POWER_OFF      0
 
-    static uint8_t state_change = 0;
-
-    
+    static uint8_t state_change = 0; 
+  
     if((boardStatus->isPowerOffFinish == YES) && (boardStatus->isPowerOnFinish == YES))
     {
         if(state_change == 0)
@@ -309,11 +308,8 @@ static void Switch_Tick( void )
             }
         }
         
-        
         if(state_change == 1)
         {
-            
-
             if( switch_user->preIOState != switch_user->getSwitchState( SWITCH_USER ) )
             {
                 switch_user->preIOState = switch_user->getSwitchState( SWITCH_USER );
@@ -360,11 +356,8 @@ static void Switch_Tick( void )
                     PowerOffDevices();
                     state_change = 0;
                 }
-            }
-            
-           
+            }     
         }
-
     }
     else
     {

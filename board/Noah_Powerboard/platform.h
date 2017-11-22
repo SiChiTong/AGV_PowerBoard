@@ -223,6 +223,7 @@ typedef enum
     MICO_GPIO_5V_KEYPAD_EN,
     
     MICO_GPIO_CAMERA_LED_EN,
+    MICO_GPIO_CAMERA_LED_FRONT_EN,
     
     
     
