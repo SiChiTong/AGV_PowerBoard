@@ -533,8 +533,8 @@ void Main_Menu(void)
         printf("\r\n triggered 5V_KEYPAD_EN \r\n");
       }
       else if (findCommandPara(cmdbuf, "L", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_CAMERA_LED_EN  );
-        MicoGpioOutputTrigger( MICO_GPIO_CAMERA_LED_FRONT_EN  );
+        MicoGpioOutputTrigger( MICO_GPIO_CAMERA_FRONT_LED_EN  );
+        MicoGpioOutputTrigger( MICO_GPIO_CAMERA_BACK_LED_EN  );
         printf("\r\n triggered CAMERA_LED_EN \r\n");
       }
 

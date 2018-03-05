@@ -117,13 +117,19 @@ void BSP_Power_OnOff(PowerEnable_TypeDef PowerEn, PowerOnOff_TypeDef OnOff)
       MicoGpioOutputLow( MICO_GPIO_5V_KEYPAD_EN);
     }
     
-    if( PowerEn & POWER_CAMERA_LED )
+    if( PowerEn & POWER_CAMERA_FRONT_LED )
     {
-      MicoGpioOutputHigh( MICO_GPIO_CAMERA_LED_EN);
-      MicoGpioOutputHigh( MICO_GPIO_CAMERA_LED_FRONT_EN);
+      MicoGpioOutputHigh( MICO_GPIO_CAMERA_FRONT_LED_EN);
+    }
+    if( PowerEn & POWER_CAMERA_BACK_LED )
+    {
+      MicoGpioOutputHigh( MICO_GPIO_CAMERA_BACK_LED_EN);
     }
     
-    
+    if( PowerEn & POWER_CTRL_OUT )
+    {
+      MicoGpioOutputHigh( MICO_GPIO_PWR_CTRL_OUT);
+    }
    
   }
   else if( POWER_OFF == OnOff )
@@ -228,10 +234,13 @@ void BSP_Power_OnOff(PowerEnable_TypeDef PowerEn, PowerOnOff_TypeDef OnOff)
       MicoGpioOutputHigh( MICO_GPIO_5V_KEYPAD_EN);
     }
     
-    if( PowerEn & POWER_CAMERA_LED )
+    if( PowerEn & POWER_CAMERA_FRONT_LED )
     {
-      MicoGpioOutputLow( MICO_GPIO_CAMERA_LED_EN);
-      MicoGpioOutputLow( MICO_GPIO_CAMERA_LED_FRONT_EN);
+      MicoGpioOutputLow( MICO_GPIO_CAMERA_FRONT_LED_EN);
+    }
+    if( PowerEn & POWER_CAMERA_BACK_LED )
+    {
+      MicoGpioOutputLow( MICO_GPIO_CAMERA_BACK_LED_EN);
     }
     
   }
@@ -415,11 +424,26 @@ uint32_t GetModulePowerState( PowerEnable_TypeDef PowerEn )
         pinState |= POWER_5V_KEYPAD;
       }
     }
-    if( PowerEn & POWER_CAMERA_LED )
+    if( PowerEn & POWER_CAMERA_FRONT_LED )
     {
-      if( MicoGpioInputGet( MICO_GPIO_CAMERA_LED_EN  ) )
+      if( MicoGpioInputGet( MICO_GPIO_CAMERA_FRONT_LED_EN  ) )
       {
-        pinState |= POWER_CAMERA_LED;
+        pinState |= POWER_CAMERA_FRONT_LED;
+      }
+    }
+    if( PowerEn & POWER_CAMERA_BACK_LED )
+    {
+      if( MicoGpioInputGet( MICO_GPIO_CAMERA_BACK_LED_EN  ) )
+      {
+        pinState |= POWER_CAMERA_BACK_LED;
+      }
+    }
+    
+    if( PowerEn & POWER_CTRL_OUT )
+    {
+      if( MicoGpioInputGet( MICO_GPIO_PWR_CTRL_OUT  ) )
+      {
+        pinState |= POWER_CTRL_OUT;
       }
     }
     return pinState;

@@ -123,7 +123,9 @@ void PowerOnDevices( void )
       boardStatus->isPowerOnFinish = NO;
       boardStatus->setPowerOnoff(POWER_ALL, POWER_ON);
       boardStatus->setPowerOnoff(POWER_VSYS_24V_NV, POWER_OFF);
-      boardStatus->setPowerOnoff(POWER_CAMERA_LED, POWER_OFF);
+      boardStatus->setPowerOnoff(POWER_CAMERA_BACK_LED, POWER_OFF);
+      boardStatus->setPowerOnoff(POWER_CAMERA_FRONT_LED, POWER_OFF);
+      boardStatus->setPowerOnoff(POWER_CTRL_OUT, POWER_ON);
       
       
       DLP_ControlSignal->isDeviceProcessOver = NO;
@@ -251,44 +253,62 @@ void setModulePowerSignalOnOff( uint8_t module, uint8_t onoff )
   }
 }
 
+
+//#define POWER_ON_DEVICE_DELAY_TIME      1500/SYSTICK_PERIOD
+//#define POWER_OFF_DEVICE_DELAY_TIME      1500/SYSTICK_PERIOD
+
+#define POWER_OFF_DELAY_TIME            10*1000/SYSTICK_PERIOD
 static void Switch_Tick( void )
 {
-#if 0
-  if( /*(YES != switch_user->isSwitchOver) && */(switch_user->getSwitchState != NULL) )
-  {
-    if( (switch_user->startTime != 0) && ((os_get_time() - switch_user->startTime) >= SWITCH_DEBOUNCE_TIME) )
+#if 1
+  
+    static uint32_t switch_on_start_time = 0;
+    static uint32_t switch_off_start_time = 0;
+    static uint32_t power_off_delay_start_time = 0;
+    uint8_t switch_state = 0;
+    
+    if(STATE_POWER_OFF == boardStatus->sysStatus & STATE_RUN_BITS)
     {
-      switch_user->startTime = 0;
-      
-      if( switch_user->preIOState != switch_user->getSwitchState( SWITCH_USER ) )
-      {
-        switch_user->preIOState = switch_user->getSwitchState( SWITCH_USER );
-      }
-      else
-      {
-        return;
-      }
+        switch_state = switch_user->getSwitchState( SWITCH_USER );
 
-      switch_user->isSwitchOver = YES;
-      if( (STATE_POWER_OFF == (boardStatus->sysStatus & STATE_RUN_BITS))/* && (voltageConvert->bat_voltage >= VBAT_POWER_ON_LEVEL)*/ )
-      {
-          switch_user->switchOnOff = SWITCH_ON;
-          platform_log("confirm to ON stable");
-          if( boardStatus->sysStatus & STATE_IS_LOW_POWER )
-          {
-            boardStatus->sysStatus &= ~STATE_IS_LOW_POWER;
-          }
-          PowerOnDevices();
-      }
-      if( ( STATE_POWER_ON == (boardStatus->sysStatus & STATE_RUN_BITS) ) )
-      {
-          switch_user->switchOnOff = SWITCH_OFF;
-          platform_log("confirm to OFF stable");
-          
-          PowerOffDevices();
-      }
+        
+        if(switch_state == 0)
+        {
+            switch_on_start_time = os_get_time();
+        }
+        if(os_get_time() - switch_on_start_time >= SWITCH_DEBOUNCE_TIME)
+        {
+            PowerOnDevices();
+        }
+        
+        
     }
-  }
+    
+    if(STATE_POWER_ON == boardStatus->sysStatus & STATE_RUN_BITS)
+    {
+        switch_state = switch_user->getSwitchState( SWITCH_USER );
+        if(switch_state == 1)
+        {
+            switch_off_start_time = os_get_time();
+        }
+        if(power_off_delay_start_time == 0)
+        {
+            if(os_get_time() - switch_off_start_time >= SWITCH_DEBOUNCE_TIME)
+            {
+                power_off_delay_start_time = os_get_time();
+            }
+        }
+        
+        if(power_off_delay_start_time > 0)
+        {
+            if(os_get_time() - power_off_delay_start_time >= POWER_OFF_DELAY_TIME)
+            {
+                PowerOffDevices();
+                power_off_delay_start_time = 0;
+            }
+        }
+    }
+    
 #else
     
 //#define DEVICE_STATE_POWER_ON       1  

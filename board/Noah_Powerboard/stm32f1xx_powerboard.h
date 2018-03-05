@@ -95,7 +95,10 @@ typedef enum
   POWER_CHARGE_FAN          = 0x00200000,
   POWER_POLE_MOTOR          = 0x00400000,
   POWER_5V_KEYPAD           = 0x00800000,
-  POWER_CAMERA_LED          = 0x01000000,
+  
+  POWER_CAMERA_BACK_LED     = 0x01000000,
+  POWER_CAMERA_FRONT_LED    = 0x02000000,
+  POWER_CTRL_OUT            = 0x04000000,
 
   POWER_ALL                 = 0x0FFFFFFF,
  
