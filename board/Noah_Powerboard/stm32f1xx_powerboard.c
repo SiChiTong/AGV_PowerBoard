@@ -130,6 +130,11 @@ void BSP_Power_OnOff(PowerEnable_TypeDef PowerEn, PowerOnOff_TypeDef OnOff)
     {
       MicoGpioOutputHigh( MICO_GPIO_PWR_CTRL_OUT);
     }
+    
+    if( PowerEn & POWER_DOOR_CTRL )
+    {
+      MicoGpioOutputHigh( MICO_GPIO_3_3V_DOOR_CTRL);
+    }
    
   }
   else if( POWER_OFF == OnOff )
@@ -234,6 +239,11 @@ void BSP_Power_OnOff(PowerEnable_TypeDef PowerEn, PowerOnOff_TypeDef OnOff)
       MicoGpioOutputHigh( MICO_GPIO_5V_KEYPAD_EN);
     }
     
+    if( PowerEn & POWER_CTRL_OUT )
+    {
+      MicoGpioOutputLow( MICO_GPIO_PWR_CTRL_OUT);
+    }
+    
     if( PowerEn & POWER_CAMERA_FRONT_LED )
     {
       MicoGpioOutputLow( MICO_GPIO_CAMERA_FRONT_LED_EN);
@@ -241,6 +251,10 @@ void BSP_Power_OnOff(PowerEnable_TypeDef PowerEn, PowerOnOff_TypeDef OnOff)
     if( PowerEn & POWER_CAMERA_BACK_LED )
     {
       MicoGpioOutputLow( MICO_GPIO_CAMERA_BACK_LED_EN);
+    }
+    if( PowerEn & POWER_DOOR_CTRL )
+    {
+      MicoGpioOutputLow( MICO_GPIO_3_3V_DOOR_CTRL);
     }
     
   }

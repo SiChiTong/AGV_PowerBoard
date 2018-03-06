@@ -99,6 +99,8 @@ typedef enum
   POWER_CAMERA_BACK_LED     = 0x01000000,
   POWER_CAMERA_FRONT_LED    = 0x02000000,
   POWER_CTRL_OUT            = 0x04000000,
+  POWER_DOOR_CTRL           = 0x08000000,
+
 
   POWER_ALL                 = 0x0FFFFFFF,
  

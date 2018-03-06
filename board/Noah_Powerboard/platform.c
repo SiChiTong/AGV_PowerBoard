@@ -186,9 +186,10 @@ const platform_gpio_t platform_gpio_pins[] =
     [MICO_GPIO_FAN_3_CTRL]          = { GPIOB, 15},//V0.1
     [MICO_GPIO_5V_POLE_MOTOR_EN]    = { GPIOC, 6},//V0.1
     [MICO_GPIO_5V_KEYPAD_EN]        = { GPIOC, 7},//V0.1
-    [MICO_GPIO_CAMERA_FRONT_LED_EN]  = { GPIOG, 13},//V0.1
-    [MICO_GPIO_CAMERA_BACK_LED_EN] = { GPIOG, 14},//V0.2
+    [MICO_GPIO_CAMERA_FRONT_LED_EN] = { GPIOG, 13},//V0.1
+    [MICO_GPIO_CAMERA_BACK_LED_EN]  = { GPIOG, 14},//V0.2
     [MICO_GPIO_PWR_CTRL_OUT]        = { GPIOD, 10},//V0.2
+    [MICO_GPIO_3_3V_DOOR_CTRL]      = { GPIOG, 15},//V0.2
     
     
 };

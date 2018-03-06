@@ -47,6 +47,11 @@ void board_gpios_init( void )
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_5V_EN, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_12V_EN, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_24V_EN, &pin_config );
+    
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_5V_EN );
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_12V_EN );
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_24V_EN );
+    
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_CHARGE_IN, &pin_config );
 
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_RECHARGE_IN, &pin_config );
@@ -72,6 +77,13 @@ void board_gpios_init( void )
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_5V_KEYPAD_EN, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_CAMERA_FRONT_LED_EN, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_CAMERA_BACK_LED_EN, &pin_config );
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_3_3V_DOOR_CTRL, &pin_config );
+    
+    
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_PWR_CTRL_OUT, &pin_config ); 
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_PWR_CTRL_OUT);
+    
+    
     //MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_FAN_1_CTRL, &pin_config );
     //MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_FAN_2_CTRL, &pin_config );
     //MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_FAN_3_CTRL, &pin_config );
@@ -93,9 +105,7 @@ void board_gpios_init( void )
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_PWR_X86 );
     
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_PWR_RESERVE );
-    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_5V_EN );
-    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_12V_EN );
-    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_24V_EN );
+    
     
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_CHARGE_IN );
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_RECHARGE_IN );
@@ -123,6 +133,9 @@ void board_gpios_init( void )
     //MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL);  
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_CAMERA_FRONT_LED_EN);  
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_CAMERA_BACK_LED_EN);
+    
+    
+    //MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_PWR_CTRL_OUT);
     
     
     //MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_LED_MCU_RESET );//LED_MCU_RESET
