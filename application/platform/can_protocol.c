@@ -198,6 +198,20 @@ void UploadSysState(void)
     CanTX( MICO_CAN1, id.CANx_ID, tx_buf, sizeof(tx_buf) );
 }
 
+void UploadPowerOffSignal(uint32_t second)
+{
+    CAN_ID_UNION id;
+    uint8_t tx_buf[3];
+    id.CanID_Struct.ACK = 0;
+    id.CanID_Struct.DestMACID = 0;////
+    id.CanID_Struct.FUNC_ID = CAN_FUN_ID_TRIGGER;
+    id.CanID_Struct.SourceID = CAN_SOURCE_ID_POWER_OFF_SIGNAL;
+    id.CanID_Struct.SrcMACID = CAN_NOAH_PB_ID;////
+    tx_buf[0] = second;
+    
+    CanTX( MICO_CAN1, id.CANx_ID, tx_buf, sizeof(tx_buf) );
+}
+
 void UploadBatInfo(void)
 {
     CAN_ID_UNION id;
