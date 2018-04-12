@@ -460,8 +460,8 @@ void startTps611xx( void )
   pin_config.gpio_speed = GPIO_SPEED_HIGH;
   pin_config.gpio_mode = GPIO_MODE_OUTPUT_PP;
   pin_config.gpio_pull = GPIO_PULLUP;
-  MicoGpioInitialize( (mico_gpio_t)MICO_PWM_IRLED, &pin_config );
-  MicoGpioOutputLow( (mico_gpio_t)MICO_PWM_IRLED );
+  MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_IRLED_PWM, &pin_config );
+  MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_IRLED_PWM );
 
   if( !pTps61151_driver->initialized )
   {
@@ -499,8 +499,8 @@ void stopTps611xx( void )
   pin_config.gpio_speed = GPIO_SPEED_MEDIUM;
   pin_config.gpio_mode = GPIO_MODE_OUTPUT_PP;
   pin_config.gpio_pull = GPIO_PULLUP;
-  MicoGpioInitialize( (mico_gpio_t)MICO_PWM_IRLED, &pin_config );
-  MicoGpioOutputLow( (mico_gpio_t)MICO_PWM_IRLED );
+  MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_IRLED_PWM, &pin_config );
+  MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_IRLED_PWM );
   
 }
 

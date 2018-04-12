@@ -380,12 +380,12 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
                 case CAN_SOURCE_ID_SET_IR_LED_LIGHTNESS:
                     {
 #if 1
-                        uint8_t duty = data_in[1];
+                        uint8_t duty = data_in[0];
                         if(duty > 100)
                         {
                             duty = 100;
                         }
-                        //brightness_dimming( 50000,  duty);
+                        brightness_dimming( 50000,  duty);
                         boardStatus->irled_duty = duty;
                         data_out[0] = data_in[0];
                         data_out[1] = duty;
