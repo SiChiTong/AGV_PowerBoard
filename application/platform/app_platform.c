@@ -257,7 +257,7 @@ void setModulePowerSignalOnOff( uint8_t module, uint8_t onoff )
 //#define POWER_ON_DEVICE_DELAY_TIME      1500/SYSTICK_PERIOD
 //#define POWER_OFF_DEVICE_DELAY_TIME      1500/SYSTICK_PERIOD
 extern void UploadPowerOffSignal(uint32_t second);
-#define POWER_OFF_DELAY_TIME            10*1000/SYSTICK_PERIOD
+#define POWER_OFF_DELAY_TIME            0//10*1000/SYSTICK_PERIOD
 #define GIVE_UP_TIME                    SWITCH_DEBOUNCE_TIME + 2*1000/SYSTICK_PERIOD
 static void Switch_Tick( void )
 {
@@ -269,7 +269,7 @@ static void Switch_Tick( void )
     static uint32_t give_up_start_time = 0;
     uint8_t switch_state = 0;
     
-    if(STATE_POWER_OFF == boardStatus->sysStatus & STATE_RUN_BITS)
+    if(STATE_POWER_OFF == (boardStatus->sysStatus & STATE_RUN_BITS) )
     {
         switch_state = switch_user->getSwitchState( SWITCH_USER );
 
@@ -289,7 +289,7 @@ static void Switch_Tick( void )
         }
     }
     
-    if(STATE_POWER_ON == boardStatus->sysStatus & STATE_RUN_BITS)
+    if(STATE_POWER_ON == (boardStatus->sysStatus & STATE_RUN_BITS) )
     {
         switch_state = switch_user->getSwitchState( SWITCH_USER );
         if(switch_state == 1)
