@@ -792,7 +792,7 @@ static OSStatus ackFwVersionInfoFrameProcess( serial_t *serial )
   OSStatus err = kNoErr;
   uint8_t length = sizeof(ackVersionInfoFrame_t);
   uint8_t swVersion[16] = SW_VERSION;
-  uint8_t hwVersion[3] = HW_VERSION;
+  uint8_t hwVersion[13] = HW_VERSION;
   hwVersion[2] = 0;
   ackVersionInfoFrame_t   *ackVersionInfoFrame;
 

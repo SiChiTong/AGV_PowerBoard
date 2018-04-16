@@ -277,20 +277,23 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
                     data_out[0] = data_in[0];
                     if(data_in[0] == 1)//read software version
                     {
-                        memcpy(&data_out[1], SW_VERSION, sizeof(SW_VERSION));
+                        memcpy(&data_out[2], SW_VERSION, sizeof(SW_VERSION));
                         //return strlen(SW_VERSION) + 1;
-                        return sizeof(SW_VERSION) + 1;
+                        data_out[1] = strlen(SW_VERSION);
+                        return sizeof(SW_VERSION) + 2;
                     }
                     else if(data_in[0] == 2)//protocol version
                     {
-                        memcpy(&data_out[1], PROTOCOL_VERSION, sizeof(PROTOCOL_VERSION));
-                        return sizeof(PROTOCOL_VERSION) +1;
+                        memcpy(&data_out[2], PROTOCOL_VERSION, sizeof(PROTOCOL_VERSION));
+                        data_out[1] = strlen(PROTOCOL_VERSION);
+                        return sizeof(PROTOCOL_VERSION) + 2;
                         
                     }
                     else if(data_in[0] == 3)//hardware version
                     {
-                        memcpy(&data_out[1], HW_VERSION, sizeof(HW_VERSION));
-                        return sizeof(HW_VERSION) + 1;
+                        memcpy(&data_out[2], HW_VERSION, sizeof(HW_VERSION));
+                        data_out[1] = strlen(HW_VERSION);
+                        return sizeof(HW_VERSION) + 2;
                     }
                     return CMD_NOT_FOUND;
                     break;
