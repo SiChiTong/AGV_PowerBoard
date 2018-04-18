@@ -8,6 +8,7 @@
 #include "serial_leds.h"
 #include "protocol.h"
 #include "upgrade_flash.h"
+#include "battery.h"
 
 //#define JOY_TEST
 
@@ -280,7 +281,11 @@ static void Switch_Tick( void )
         }
         if(os_get_time() - switch_on_start_time >= SWITCH_DEBOUNCE_TIME)
         {
-            PowerOnDevices();
+            //if((battery_pack.percentage > VBAT_POWER_OFF_PERCENTAGE + 5) || (battery_pack.com_status == false))
+            {
+                PowerOnDevices();
+            }
+            
         }  
         
         if(os_get_time() - give_up_start_time >= GIVE_UP_TIME)

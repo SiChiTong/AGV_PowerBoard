@@ -448,7 +448,7 @@ struct tps611xx_driver {
 
 static struct tps611xx_driver tps61151_driver = 
 {
-  .lightness_percent = 100,//75,
+  .lightness_percent = 20,//75,
   .pwm_frequency = 50000,
 };
 struct tps611xx_driver *pTps61151_driver = &tps61151_driver;

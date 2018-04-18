@@ -460,6 +460,14 @@ uint32_t GetModulePowerState( PowerEnable_TypeDef PowerEn )
         pinState |= POWER_CTRL_OUT;
       }
     }
+    
+    if( PowerEn & POWER_DOOR_CTRL )
+    {
+      if( MicoGpioInputGet( MICO_GPIO_3_3V_DOOR_CTRL  ) )
+      {
+        pinState |= POWER_DOOR_CTRL;
+      }
+    }
     return pinState;
 }
 
