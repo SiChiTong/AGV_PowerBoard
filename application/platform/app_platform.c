@@ -122,11 +122,14 @@ void PowerOnDevices( void )
     {
       boardStatus->startTime = os_get_time();
       boardStatus->isPowerOnFinish = NO;
+      board_gpios_init();
       boardStatus->setPowerOnoff(POWER_ALL, POWER_ON);
       boardStatus->setPowerOnoff(POWER_VSYS_24V_NV, POWER_OFF);
       boardStatus->setPowerOnoff(POWER_CAMERA_BACK_LED, POWER_OFF);
       boardStatus->setPowerOnoff(POWER_CAMERA_FRONT_LED, POWER_OFF);
-      boardStatus->setPowerOnoff(POWER_CTRL_OUT, POWER_ON);
+      //boardStatus->setPowerOnoff(POWER_CTRL_OUT, POWER_ON);
+      en_led_mcu();
+      
       
       
       DLP_ControlSignal->isDeviceProcessOver = NO;
@@ -262,7 +265,7 @@ extern void UploadPowerOffSignal(uint32_t second);
 #define GIVE_UP_TIME                    SWITCH_DEBOUNCE_TIME + 2*1000/SYSTICK_PERIOD
 static void Switch_Tick( void )
 {
-#if 1
+#if 0
   
     static uint32_t switch_on_start_time = 0;
     static uint32_t switch_off_start_time = 0;
@@ -862,7 +865,7 @@ void Platform_Tick( void )
 
 void bsp_Init( void )
 {
-  board_gpios_init();
+  //board_gpios_init();
   charger_detect_init();
   //key_switch_init();
 }

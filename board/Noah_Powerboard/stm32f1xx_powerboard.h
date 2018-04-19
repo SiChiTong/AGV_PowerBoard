@@ -128,6 +128,7 @@ void     BSP_GPIO_Init( void );
 void     BSP_Power_OnOff(PowerEnable_TypeDef PowerEn, PowerOnOff_TypeDef OnOff);
 uint32_t GetModulePowerState(PowerEnable_TypeDef PowerEn);
 void     BSP_Control_Sigal(PowerControl_TypeDef PowerCon, ControlSignal_TypeDef isHold);
+void en_led_mcu(void);
 
 extern void halEnterSleepMode( void );
 

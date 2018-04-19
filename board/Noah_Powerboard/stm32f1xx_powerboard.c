@@ -567,6 +567,17 @@ void BSP_Control_Sigal(PowerControl_TypeDef PowerCon, ControlSignal_TypeDef isHo
   }
 }
 
+
+void en_led_mcu(void)
+{
+    platform_pin_config_t pin_config;
+
+    pin_config.gpio_speed = GPIO_SPEED_MEDIUM;
+    pin_config.gpio_mode = GPIO_MODE_OUTPUT_PP;
+    pin_config.gpio_pull = GPIO_PULLUP;
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_LED_MCU_POWER_EN, &pin_config );
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_LED_MCU_POWER_EN);
+}
 #ifndef BOOTLOADER
 void halEnterSleepMode( void )
 {
