@@ -431,6 +431,7 @@ void PrintBatInfo(void)
 #define BAT_EOI     0x0D
 #define BATTERY_COM_ERR_DEBOUNCE_CNT    3
 #define BATTERY_READ_PERIOD             (3000/SYSTICK_PERIOD)
+#define BATTERY_FIRST_READ_PERIOD       (2800/SYSTICK_PERIOD)
 static uint32_t battery_period_start_time;
 static uint8_t battery_com_err_cnt = 0;
 extern void UploadBatInfo(void);
@@ -461,10 +462,10 @@ void battery_period( void )
         }
     }
 
-    if( os_get_time() - battery_period_start_time >= BATTERY_READ_PERIOD  )
+    if( os_get_time() + BATTERY_FIRST_READ_PERIOD - battery_period_start_time >= BATTERY_READ_PERIOD  )
     {   
         static uint8_t err_cnt = 0;
-        battery_period_start_time = os_get_time();  
+        battery_period_start_time = os_get_time() + BATTERY_FIRST_READ_PERIOD;  
         battery_com_err_cnt++;
         
         battery_read_infomation(); 
