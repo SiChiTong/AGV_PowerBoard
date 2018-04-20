@@ -122,7 +122,6 @@ void PowerOnDevices( void )
     {
       boardStatus->startTime = os_get_time();
       boardStatus->isPowerOnFinish = NO;
-      board_gpios_init();
       boardStatus->setPowerOnoff(POWER_ALL, POWER_ON);
       boardStatus->setPowerOnoff(POWER_VSYS_24V_NV, POWER_OFF);
       boardStatus->setPowerOnoff(POWER_CAMERA_BACK_LED, POWER_OFF);
@@ -865,7 +864,7 @@ void Platform_Tick( void )
 
 void bsp_Init( void )
 {
-  //board_gpios_init();
+  board_gpios_init();
   charger_detect_init();
   //key_switch_init();
 }

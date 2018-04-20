@@ -729,10 +729,10 @@ void init_platform( void )
  
   //  Initialise switch
   pin_config.gpio_speed = GPIO_SPEED_MEDIUM;
-  pin_config.gpio_mode = GPIO_MODE_INPUT;//GPIO_MODE_IT_RISING_FALLING;
+  pin_config.gpio_mode = GPIO_MODE_IT_RISING_FALLING;//GPIO_MODE_INPUT;//;
   pin_config.gpio_pull = GPIO_PULLDOWN;//GPIO_NOPULL;//GPIO_PULLDOWN;
-  MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_PWRKEY, &pin_config );
-  //MicoGpioEnableIRQ( MICO_GPIO_PWRKEY , IRQ_TRIGGER_BOTH_EDGES, _switch_irq_handler, NULL);
+
+  MicoGpioEnableIRQ( MICO_GPIO_PWRKEY , IRQ_TRIGGER_BOTH_EDGES, _switch_irq_handler, NULL);
 }
 
 void init_platform_bootloader( void )
