@@ -429,6 +429,22 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
 
                     break;
 #endif
+                    
+                case CAN_SOURCE_ID_REMOTE_POWRER_CTRL:
+                    {
+                        if((data_in[0] == 1) || (data_in[0] == 2))
+                        {
+                            boardStatus->remote_device_power_ctrl = data_in[0];
+                            data_out[0] = data_in[0];
+                            return 1;
+                        }
+                        else
+                        {
+                            data_out[0] = 0;
+                            return 1;
+                        }                    
+                        break;
+                    }
                 default :
                     break;
             }

@@ -107,6 +107,9 @@ typedef struct _boardStatus_t {
 #endif
   uint8_t            irled_duty;
   uint8_t            isUpgrading;
+  uint8_t            remote_device_power_ctrl;
+#define                 REMOTE_DEVICE_POWER_SHUTDOWN    1 
+#define                 REMOTE_DEVICE_POWER_REBOOT      2
 } boardStatus_t;
 
 typedef struct _controlSignal_t { 

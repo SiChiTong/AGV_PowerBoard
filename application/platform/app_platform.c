@@ -327,75 +327,134 @@ static void Switch_Tick( void )
 //#define DEVICE_STATE_POWER_ON       1  
 //#define DEVICE_STATE_POWER_OFF      0
 
-    static uint8_t state_change = 0; 
-  
-    if((boardStatus->isPowerOffFinish == YES) && (boardStatus->isPowerOnFinish == YES))
+    static uint8_t state_change = 0;
+    
+    if(boardStatus->remote_device_power_ctrl == 0)
     {
-        if(state_change == 0)
+        if((boardStatus->isPowerOffFinish == YES) && (boardStatus->isPowerOnFinish == YES))
         {
-            if( switch_user->preIOState != switch_user->getSwitchState( SWITCH_USER ) )
+            if(state_change == 0)
             {
-                switch_user->preIOState = switch_user->getSwitchState( SWITCH_USER );
-                state_change = 1;
-                platform_log("switch have switched");
-            }
-        }
-        
-        if(state_change == 1)
-        {
-            if( switch_user->preIOState != switch_user->getSwitchState( SWITCH_USER ) )
-            {
-                switch_user->preIOState = switch_user->getSwitchState( SWITCH_USER );
-                state_change = 0;
-                switch_user->startTime = 0;
-                return ;
-            }
-            if(switch_user->startTime == 0)
-            {
-                switch_user->startTime = os_get_time();
-            }
-            if( (switch_user->startTime != 0) && ((os_get_time() - switch_user->startTime) >= SWITCH_DEBOUNCE_TIME) )
-            {
-                switch_user->startTime = 0;
-#if 0
                 if( switch_user->preIOState != switch_user->getSwitchState( SWITCH_USER ) )
                 {
                     switch_user->preIOState = switch_user->getSwitchState( SWITCH_USER );
+                    state_change = 1;
+                    platform_log("switch have switched");
                 }
-                else
+            }
+            
+            if(state_change == 1)
+            {
+                if( switch_user->preIOState != switch_user->getSwitchState( SWITCH_USER ) )
                 {
-                    return;
+                    switch_user->preIOState = switch_user->getSwitchState( SWITCH_USER );
+                    state_change = 0;
+                    switch_user->startTime = 0;
+                    return ;
                 }
-#endif
-
-                switch_user->isSwitchOver = YES;
-                if( (STATE_POWER_OFF == (boardStatus->sysStatus & STATE_RUN_BITS))/* && (voltageConvert->bat_voltage >= VBAT_POWER_ON_LEVEL)*/ )
+                if(switch_user->startTime == 0)
                 {
-                    switch_user->switchOnOff = SWITCH_ON;
-                    platform_log("confirm to ON stable");
-                    if( boardStatus->sysStatus & STATE_IS_LOW_POWER )
+                    switch_user->startTime = os_get_time();
+                }
+                if( (switch_user->startTime != 0) && ((os_get_time() - switch_user->startTime) >= SWITCH_DEBOUNCE_TIME) )
+                {
+                    switch_user->startTime = 0;
+    #if 0
+                    if( switch_user->preIOState != switch_user->getSwitchState( SWITCH_USER ) )
                     {
-                        boardStatus->sysStatus &= ~STATE_IS_LOW_POWER;
+                        switch_user->preIOState = switch_user->getSwitchState( SWITCH_USER );
                     }
-                    PowerOnDevices();
-                    state_change = 0;
-                }
-                
-                else if( ( STATE_POWER_ON == (boardStatus->sysStatus & STATE_RUN_BITS) ) )
-                {
-                    switch_user->switchOnOff = SWITCH_OFF;
-                    platform_log("confirm to OFF stable");
+                    else
+                    {
+                        return;
+                    }
+    #endif
 
-                    PowerOffDevices();
-                    state_change = 0;
-                }
-            }     
+                    switch_user->isSwitchOver = YES;
+                    if( (STATE_POWER_OFF == (boardStatus->sysStatus & STATE_RUN_BITS))/* && (voltageConvert->bat_voltage >= VBAT_POWER_ON_LEVEL)*/ )
+                    {
+                        switch_user->switchOnOff = SWITCH_ON;
+                        platform_log("confirm to ON stable");
+                        if( boardStatus->sysStatus & STATE_IS_LOW_POWER )
+                        {
+                            boardStatus->sysStatus &= ~STATE_IS_LOW_POWER;
+                        }
+                        PowerOnDevices();
+                        state_change = 0;
+                    }
+                    
+                    else if( ( STATE_POWER_ON == (boardStatus->sysStatus & STATE_RUN_BITS) ) )
+                    {
+                        switch_user->switchOnOff = SWITCH_OFF;
+                        platform_log("confirm to OFF stable");
+
+                        PowerOffDevices();
+                        state_change = 0;
+                    }
+                }     
+            }
+        }
+        else
+        {
+            switch_user->preIOState = switch_user->getSwitchState( SWITCH_USER );
         }
     }
-    else
+    else if( DEVICES_ON == boardStatus->devicesOnOff )
     {
-        switch_user->preIOState = switch_user->getSwitchState( SWITCH_USER );
-    }
+        //if(boardStatus->remote_device_power_ctrl == REMOTE_DEVICE_POWER_SHUTDOWN)
+        {
+          
+#define REMOTE_POWER_CTRL_STATUS_DELAY      1
+#define REMOTE_POWER_CTRL_STATUS_PROCEED    2
+#define REMOTE_POWER_CTRL_STATUS_FINISHED   3
+        
+#define REMOTE_POWER_CTRL_DELAY_TIME        5000/SYSTICK_PERIOD
+          
+            static uint8_t status = 0;
+            static uint32_t remote_power_delay_start_time = 0;
+
+            switch (status)
+            {
+                case 0:
+                    status = REMOTE_POWER_CTRL_STATUS_DELAY;
+                    remote_power_delay_start_time = os_get_time();
+                    break;
+                case REMOTE_POWER_CTRL_STATUS_DELAY:
+                    if(os_get_time() - remote_power_delay_start_time > REMOTE_POWER_CTRL_DELAY_TIME)
+                    {
+                        status = REMOTE_POWER_CTRL_STATUS_PROCEED;
+                    }
+                    break;
+                case REMOTE_POWER_CTRL_STATUS_PROCEED:
+                    if(boardStatus->remote_device_power_ctrl == REMOTE_DEVICE_POWER_SHUTDOWN)
+                    {
+                        PowerOffDevices();
+                        status = REMOTE_POWER_CTRL_STATUS_FINISHED;
+                    }
+                    else if(boardStatus->remote_device_power_ctrl == REMOTE_DEVICE_POWER_REBOOT)
+                    {
+                        PowerOffDevices();
+                        boardStatus->rebootFlag  = REBOOT_YES;
+                        
+                    }
+                    
+                    break;
+                case REMOTE_POWER_CTRL_STATUS_FINISHED:
+                    //status = 0;
+                    break;
+                      
+                default:
+                    break;         
+            }
+        }
+        //else if(boardStatus->remote_device_power_ctrl == REMOTE_DEVICE_POWER_REBOOT)
+        {
+            
+        }
+          
+
+
+    } 
     
 #endif
 }
@@ -686,6 +745,7 @@ static void BoardStatus_Tick( void )
         //platform_log("board start to reboot after 5 seconds");
         platform_log("board start to reboot right now");
         flashTable.isNeedAutoBoot = 'Y';
+        flashTable.AutoBootDelayTime = 5;
         MICOBootConfiguration( &flashTable );
         NVIC_SystemReset();
       }
@@ -851,6 +911,10 @@ void ChargeTick(void)
         state = 0;
         boardStatus->sysStatus &= ~STATE_IS_CHARGER_IN;
         boardStatus->sysStatus &= ~STATE_IS_RECHARGE_IN;
+    }
+    else
+    {
+        boardStatus->sysStatus |= STATE_IS_CHARGING;
     }
     
 }

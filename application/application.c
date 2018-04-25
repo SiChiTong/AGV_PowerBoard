@@ -103,15 +103,19 @@ int main(void)
     FifoInit(fifo, fifo_data_in_ram, RCV_DATA_LEN_MAX);
       
     MicoCanInitialize( MICO_CAN1 );
-    if( !isNeedAutoBoot() )
-    {
-        PowerOnDevices();
-    } 
+    
 
     MX_GPIO_Init();
     MX_USART2_UART_Init();
     
     if(HAL_UART_Receive_IT(&huart2,rcv_buf,1)!=HAL_OK)Error_Handler();
+    
+    if( !isNeedAutoBoot() )
+    {   
+        while(os_get_time() <= flashTable.AutoBootDelayTime*1000/SYSTICK_PERIOD);
+        PowerOnDevices();
+    } 
+    
     for(;;)
     {
         Platform_Tick();

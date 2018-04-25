@@ -39,6 +39,7 @@
 #define CAN_SOURCE_ID_GET_IR_LED_LIGHTNESS  0x88
 #define CAN_SOURCE_ID_SET_LED_EFFECT        0x89
 #define CAN_SOURCE_ID_POWER_OFF_SIGNAL      0x8a
+#define CAN_SOURCE_ID_REMOTE_POWRER_CTRL    0x8b
 
 #define CAN_FIFO_SIZE                   250
 
