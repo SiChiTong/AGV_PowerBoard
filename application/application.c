@@ -112,7 +112,8 @@ int main(void)
     
     if( !isNeedAutoBoot() )
     {   
-        while(os_get_time() <= flashTable.AutoBootDelayTime*1000/SYSTICK_PERIOD);
+        //while(os_get_time() <= flashTable.AutoBootDelayTime*1000/SYSTICK_PERIOD);
+        while(os_get_time() <= 6*1000/SYSTICK_PERIOD);
         PowerOnDevices();
     } 
     

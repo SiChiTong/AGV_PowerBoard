@@ -432,17 +432,24 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
                     
                 case CAN_SOURCE_ID_REMOTE_POWRER_CTRL:
                     {
-                        if((data_in[0] == 1) || (data_in[0] == 2))
+                        data_out[0] = data_in[0];
+                        if( (YES == boardStatus->isPowerOffFinish) && (YES == boardStatus->isPowerOnFinish) && (boardStatus->sysStatus & STATE_RUN_BITS) )
                         {
-                            boardStatus->remote_device_power_ctrl = data_in[0];
-                            data_out[0] = data_in[0];
-                            return 1;
+                            if((data_in[0] == 1) || (data_in[0] == 2))
+                            {
+                                boardStatus->remote_device_power_ctrl = data_in[0];
+                                data_out[1] = 0; //succeed
+                            }
+                            else
+                            {
+                                data_out[1] = 1; //parameter error
+                            }
                         }
                         else
                         {
-                            data_out[0] = 0;
-                            return 1;
-                        }                    
+                            data_out[1] = 2;    //device is not power on yet
+                        }
+                        return 2;
                         break;
                     }
                 default :
