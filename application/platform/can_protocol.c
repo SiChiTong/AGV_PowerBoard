@@ -215,23 +215,23 @@ void UploadPowerOffSignal(uint32_t second)
 void UploadBatInfo(void)
 {
     CAN_ID_UNION id;
-    uint8_t tx_buf[6];
+    uint8_t tx_buf[4];
     id.CanID_Struct.ACK = 0;
     id.CanID_Struct.DestMACID = 0;////
     id.CanID_Struct.FUNC_ID = CAN_FUN_ID_TRIGGER;
     id.CanID_Struct.SourceID = CAN_SOURCE_ID_GET_BAT_STATE;
     id.CanID_Struct.SrcMACID = CAN_NOAH_PB_ID;////
     tx_buf[0] = 0;
-    tx_buf[1] = 0;
+    //tx_buf[1] = 0;
     if(battery_pack.com_status == false)
     {
-        *(uint16_t*)&tx_buf[2] = voltageConvert->bat_voltage;
-        *(uint16_t*)&tx_buf[4] = 0;
+        *(uint16_t*)&tx_buf[1] = voltageConvert->bat_voltage;
+        tx_buf[3] = 0;
     }
     else
     {
-        *(uint16_t*)&tx_buf[2] = battery_pack.pack_voltage;
-        *(uint16_t*)&tx_buf[4] = battery_pack.percentage;
+        *(uint16_t*)&tx_buf[1] = battery_pack.pack_voltage;
+        tx_buf[3] = battery_pack.percentage;
     }
     
     CanTX( MICO_CAN1, id.CANx_ID, tx_buf, sizeof(tx_buf) );
@@ -360,15 +360,15 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
                     if(battery_pack.com_status == false)
                     {
                         *(uint16_t*)&data_out[1] = voltageConvert->bat_voltage;
-                        *(uint16_t*)&data_out[3] = 0;
+                        data_out[3] = 0;
                     }
                     else
                     {
                         *(uint16_t*)&data_out[1] = battery_pack.pack_voltage;
-                        *(uint16_t*)&data_out[3] = battery_pack.percentage;
+                        data_out[3] = battery_pack.percentage;
                     }
                      
-                    return 5;
+                    return 4;
                       
                     break;
                 case CAN_SOURCE_ID_GET_SYS_STATE:
