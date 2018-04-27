@@ -745,7 +745,7 @@ static void BoardStatus_Tick( void )
         //platform_log("board start to reboot after 5 seconds");
         platform_log("board start to reboot right now");
         flashTable.isNeedAutoBoot = 'Y';
-        flashTable.AutoBootDelayTime = 5;
+        flashTable.AutoBootDelayTime = 10;
         MICOBootConfiguration( &flashTable );
         NVIC_SystemReset();
       }

@@ -112,8 +112,7 @@ int main(void)
     
     if( !isNeedAutoBoot() )
     {   
-        //while(os_get_time() <= flashTable.AutoBootDelayTime*1000/SYSTICK_PERIOD);
-        while(os_get_time() <= 6*1000/SYSTICK_PERIOD);
+        while(os_get_time() <= flashTable.AutoBootDelayTime*1000/SYSTICK_PERIOD);
         PowerOnDevices();
     } 
     
@@ -184,17 +183,18 @@ int8_t isNeedAutoBoot( void )
 {
   OSStatus err = kNoErr;
   uint32_t flash_table_offset = 0x0;
-  save_flash_data_t        flashTable;
-  err = MicoFlashRead( MICO_PARTITION_PARAMETER_2, &flash_table_offset, (uint8_t *)&flashTable, sizeof(save_flash_data_t) );
+  save_flash_data_t        flashTableTmp;
+  err = MicoFlashRead( MICO_PARTITION_PARAMETER_2, &flash_table_offset, (uint8_t *)&flashTableTmp, sizeof(save_flash_data_t) );
   if( err )
   {
     printf("\r\n read flash data err\r\n");
     return -1;
   }
-  if( flashTable.isNeedAutoBoot == 'Y' )
+  if( flashTableTmp.isNeedAutoBoot == 'Y' )
   {//
-    flashTable.isNeedAutoBoot = 'N';
-    MICOBootConfiguration( &flashTable );
+    flashTableTmp.isNeedAutoBoot = 'N';
+    flashTable.AutoBootDelayTime = flashTableTmp.AutoBootDelayTime;
+    MICOBootConfiguration( &flashTableTmp );
     return 0;
   }
   return -1;

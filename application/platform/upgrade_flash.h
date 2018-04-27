@@ -24,7 +24,7 @@ typedef struct  _boot_table_t {
 
 typedef struct {
   uint8_t       isNeedAutoBoot; 
-  uint8_t       AutoBootDelayTime;  //uint: second
+  uint16_t       AutoBootDelayTime;  //uint: second
 } save_flash_data_t;
 extern save_flash_data_t        flashTable;
 
