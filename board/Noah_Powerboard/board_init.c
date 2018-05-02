@@ -79,6 +79,9 @@ void board_gpios_init( void )
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_CAMERA_BACK_LED_EN, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_3_3V_DOOR_CTRL, &pin_config );
     
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_LED_MCU_POWER_EN, &pin_config );
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_LED_MCU_POWER_EN);
+    
     
     //MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_PWR_CTRL_OUT, &pin_config ); 
     
@@ -131,7 +134,6 @@ void board_gpios_init( void )
     
     
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL);
-    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_LED_MCU_POWER_EN );
     
     
     MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_5V_KEYPAD_EN );
