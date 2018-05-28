@@ -792,8 +792,8 @@ static OSStatus ackFwVersionInfoFrameProcess( serial_t *serial )
   OSStatus err = kNoErr;
   uint8_t length = sizeof(ackVersionInfoFrame_t);
   uint8_t swVersion[16] = SW_VERSION;
-  uint8_t hwVersion[13] = HW_VERSION;
-  hwVersion[2] = 0;
+  //uint8_t hwVersion[13] = HW_VERSION;
+  //hwVersion[2] = 0;
   ackVersionInfoFrame_t   *ackVersionInfoFrame;
 
   require_action( serial, exit, err = kGeneralErr );
@@ -804,7 +804,7 @@ static OSStatus ackFwVersionInfoFrameProcess( serial_t *serial )
 
   ackVersionInfoFrame->ctype = FRAME_TYPE_VERSION_INFO;
   ackVersionInfoFrame->ver_type = VERSION_TYPE_FARMWARE;
-  memcpy( ackVersionInfoFrame->hw, (void const*)hwVersion, 3 );
+  //memcpy( ackVersionInfoFrame->hw, (void const*)hwVersion, 3 );
   memcpy( ackVersionInfoFrame->sw, (void const*)swVersion, 16 );
 
   err = uart_frame_send( serial, (uint8_t *)ackVersionInfoFrame, length );

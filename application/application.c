@@ -88,10 +88,10 @@ int main(void)
     init_architecture();
     init_platform();
     printf ( menu, MODEL, SW_VERSION, HARDWARE_REVISION );
-
     os_PowerBoard_log( "System clock = %d Hz",HAL_RCC_GetHCLKFreq() );
 
     Platform_Init();
+    get_hw_version();
     
     VolDetect_Init();
     Protocol_Init();
@@ -103,12 +103,8 @@ int main(void)
     FifoInit(fifo, fifo_data_in_ram, RCV_DATA_LEN_MAX);
       
     MicoCanInitialize( MICO_CAN1 );
-    
 
-    MX_GPIO_Init();
-    MX_USART2_UART_Init();
     
-    if(HAL_UART_Receive_IT(&huart2,rcv_buf,1)!=HAL_OK)Error_Handler();
     
     if( !isNeedAutoBoot() )
     {   
@@ -367,6 +363,13 @@ void assert_failed(uint8_t* file, uint32_t line)
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 
+void led_uart_init(void)
+{
+    MX_GPIO_Init();
+    MX_USART2_UART_Init();
+    
+    if(HAL_UART_Receive_IT(&huart2,rcv_buf,1)!=HAL_OK)Error_Handler();
+}
 
 
 

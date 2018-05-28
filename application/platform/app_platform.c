@@ -114,6 +114,8 @@ exit:
   return err;
 }
 
+
+extern void led_uart_init(void);
 void PowerOnDevices( void )
 {
   if( DEVICES_OFF == boardStatus->devicesOnOff )
@@ -131,9 +133,9 @@ void PowerOnDevices( void )
       //boardStatus->setPowerOnoff(POWER_CAMERA_BACK_LED, POWER_OFF);
       //boardStatus->setPowerOnoff(POWER_CAMERA_FRONT_LED, POWER_OFF);
       en_led_mcu();
+      led_uart_init();
       
-      
-      
+
       DLP_ControlSignal->isDeviceProcessOver = NO;
       PAD_ControlSignal->isDeviceProcessOver = NO;
       X86_ControlSignal->isDeviceProcessOver = NO;
@@ -929,6 +931,44 @@ void Platform_Tick( void )
   ChargeTick();
 }
 
+void get_hw_version(void)
+{
+#define DEBOUNCE_TIME       100/SYSTICK_PERIOD
+    uint8_t new_key_value = 0;
+    uint8_t old_key_value = 0;
+
+    
+    static uint32_t start_time = 0;
+    start_time = os_get_time();
+    while(os_get_time() - start_time <= DEBOUNCE_TIME)
+    {
+        old_key_value = new_key_value;
+        
+        new_key_value |=  MicoGpioInputGet(MICO_GPIO_HW_VERSION_ID_0);
+        new_key_value |=  MicoGpioInputGet(MICO_GPIO_HW_VERSION_ID_1)<<1;
+  
+        if(new_key_value != old_key_value)
+        {
+            start_time = os_get_time();
+        }     
+    }
+    boardStatus->hw_version_id =  new_key_value;
+    switch(boardStatus->hw_version_id)
+    {
+        case 0:
+            memcpy(boardStatus->hw_version, HW_VERSION_V0_2, strlen(HW_VERSION_V0_2));
+            break;
+        case 1:
+            memcpy(boardStatus->hw_version, HW_VERSION_V0_3, strlen(HW_VERSION_V0_3));
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+        default :
+            break;   
+    }
+}
 void bsp_Init( void )
 {
   board_gpios_init();

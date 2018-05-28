@@ -110,6 +110,11 @@ typedef struct _boardStatus_t {
   uint8_t            remote_device_power_ctrl;
 #define                 REMOTE_DEVICE_POWER_SHUTDOWN    1 
 #define                 REMOTE_DEVICE_POWER_REBOOT      2
+  
+  uint8_t            hw_version_id;
+#define                 HW_V0_3     1
+  char hw_version[20];
+  
 } boardStatus_t;
 
 typedef struct _controlSignal_t { 
@@ -144,5 +149,6 @@ extern void Platform_Tick( void );
 extern void bsp_Init( void );
 extern void SystemClock_Config( void );
 extern void key_switch_interrupt_cb( void );
+extern void get_hw_version(void);
 #endif  /* __PLATFORM_H */
 

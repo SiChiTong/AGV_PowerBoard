@@ -139,7 +139,7 @@ typedef enum
     MICO_GPIO_5V_MOTOR_EN,          //new
     MICO_GPIO_5V_RECHARGE_EN,       //new
     MICO_GPIO_5V_SENSOR_BOARD_EN,   //new
-    MICO_GPIO_5V_SWITCH_EN,         //new
+    MICO_GPIO_5V_SWITCH_EN,         //new  /////////////////
     MICO_GPIO_12V_PAD_EN,           //new
     MICO_GPIO_12V_2_1_PA_EN,        //new
     MICO_GPIO_12V_EXTEND_EN,        //new
@@ -219,8 +219,8 @@ typedef enum
     MICO_GPIO_FAN_1_CTRL,
     MICO_GPIO_FAN_2_CTRL,
     MICO_GPIO_FAN_3_CTRL,
-    MICO_GPIO_5V_POLE_MOTOR_EN,
-    MICO_GPIO_5V_KEYPAD_EN,
+    MICO_GPIO_5V_POLE_MOTOR_EN,////////
+    MICO_GPIO_5V_KEYPAD_EN,///////
     
     MICO_GPIO_CAMERA_BACK_LED_EN,
     MICO_GPIO_CAMERA_FRONT_LED_EN,

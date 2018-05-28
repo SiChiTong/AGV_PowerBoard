@@ -28,7 +28,7 @@ extern platform_can_driver_t  platform_can_drivers[];
 uint8_t CanTxdataBuff[CAN_LONG_FRAME_LENTH_MAX] = {0};
 
 uint8_t swVersion[] = SW_VERSION;
-uint8_t hwVersion[] = HW_VERSION;
+//uint8_t hwVersion[] = HW_VERSION;
 
 CAN_TXDATA_STRUCT  CommandProcessing( uint32_t func_ID, uint8_t* dstPtr, uint8_t* pdata, uint32_t len );
 
@@ -291,9 +291,9 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
                     }
                     else if(data_in[0] == 3)//hardware version
                     {
-                        memcpy(&data_out[2], HW_VERSION, sizeof(HW_VERSION));
-                        data_out[1] = strlen(HW_VERSION);
-                        return sizeof(HW_VERSION) + 2;
+                        memcpy(&data_out[2], boardStatus->hw_version, strlen(boardStatus->hw_version));
+                        data_out[1] = strlen(boardStatus->hw_version);
+                        return strlen(boardStatus->hw_version) + 2;
                     }
                     return CMD_NOT_FOUND;
                     break;

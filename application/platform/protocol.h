@@ -44,7 +44,9 @@
 #define READ_FW_VERSION_COMMAND         0x00
 #define READ_PROTOCOL_VERSION           0x01
 
-#define HW_VERSION                      "NOAH_PM_V0.2"
+//#define HW_VERSION                      "NOAH_PM_V0.2"
+#define HW_VERSION_V0_2                  "NOAH_PM_V0.2"
+#define HW_VERSION_V0_3                  "NOAH_PM_V0.3"
 #define SW_VERSION                      "NOAHC001M08B107"
 #define PROTOCOL_VERSION                "20170619P0001"
 
