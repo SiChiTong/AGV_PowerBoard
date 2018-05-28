@@ -458,7 +458,7 @@ void Main_Menu(void)
         printf("\r\n triggered 5V_SENSOR_BOARD_EN \r\n");
       }
       else if (findCommandPara(cmdbuf, "3", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_5V_SWITCH_EN  );
+        //MicoGpioOutputTrigger( MICO_GPIO_5V_SWITCH_EN  );
         printf("\r\n triggered 5V_SWITCH_EN \r\n");
       }
 #if 1
@@ -525,11 +525,11 @@ void Main_Menu(void)
       
       
       else if (findCommandPara(cmdbuf, "J", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_5V_POLE_MOTOR_EN  );
+        //MicoGpioOutputTrigger( MICO_GPIO_5V_POLE_MOTOR_EN  );
         printf("\r\n triggered 5V_POLE_MOTOR_EN \r\n");
       }
       else if (findCommandPara(cmdbuf, "K", NULL, 0) != -1){
-        MicoGpioOutputTrigger( MICO_GPIO_5V_KEYPAD_EN  );
+        //MicoGpioOutputTrigger( MICO_GPIO_5V_KEYPAD_EN  );
         printf("\r\n triggered 5V_KEYPAD_EN \r\n");
       }
       else if (findCommandPara(cmdbuf, "L", NULL, 0) != -1){
@@ -604,7 +604,7 @@ void Main_Menu(void)
         printf(   "\r\n8 -0: 5V_MOTOR_EN\r\n"
                       "8 -1: 5V_RECHARGE_EN\r\n"
                       "8 -2: 5V_SENSOR_BOARD_EN\r\n"
-                      "8 -3: 5V_SWITCH_EN\r\n"
+                      /*"8 -3: 5V_SWITCH_EN\r\n"*/
                       "8 -4: 5V_ROUTER_EN\r\n"
                       "8 -5: 5V_EN\r\n"
                       "8 -6: 12V_PAD_EN\r\n"
@@ -620,8 +620,8 @@ void Main_Menu(void)
                       "8 -G: RECHARGE_LED\r\n"
                       "8 -H: SLAM_EN nv\r\n"
                       "8 -I: 485_EN\r\n"
-                      "8 -J: 5V_POLE_MOTOR_EN\r\n"
-                      "8 -K: 5V_KEYPAD_EN\r\n"
+                      /*"8 -J: 5V_POLE_MOTOR_EN\r\n"*/
+                      /*"8 -K: 5V_KEYPAD_EN\r\n"*/
                       "8 -L: CAMERA_LED_EN\r\n"
                         
                         );

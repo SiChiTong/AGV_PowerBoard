@@ -28,9 +28,9 @@ void BSP_Power_OnOff(uint32_t PowerEn, PowerOnOff_TypeDef OnOff)
     {
       MicoGpioOutputLow( MICO_GPIO_5V_SENSOR_BOARD_EN );
     }
-    if( PowerEn & POWER_5V_SWITCH )
+    //if( PowerEn & POWER_5V_SWITCH )
     {
-      MicoGpioOutputLow( MICO_GPIO_5V_SWITCH_EN );
+      //MicoGpioOutputLow( MICO_GPIO_5V_SWITCH_EN );
     }
     if( PowerEn & POWER_5V_ROUTER  )
     {
@@ -108,13 +108,15 @@ void BSP_Power_OnOff(uint32_t PowerEn, PowerOnOff_TypeDef OnOff)
       MicoGpioOutputHigh( MICO_GPIO_CHARGE_FAN_CTRL);
     }
     */
-    if( PowerEn & POWER_POLE_MOTOR )
+    
+    
+    //if( PowerEn & POWER_POLE_MOTOR )
     {
-      MicoGpioOutputLow( MICO_GPIO_5V_POLE_MOTOR_EN);
+      //MicoGpioOutputLow( MICO_GPIO_5V_POLE_MOTOR_EN);
     }
-    if( PowerEn & POWER_5V_KEYPAD )
+    //if( PowerEn & POWER_5V_KEYPAD )
     {
-      MicoGpioOutputLow( MICO_GPIO_5V_KEYPAD_EN);
+      //MicoGpioOutputLow( MICO_GPIO_5V_KEYPAD_EN);
     }
     
     if( PowerEn & POWER_CAMERA_FRONT_LED )
@@ -171,9 +173,9 @@ void BSP_Power_OnOff(uint32_t PowerEn, PowerOnOff_TypeDef OnOff)
     {
       MicoGpioOutputHigh( MICO_GPIO_5V_SENSOR_BOARD_EN );
     }
-    if( PowerEn & POWER_5V_SWITCH )
+    //if( PowerEn & POWER_5V_SWITCH )
     {
-      MicoGpioOutputHigh( MICO_GPIO_5V_SWITCH_EN );
+      //MicoGpioOutputHigh( MICO_GPIO_5V_SWITCH_EN );
     }
     if( PowerEn & POWER_5V_ROUTER  )
     {
@@ -250,13 +252,13 @@ void BSP_Power_OnOff(uint32_t PowerEn, PowerOnOff_TypeDef OnOff)
     }
 */
     
-    if( PowerEn & POWER_POLE_MOTOR )
+    //if( PowerEn & POWER_POLE_MOTOR )
     {
-      MicoGpioOutputHigh( MICO_GPIO_5V_POLE_MOTOR_EN);
+      //MicoGpioOutputHigh( MICO_GPIO_5V_POLE_MOTOR_EN);
     }
-    if( PowerEn & POWER_5V_KEYPAD )
+    //if( PowerEn & POWER_5V_KEYPAD )
     {
-      MicoGpioOutputHigh( MICO_GPIO_5V_KEYPAD_EN);
+      //MicoGpioOutputHigh( MICO_GPIO_5V_KEYPAD_EN);
     }
     
     if( PowerEn & POWER_CTRL_OUT )
@@ -327,11 +329,11 @@ uint32_t GetModulePowerState( PowerEnable_TypeDef PowerEn )
         pinState |= POWER_5V_SENSOR_BOARD     ;
       }
     }
-    if( PowerEn & POWER_5V_SWITCH )
+    //if( PowerEn & POWER_5V_SWITCH )
     {
-      if( !MicoGpioInputGet( MICO_GPIO_5V_SWITCH_EN ) )
+      //if( !MicoGpioInputGet( MICO_GPIO_5V_SWITCH_EN ) )
       {
-        pinState |= POWER_5V_SWITCH;
+        //pinState |= POWER_5V_SWITCH;
       }
     }
     if( PowerEn & POWER_5V_ROUTER  )
@@ -463,19 +465,19 @@ uint32_t GetModulePowerState( PowerEnable_TypeDef PowerEn )
         pinState |= POWER_CHARGE_FAN;
       }
     }
-    if( PowerEn & POWER_POLE_MOTOR )
+    //if( PowerEn & POWER_POLE_MOTOR )
     {
-      if( !MicoGpioInputGet( MICO_GPIO_5V_POLE_MOTOR_EN  ) )
+      //if( !MicoGpioInputGet( MICO_GPIO_5V_POLE_MOTOR_EN  ) )
       {
-        pinState |= POWER_POLE_MOTOR;
+        //pinState |= POWER_POLE_MOTOR;
       }
     }
     
-    if( PowerEn & POWER_5V_KEYPAD )
+    //if( PowerEn & POWER_5V_KEYPAD )
     {
-      if( !MicoGpioInputGet( MICO_GPIO_5V_KEYPAD_EN  ) )
+      //if( !MicoGpioInputGet( MICO_GPIO_5V_KEYPAD_EN  ) )
       {
-        pinState |= POWER_5V_KEYPAD;
+        //pinState |= POWER_5V_KEYPAD;
       }
     }
     if( PowerEn & POWER_CAMERA_FRONT_LED )
