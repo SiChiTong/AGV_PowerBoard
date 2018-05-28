@@ -122,11 +122,14 @@ void PowerOnDevices( void )
     {
       boardStatus->startTime = os_get_time();
       boardStatus->isPowerOnFinish = NO;
-      boardStatus->setPowerOnoff(POWER_ALL, POWER_ON);
-      boardStatus->setPowerOnoff(POWER_VSYS_24V_NV, POWER_OFF);
-      boardStatus->setPowerOnoff(POWER_CAMERA_BACK_LED, POWER_OFF);
-      boardStatus->setPowerOnoff(POWER_CAMERA_FRONT_LED, POWER_OFF);
-      //boardStatus->setPowerOnoff(POWER_CTRL_OUT, POWER_ON);
+      
+      boardStatus->setPowerOnoff(POWER_VSYS_24V_NV + POWER_CAMERA_BACK_LED + POWER_CAMERA_FRONT_LED +  POWER_DOOR_CTRL, POWER_OFF);
+      boardStatus->setPowerOnoff(POWER_ALL - (POWER_VSYS_24V_NV + POWER_CAMERA_BACK_LED + POWER_CAMERA_FRONT_LED +  POWER_DOOR_CTRL), POWER_ON);
+      
+      //boardStatus->setPowerOnoff(POWER_VSYS_24V_NV, POWER_OFF);
+      //boardStatus->setPowerOnoff(POWER_DOOR_CTRL, POWER_OFF);
+      //boardStatus->setPowerOnoff(POWER_CAMERA_BACK_LED, POWER_OFF);
+      //boardStatus->setPowerOnoff(POWER_CAMERA_FRONT_LED, POWER_OFF);
       en_led_mcu();
       
       

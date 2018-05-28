@@ -59,7 +59,7 @@
 #define POWER_OFF_PROCEESING_TIME     30000/SYSTICK_PERIOD   //30s
 
 typedef  uint32_t (*getSwitchState_Fn)(Switch_TypeDef Switch);
-typedef  void (*setPowerOnoff_Fn)(PowerEnable_TypeDef PowerEn, PowerOnOff_TypeDef OnOff);
+typedef  void (*setPowerOnoff_Fn)(uint32_t PowerEn, PowerOnOff_TypeDef OnOff);
 typedef  void (*setControlSigal_Fn)(PowerControl_TypeDef PowerCon, ControlSignal_TypeDef isHold);
 
 typedef struct _switch_t {

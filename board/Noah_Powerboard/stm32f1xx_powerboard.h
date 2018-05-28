@@ -100,9 +100,14 @@ typedef enum
   POWER_CAMERA_BACK_LED     = 0x02000000,
   POWER_CTRL_OUT            = 0x04000000,
   POWER_DOOR_CTRL           = 0x08000000,
+  
+  POWER_3V3_CARD_EN_1       = 0x10000000,
+  POWER_3V3_CARD_EN_2       = 0x20000000,
+  POWER_3V3_CARD_EN_3       = 0x40000000,
+  POWER_3V3_CARD_EN_4       = 0x80000000,
 
 
-  POWER_ALL                 = 0x0FFFFFFF,
+  POWER_ALL                 = 0xFFFFFFFF,
  
   
 } PowerEnable_TypeDef;
@@ -125,7 +130,7 @@ void            BSP_SW_Init(Switch_TypeDef Switch, SwitchMode_TypeDef SwitchMode
 uint32_t        BSP_SW_GetState(Switch_TypeDef Switch);
 
 void     BSP_GPIO_Init( void );
-void     BSP_Power_OnOff(PowerEnable_TypeDef PowerEn, PowerOnOff_TypeDef OnOff);
+void     BSP_Power_OnOff(uint32_t PowerEn, PowerOnOff_TypeDef OnOff);
 uint32_t GetModulePowerState(PowerEnable_TypeDef PowerEn);
 void     BSP_Control_Sigal(PowerControl_TypeDef PowerCon, ControlSignal_TypeDef isHold);
 void en_led_mcu(void);

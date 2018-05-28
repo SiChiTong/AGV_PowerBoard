@@ -22,140 +22,97 @@ extern const platform_adc_t             platform_adc_peripherals[];
 void board_gpios_init( void )
 {
     platform_pin_config_t pin_config;
-
+    
+    /*---- output initialization----*/
     pin_config.gpio_speed = GPIO_SPEED_MEDIUM;
     pin_config.gpio_mode = GPIO_MODE_OUTPUT_PP;
     pin_config.gpio_pull = GPIO_PULLUP;
- 
 
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_5V_MOTOR_EN, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_5V_RECHARGE_EN, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_5V_SENSOR_BOARD_EN, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_5V_SWITCH_EN, &pin_config );
-
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_12V_PAD_EN, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_12V_2_1_PA_EN, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_12V_EXTEND_EN, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_12V_X86_EN, &pin_config );
-
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_12V_NV_EN, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_PWR_NV, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_PWR_PAD, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_PWR_X86, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_PWR_RESERVE, &pin_config );
-
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_5V_EN, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_12V_EN, &pin_config );
-    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_24V_EN, &pin_config );
-    
-    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_5V_EN );
-    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_12V_EN );
-    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_24V_EN );
-    
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_24V_EN, &pin_config );   
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_CHARGE_IN, &pin_config );
-
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_RECHARGE_IN, &pin_config );
-
-
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_485_EN, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_IRLED_PWM, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_SYS_LED, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_RECHARGE_LED, &pin_config );
-
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_5V_ROUTER_EN, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_VSYS_24V_NV_EN , &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_SLAM_EN , &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_24V_EXTEND_EN, &pin_config );
-    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_24V_PRINTER_EN, &pin_config );
-    
-    //MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_LED_MCU_RESET, &pin_config );//LED_MCU_RESET
-    
-    
-    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL, &pin_config );
-    
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_24V_PRINTER_EN, &pin_config );    
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL, &pin_config );    
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_5V_POLE_MOTOR_EN, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_5V_KEYPAD_EN, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_CAMERA_FRONT_LED_EN, &pin_config );
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_CAMERA_BACK_LED_EN, &pin_config );
-    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_3_3V_DOOR_CTRL, &pin_config );
-    
-    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_LED_MCU_POWER_EN, &pin_config );
-    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_LED_MCU_POWER_EN);
-    
-    
-    //MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_PWR_CTRL_OUT, &pin_config ); 
-    
-    
-    //pin_config.gpio_speed = GPIO_SPEED_MEDIUM;
-    //pin_config.gpio_mode = GPIO_MODE_INPUT;
-    //pin_config.gpio_pull = GPIO_PULLDOWN;
-    //MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_PWR_CTRL_IN, &pin_config ); 
-      
-    //MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_PWR_CTRL_OUT);
-    
-    
-    //MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_FAN_1_CTRL, &pin_config );
-    //MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_FAN_2_CTRL, &pin_config );
-    //MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_FAN_3_CTRL, &pin_config );
-    
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_3_3V_DOOR_CTRL, &pin_config );   
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_LED_MCU_POWER_EN, &pin_config );  
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_3V3_CARD_EN_1, &pin_config );//V0.3
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_3V3_CARD_EN_2, &pin_config );//V0.3
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_3V3_CARD_EN_3, &pin_config );//V0.3
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_3V3_CARD_EN_4, &pin_config );//V0.3
 
+    
+    /*---- input initialization ----*/
+    pin_config.gpio_speed = GPIO_SPEED_MEDIUM;
+    pin_config.gpio_mode = GPIO_MODE_INPUT;
+    pin_config.gpio_pull = GPIO_NOPULL;
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_HW_VERSION_ID_0, &pin_config );
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_HW_VERSION_ID_1, &pin_config );
+
+    
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_5V_EN );
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_12V_EN );
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_24V_EN ); 
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_LED_MCU_POWER_EN);
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_5V_MOTOR_EN );
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_5V_RECHARGE_EN );
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_5V_SENSOR_BOARD_EN );
-    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_5V_SWITCH_EN );
-    
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_5V_SWITCH_EN );   
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_12V_PAD_EN );
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_12V_2_1_PA_EN );
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_12V_EXTEND_EN );
-    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_12V_X86_EN );
-    
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_12V_X86_EN );   
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_12V_NV_EN );
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_PWR_NV );
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_PWR_PAD );
-    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_PWR_X86 );
-    
-    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_PWR_RESERVE );
-    
-    
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_PWR_X86 );   
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_PWR_RESERVE );   
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_CHARGE_IN );
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_RECHARGE_IN );
-
-    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_485_EN );
-    
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_485_EN );    
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_IRLED_PWM );
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_SYS_LED );
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_RECHARGE_LED );
-    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_5V_ROUTER_EN);
-    
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_5V_ROUTER_EN);    
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_VSYS_24V_NV_EN);
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_SLAM_EN);
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_24V_PRINTER_EN);
-    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_24V_EXTEND_EN);
-    
-    
-    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL);
-    
-    
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_24V_EXTEND_EN);   
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL); 
     MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_5V_KEYPAD_EN );
-    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_5V_POLE_MOTOR_EN );
-    
-    //MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL);  
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_5V_POLE_MOTOR_EN ); 
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_CAMERA_FRONT_LED_EN);  
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_CAMERA_BACK_LED_EN);
-    
-    
-    
-    //MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_PWR_CTRL_OUT);
-    
-    
-    //MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_LED_MCU_RESET );//LED_MCU_RESET
-    
-    
-    
-    //MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_FAN_1_CTRL );
-    //MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_FAN_2_CTRL );
-    //MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_FAN_3_CTRL );
-    
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_3V3_CARD_EN_1);//V0.3
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_3V3_CARD_EN_2);//V0.3
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_3V3_CARD_EN_3);//V0.3
+    MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_3V3_CARD_EN_4);//V0.3
     
 }
 #ifdef NOT_USE_TMP

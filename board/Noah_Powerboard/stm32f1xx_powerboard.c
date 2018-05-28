@@ -12,7 +12,7 @@ uint32_t BSP_SW_GetState(Switch_TypeDef Switch)
   return MicoGpioInputGet( MICO_GPIO_PWRKEY );
 }
 
-void BSP_Power_OnOff(PowerEnable_TypeDef PowerEn, PowerOnOff_TypeDef OnOff)
+void BSP_Power_OnOff(uint32_t PowerEn, PowerOnOff_TypeDef OnOff)
 {
   if( POWER_ON == OnOff )
   {
@@ -135,6 +135,26 @@ void BSP_Power_OnOff(PowerEnable_TypeDef PowerEn, PowerOnOff_TypeDef OnOff)
     {
       MicoGpioOutputHigh( MICO_GPIO_3_3V_DOOR_CTRL);
     }
+    
+    if( PowerEn & POWER_3V3_CARD_EN_1 )
+    {
+      MicoGpioOutputHigh( MICO_GPIO_3V3_CARD_EN_1);
+    }
+    
+    if( PowerEn & POWER_3V3_CARD_EN_2 )
+    {
+      MicoGpioOutputHigh( MICO_GPIO_3V3_CARD_EN_2);
+    }
+    
+    if( PowerEn & POWER_3V3_CARD_EN_3 )
+    {
+      MicoGpioOutputHigh( MICO_GPIO_3V3_CARD_EN_3);
+    }
+    
+    if( PowerEn & POWER_3V3_CARD_EN_4 )
+    {
+      MicoGpioOutputHigh( MICO_GPIO_3V3_CARD_EN_4);
+    }
    
   }
   else if( POWER_OFF == OnOff )
@@ -255,6 +275,26 @@ void BSP_Power_OnOff(PowerEnable_TypeDef PowerEn, PowerOnOff_TypeDef OnOff)
     if( PowerEn & POWER_DOOR_CTRL )
     {
       MicoGpioOutputLow( MICO_GPIO_3_3V_DOOR_CTRL);
+    }
+    
+    if( PowerEn & POWER_3V3_CARD_EN_1 )
+    {
+      MicoGpioOutputLow( MICO_GPIO_3V3_CARD_EN_1);
+    }
+    
+    if( PowerEn & POWER_3V3_CARD_EN_2 )
+    {
+      MicoGpioOutputLow( MICO_GPIO_3V3_CARD_EN_2);
+    }
+    
+    if( PowerEn & POWER_3V3_CARD_EN_3 )
+    {
+      MicoGpioOutputLow( MICO_GPIO_3V3_CARD_EN_3);
+    }
+    
+    if( PowerEn & POWER_3V3_CARD_EN_4 )
+    {
+      MicoGpioOutputLow( MICO_GPIO_3V3_CARD_EN_4);
     }
     
   }
@@ -468,6 +508,40 @@ uint32_t GetModulePowerState( PowerEnable_TypeDef PowerEn )
         pinState |= POWER_DOOR_CTRL;
       }
     }
+       
+    if( PowerEn & POWER_3V3_CARD_EN_1 )
+    {
+      if( MicoGpioInputGet( MICO_GPIO_3V3_CARD_EN_1  ) )
+      {
+        pinState |= POWER_3V3_CARD_EN_1;
+      }
+    }
+    
+    if( PowerEn & POWER_3V3_CARD_EN_2 )
+    {
+      if( MicoGpioInputGet( MICO_GPIO_3V3_CARD_EN_2  ) )
+      {
+        pinState |= POWER_3V3_CARD_EN_2;
+      }
+    }
+    
+    if( PowerEn & POWER_3V3_CARD_EN_3 )
+    {
+      if( MicoGpioInputGet( MICO_GPIO_3V3_CARD_EN_3  ) )
+      {
+        pinState |= POWER_3V3_CARD_EN_3;
+      }
+    }
+    
+    if( PowerEn & POWER_3V3_CARD_EN_4 )
+    {
+      if( MicoGpioInputGet( MICO_GPIO_3V3_CARD_EN_4  ) )
+      {
+        pinState |= POWER_3V3_CARD_EN_4;
+      }
+    }
+    
+    
     return pinState;
 }
 

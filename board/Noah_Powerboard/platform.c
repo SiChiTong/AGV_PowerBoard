@@ -192,6 +192,15 @@ const platform_gpio_t platform_gpio_pins[] =
     [MICO_GPIO_PWR_CTRL_IN]         = { GPIOD, 10},//V0.2
     [MICO_GPIO_3_3V_DOOR_CTRL]      = { GPIOG, 15},//V0.2
     
+    [MICO_GPIO_HW_VERSION_ID_0]     = { GPIOE, 0 },//
+    [MICO_GPIO_HW_VERSION_ID_1]     = { GPIOE, 1 },//
+    
+    [MICO_GPIO_3V3_CARD_EN_1]       = { GPIOC, 7 },//V0.3
+    [MICO_GPIO_3V3_CARD_EN_2]       = { GPIOC, 6 },//V0.3
+    [MICO_GPIO_3V3_CARD_EN_3]       = { GPIOE, 6 },//V0.3
+    [MICO_GPIO_3V3_CARD_EN_4]       = { GPIOE, 12},//V0.3
+    
+    
     
 };
 
