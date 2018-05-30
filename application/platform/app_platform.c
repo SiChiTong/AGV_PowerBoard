@@ -844,6 +844,20 @@ void ChargerPlugInCallback(void)
     {
         boardStatus->sysStatus &= ~STATE_IS_RECHARGE_IN;
     }
+    
+    if( (MicoGpioInputGet( MICO_GPIO_CHARGE_IN ) == 0) && (MicoGpioInputGet( MICO_GPIO_RECHARGE_IN ) == 0) )
+    {
+        boardStatus->sysStatus &= ~STATE_IS_CHARGER_IN;
+        boardStatus->sysStatus &= ~STATE_IS_RECHARGE_IN;
+        boardStatus->sysStatus &= ~STATE_IS_CHARGING;
+    }
+    else
+    {
+      if(battery_pack.pack_voltage < 100)  
+      {
+        boardStatus->sysStatus |= STATE_IS_CHARGING;
+      } 
+    }
     //AckReadSysStatusFrameProcess(serial, 0);
     
     UploadSysState();
@@ -870,6 +884,19 @@ void ChargerUnplugCallback(void)
         boardStatus->sysStatus &= ~STATE_IS_RECHARGE_IN;
     }
     
+    if( (MicoGpioInputGet( MICO_GPIO_CHARGE_IN ) == 0) && (MicoGpioInputGet( MICO_GPIO_RECHARGE_IN ) == 0) )
+    {
+        boardStatus->sysStatus &= ~STATE_IS_CHARGER_IN;
+        boardStatus->sysStatus &= ~STATE_IS_RECHARGE_IN;
+        boardStatus->sysStatus &= ~STATE_IS_CHARGING;
+    }
+    else
+    {
+      if(battery_pack.pack_voltage < 100)  
+      {
+        boardStatus->sysStatus |= STATE_IS_CHARGING;
+      }   
+    }
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL);//charger unplug fan ctrl
     UploadSysState();
 }
@@ -916,10 +943,14 @@ void ChargeTick(void)
         state = 0;
         boardStatus->sysStatus &= ~STATE_IS_CHARGER_IN;
         boardStatus->sysStatus &= ~STATE_IS_RECHARGE_IN;
+        boardStatus->sysStatus &= ~STATE_IS_CHARGING;
     }
     else
     {
+      if(battery_pack.pack_voltage < 100)  
+      {
         boardStatus->sysStatus |= STATE_IS_CHARGING;
+      } 
     }
     
 }
