@@ -114,7 +114,7 @@ exit:
   return err;
 }
 
-
+#define HW_TEST     0
 extern void led_uart_init(void);
 void PowerOnDevices( void )
 {
@@ -124,9 +124,14 @@ void PowerOnDevices( void )
     {
       boardStatus->startTime = os_get_time();
       boardStatus->isPowerOnFinish = NO;
-      
+#if  HW_TEST
+       boardStatus->setPowerOnoff(POWER_ALL , POWER_ON);
+#else   
       boardStatus->setPowerOnoff(POWER_VSYS_24V_NV + POWER_CAMERA_BACK_LED + POWER_CAMERA_FRONT_LED +  POWER_DOOR_CTRL, POWER_OFF);
-      boardStatus->setPowerOnoff(POWER_ALL - (POWER_VSYS_24V_NV + POWER_CAMERA_BACK_LED + POWER_CAMERA_FRONT_LED +  POWER_DOOR_CTRL), POWER_ON);
+      boardStatus->setPowerOnoff(POWER_ALL - (POWER_VSYS_24V_NV +  POWER_CAMERA_BACK_LED + POWER_CAMERA_FRONT_LED +  POWER_DOOR_CTRL + \
+       POWER_3V3_CARD_EN_1 + POWER_3V3_CARD_EN_2 + POWER_3V3_CARD_EN_3 + POWER_3V3_CARD_EN_4 ), POWER_ON);
+#endif
+      
       
       //boardStatus->setPowerOnoff(POWER_VSYS_24V_NV, POWER_OFF);
       //boardStatus->setPowerOnoff(POWER_DOOR_CTRL, POWER_OFF);
