@@ -200,6 +200,8 @@ const platform_gpio_t platform_gpio_pins[] =
     [MICO_GPIO_3V3_CARD_EN_3]       = { GPIOE, 6 },//V0.3
     [MICO_GPIO_3V3_CARD_EN_4]       = { GPIOE, 12},//V0.3
     
+    [MICO_GPIO_FAN_12V_DC_CTRL]     = { GPIOA, 15},//V0.3
+    
     
     
 };

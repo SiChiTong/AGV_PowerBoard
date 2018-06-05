@@ -235,6 +235,8 @@ typedef enum
     MICO_GPIO_3V3_CARD_EN_3,
     MICO_GPIO_3V3_CARD_EN_4,
     
+    MICO_GPIO_FAN_12V_DC_CTRL,
+    
     
     
     

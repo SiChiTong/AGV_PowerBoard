@@ -66,6 +66,8 @@ void board_gpios_init( void )
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_3V3_CARD_EN_2, &pin_config );//V0.3
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_3V3_CARD_EN_3, &pin_config );//V0.3
     MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_3V3_CARD_EN_4, &pin_config );//V0.3
+    MicoGpioInitialize( (mico_gpio_t)MICO_GPIO_FAN_12V_DC_CTRL, &pin_config );//V0.3
+    
 
     
     /*---- input initialization ----*/
@@ -113,6 +115,7 @@ void board_gpios_init( void )
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_3V3_CARD_EN_2);//V0.3
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_3V3_CARD_EN_3);//V0.3
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_3V3_CARD_EN_4);//V0.3
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_FAN_12V_DC_CTRL);//V0.3
     
 }
 #ifdef NOT_USE_TMP
