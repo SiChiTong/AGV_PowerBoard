@@ -47,7 +47,7 @@
 //#define HW_VERSION                      "NOAH_PM_V0.2"
 #define HW_VERSION_V0_2                  "NOAH_PM_V0.2"
 #define HW_VERSION_V0_3                  "NOAH_PM_V0.3"
-#define SW_VERSION                      "NOAHC001M08B107"
+#define SW_VERSION                      "NOAHC001M08B108"
 #define PROTOCOL_VERSION                "20170619P0001"
 
 typedef struct _serial_frame_t {

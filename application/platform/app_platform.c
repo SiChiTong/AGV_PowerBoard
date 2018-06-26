@@ -969,24 +969,30 @@ void Platform_Tick( void )
 
 void get_hw_version(void)
 {
-#define DEBOUNCE_TIME       100/SYSTICK_PERIOD
+#define DEBOUNCE_TIME                       100/SYSTICK_PERIOD
+#define GET_HARD_VERSION_OVER_TIME          2000/SYSTICK_PERIOD
     uint8_t new_key_value = 0;
     uint8_t old_key_value = 0;
 
     
     static uint32_t start_time = 0;
     start_time = os_get_time();
+    uint32_t overtime_start_time = os_get_time();
     while(os_get_time() - start_time <= DEBOUNCE_TIME)
     {
         old_key_value = new_key_value;
         
-        new_key_value |=  MicoGpioInputGet(MICO_GPIO_HW_VERSION_ID_0);
-        new_key_value |=  MicoGpioInputGet(MICO_GPIO_HW_VERSION_ID_1)<<1;
+        new_key_value |=  MicoGpioInputGet(MICO_GPIO_HW_VERSION_ID_0)^1;
+        new_key_value |=  (MicoGpioInputGet(MICO_GPIO_HW_VERSION_ID_1)^1)<<1;
   
         if(new_key_value != old_key_value)
         {
             start_time = os_get_time();
-        }     
+        } 
+        if(os_get_time() - overtime_start_time >= GET_HARD_VERSION_OVER_TIME)
+        {
+            break;
+        }
     }
     boardStatus->hw_version_id =  new_key_value;
     switch(boardStatus->hw_version_id)
