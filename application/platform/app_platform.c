@@ -952,10 +952,15 @@ void ChargeTick(void)
     }
     else
     {
-      if(battery_pack.pack_voltage < 100)  
+      if(battery_pack.percentage < 100)  
       {
         boardStatus->sysStatus |= STATE_IS_CHARGING;
-      } 
+      }
+      else if(battery_pack.percentage == 100) 
+      {
+        boardStatus->sysStatus &= ~STATE_IS_CHARGING;
+      }
+        
     }
     
 }
