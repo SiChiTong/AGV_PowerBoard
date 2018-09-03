@@ -27,6 +27,9 @@
 #define FRAME_TYPE_MODULE_CONTROL       0x06
 #define FRAME_TYPE_IRLED_CONTROL        0x07
 
+#define SERIALS_LEDS_FRAME_LED_CTRL     0x01
+#define SERIALS_LEDS_FRAME_VERSION      0x02
+
 #define FRAME_TYPE_S_SYS_V_BAT          0x02
 
 #define FRAME_TYPE_FAULT_BIT            0x04

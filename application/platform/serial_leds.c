@@ -67,7 +67,7 @@ void LedsUartInit(void)
 }
 
 
-static uint8_t leds_send_buf[0x0a] = {0};
+static uint8_t leds_send_buf[0x0f] = {0};
 
 static uint8_t CalCheckSum(uint8_t *data, uint8_t len)
 {
@@ -78,7 +78,9 @@ static uint8_t CalCheckSum(uint8_t *data, uint8_t len)
     }
     return sum;
 }
-void LedsSendFrame(rcv_serial_leds_frame_t *leds_frame)
+
+/*
+static void LedsSendFrame(rcv_serial_leds_frame_t *leds_frame)
 {
     leds_send_buf[0] = FRAME_HEADER;
     leds_send_buf[1] = 0x0a;
@@ -89,9 +91,42 @@ void LedsSendFrame(rcv_serial_leds_frame_t *leds_frame)
     
     HAL_StatusTypeDef uart_err = HAL_UART_Transmit(&huart2, leds_send_buf, sizeof(leds_send_buf), 10);
 }
+*/
+
+static HAL_StatusTypeDef serials_leds_uart_send(uint8_t *data, uint8_t len)
+{
+    return HAL_UART_Transmit(&huart2, data, len, 10);
+}
+
+void get_serials_leds_version(void)
+{
+    memset(leds_send_buf, 0, sizeof(leds_send_buf));
+
+    leds_send_buf[0] = FRAME_HEADER;
+    leds_send_buf[1] = 0x05;
+    leds_send_buf[2] = SERIALS_LEDS_FRAME_VERSION;
+    leds_send_buf[3] = CalCheckSum(leds_send_buf, 3);
+    leds_send_buf[4] = FRAME_FOOTER;
+    serials_leds_uart_send(leds_send_buf, 5);
+}
 
 void SetSerialLedsEffect( light_mode_t light_mode, color_t *cur_color, uint8_t period )
-{ 
+{
+    memset(leds_send_buf, 0, sizeof(leds_send_buf));
+
+    leds_send_buf[0] = FRAME_HEADER;
+    leds_send_buf[1] = 0x0a;
+    leds_send_buf[2] = SERIALS_LEDS_FRAME_LED_CTRL;
+    leds_send_buf[3] = light_mode;
+    leds_send_buf[4] = cur_color->r;
+    leds_send_buf[5] = cur_color->g;
+    leds_send_buf[6] = cur_color->b;
+    leds_send_buf[7] = period;
+    leds_send_buf[8] = CalCheckSum(leds_send_buf, 8);
+    leds_send_buf[9] = FRAME_FOOTER;
+    serials_leds_uart_send(leds_send_buf, 10);
+
+/*    
     rcv_serial_leds_frame_t leds_frame;
     leds_frame.color.r = cur_color->r;
     leds_frame.color.g = cur_color->g;
@@ -100,7 +135,7 @@ void SetSerialLedsEffect( light_mode_t light_mode, color_t *cur_color, uint8_t p
     leds_frame.period = period;
     
     LedsSendFrame(&leds_frame);
-    
+*/    
 #if 0
     switch(light_mode)
     {
@@ -163,12 +198,14 @@ void AckLedsFrame(light_mode_t light_mode, color_t *cur_color, uint8_t period )
 
 extern OSStatus AckSerialLedsFrameProcess( serial_t *serial, uint8_t mode, color_t *color, uint8_t period );
 extern void AckLedsEffect(light_mode_t light_mode, color_t *cur_color, uint8_t period);
+extern void ack_serials_leds_version(uint8_t *data, uint8_t len);
 void SerialLedsProc(light_mode_t light_mode, color_t *cur_color, uint8_t period)
 {
     //AckSerialLedsFrameProcess( serial, light_mode, cur_color, period );
     AckLedsEffect(light_mode, cur_color, period);
 }
 led_com_opt_t led_com_opt = {0};
+char serials_leds_version[20] = {0};
 
 void leds_protocol_period(void)
 {
@@ -195,12 +232,23 @@ void leds_protocol_period(void)
                     {
                         switch(ctype)
                         {
-                        case FRAME_TYPE_LEDS_CONTROL:
-                            SerialLedsProc((light_mode_t)led_com_opt.rcv_buf[3], (color_t*)&led_com_opt.rcv_buf[4], led_com_opt.rcv_buf[7]);
-                            
-                            break;
-                        default :
-                            break;
+                            case SERIALS_LEDS_FRAME_LED_CTRL:
+                                SerialLedsProc((light_mode_t)led_com_opt.rcv_buf[3], (color_t*)&led_com_opt.rcv_buf[4], led_com_opt.rcv_buf[7]);
+                                break;
+
+                            case SERIALS_LEDS_FRAME_VERSION:
+                                //if(led_com_opt.data_len == 8)
+                                {
+                                    for(uint8_t i = 0; i < led_com_opt.data_len - 5; i++)
+                                    {
+                                        serials_leds_version[i] = led_com_opt.rcv_buf[3 + i];
+                                    }
+                                    ack_serials_leds_version(&led_com_opt.rcv_buf[3], led_com_opt.data_len - 5);
+                                }
+                                break;
+
+                            default :
+                                break;
                         }
                     }
                     

@@ -255,6 +255,7 @@ void reset_led(void);
 //void test_nsDelay(void);
 
 void SetSerialLedsEffect( light_mode_t lightsMode, color_t *color, uint8_t period );
+void get_serials_leds_version(void);
 
 
 

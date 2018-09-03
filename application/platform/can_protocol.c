@@ -255,6 +255,19 @@ void AckLedsEffect(light_mode_t light_mode, color_t *cur_color, uint8_t period)
     
     CanTX( MICO_CAN1, id.CANx_ID, tx_buf, sizeof(tx_buf) );
 }
+
+void ack_serials_leds_version(uint8_t *data, uint8_t len)
+{
+    CAN_ID_UNION id;
+    id.CanID_Struct.ACK = 1;
+    id.CanID_Struct.DestMACID = 0;////
+    id.CanID_Struct.FUNC_ID = CAN_FUN_ID_TRIGGER;
+    id.CanID_Struct.SourceID = CAN_SOURCE_ID_GET_SERIALS_LEDS_VERSION;
+    id.CanID_Struct.SrcMACID = CAN_NOAH_PB_ID;////
+
+    CanTX( MICO_CAN1, id.CANx_ID, data, len );
+}
+
 #define CMD_NOT_FOUND   0
 uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t data_in_len, uint8_t *data_out)
 {
@@ -452,6 +465,9 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
                         return 2;
                         break;
                     }
+                case CAN_SOURCE_ID_GET_SERIALS_LEDS_VERSION:
+                    get_serials_leds_version();
+                    break;
                 default :
                     break;
             }
