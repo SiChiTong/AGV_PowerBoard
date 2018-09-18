@@ -414,7 +414,10 @@ void  battery_parse_rx_buffer( const uint8_t * const hex_rx_buf )
   
   if(battery_pack.pack_totoal_soc > 0)
   {
-      battery_pack.percentage = battery_pack.pack_current_soc * 100 / battery_pack.pack_totoal_soc;
+      uint16_t percentage = 0;
+      percentage= battery_pack.pack_current_soc * 1000 / battery_pack.pack_totoal_soc;
+      percentage += 5;  //percentage: rounding
+      battery_pack.percentage = percentage/10;
       if(battery_pack.percentage > 100)
       {
           battery_pack.percentage = 100;
