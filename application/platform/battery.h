@@ -24,7 +24,7 @@ typedef struct _battery_protocol_t {
 
 
 typedef struct _battery_pack_t{
- int32_t pack_current;
+ int16_t pack_current;
  uint32_t pack_voltage;
  uint32_t pack_current_soc;
  uint32_t pack_totoal_soc;
