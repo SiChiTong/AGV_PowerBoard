@@ -1,4 +1,7 @@
-
+/*
+*  Author: Kaka Xie
+*  brief: byte flow fifo
+*/
 #include "fifo.h"
 
 
@@ -29,25 +32,25 @@ void FifoRst(fifo_t *head)
         return;
     }
     head->front = 0;
-	head->rear = 0;
+    head->rear = 0;
 }
 
 uint8_t IsFifoEmpty(fifo_t *head)
-{    
+{
     return ((head->front == head->rear) ? TRUE : FALSE);
 }
 
 static uint8_t IsFifoFull(fifo_t *head)
-{   
+{
     return ((head->front == ((head->rear + 1) % head->size)) ? TRUE : FALSE);
 }
 
 
 uint32_t FifoValidSize(fifo_t *head)
 {
-	return ((head->rear < head->front)
-			? (head->rear + head->size - head->front)
-			: (head->rear - head->front));
+    return ((head->rear < head->front)
+            ? (head->rear + head->size - head->front)
+            : (head->rear - head->front));
 }
 
 
@@ -67,7 +70,7 @@ uint8_t FifoPut(fifo_t *head, const fifo_data_struct data)
     head->rear++;
     head->rear = head->rear % head->size;
 
-    return TRUE;   
+    return TRUE;
 }
 
 
@@ -85,6 +88,6 @@ uint8_t FifoGet(fifo_t *head, fifo_data_struct *data)
     head->front++;
     head->front = head->front % head->size;
 
-    return TRUE;   
+    return TRUE;
 }
 

@@ -72,7 +72,7 @@ UART_HandleTypeDef huart2;
 uint8_t test_data[] = {0x5a,8,1,1,1,1,0x66,0xa5};
 uint8_t rcv_buf[50];
 HAL_StatusTypeDef uart_err;
- 
+
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
@@ -84,7 +84,7 @@ int main(void)
     HAL_Init();
 
     init_clocks();
-    bsp_Init(); 
+    bsp_Init();
     init_architecture();
     init_platform();
     printf ( menu, MODEL, SW_VERSION, HARDWARE_REVISION );
@@ -92,46 +92,46 @@ int main(void)
 
     Platform_Init();
     get_hw_version();
-    
+
     VolDetect_Init();
     Protocol_Init();
     startTps611xx();
     FanInit();
-    
+
     battery_init();
-    
+
     FifoInit(fifo, fifo_data_in_ram, RCV_DATA_LEN_MAX);
-      
+
     MicoCanInitialize( MICO_CAN1 );
 
-    
-    
+
+
     if( !isNeedAutoBoot() )
-    {   
+    {
         while(os_get_time() <= flashTable.AutoBootDelayTime*1000/SYSTICK_PERIOD);
         PowerOnDevices();
-    } 
-    
+    }
+
     for(;;)
     {
         Platform_Tick();
-        //protocol_period(); 
+        //protocol_period();
         VolDetect_Tick();
         can_protocol_period();
         Main_Menu();
-        battery_period(); 
+        battery_period();
         leds_protocol_period();
     }
 
 }
 
 
-color_t color_test[] = 
+color_t color_test[] =
 {
-    [0]     = {0xc8, 0x32, 0x00 },  
-    [1]     = {0x96, 0x19, 0x00 },  
+    [0]     = {0xc8, 0x32, 0x00 },
+    [1]     = {0x96, 0x19, 0x00 },
     [2]     = {0x82, 0x1e, 0x00 },
-    [3]     = {0xb4, 0x1e, 0x00 },  
+    [3]     = {0xb4, 0x1e, 0x00 },
     [4]     = {0xb4, 0x14, 0x00 },
     [5]     = {255, 165, 0 },
 };
@@ -147,21 +147,21 @@ void OneWireLedTest(void)
     if(init_flag == 0)
     {
         init_flag = 1;
-       
+
     }
-    
-    
+
+
     if(os_get_time() - start_time >= ONE_WIRE_LED_TEST_PERIOD)
     {
         start_time = os_get_time();
         new_tick++;
-        
+
     }
-    
+
     if(new_tick >= sizeof(color_test)/sizeof(color_test[0]))
     {
         new_tick = 0;
-         
+
     }
     //else
     {
@@ -170,7 +170,7 @@ void OneWireLedTest(void)
             SetSerialLedsEffect( (light_mode_t)new_tick, NULL, 50 );
             //SetSerialLedsEffect(LIGHTS_MODE_SETTING, &color_test[new_tick], 200);
             //printf("hello hello");
-        }    
+        }
     }
     last_tick = new_tick;
 }
@@ -205,7 +205,7 @@ void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
 
-    /**Initializes the CPU, AHB and APB busses clocks 
+    /**Initializes the CPU, AHB and APB busses clocks
     */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
@@ -219,7 +219,7 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-    /**Initializes the CPU, AHB and APB busses clocks 
+    /**Initializes the CPU, AHB and APB busses clocks
     */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
@@ -233,11 +233,11 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-    /**Configure the Systick interrupt time 
+    /**Configure the Systick interrupt time
     */
   HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
 
-    /**Configure the Systick 
+    /**Configure the Systick
     */
   HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 
@@ -266,9 +266,9 @@ static void MX_USART2_UART_Init(void)
   HAL_NVIC_EnableIRQ(USART2_IRQn);
 }
 
-/** Configure pins as 
-        * Analog 
-        * Input 
+/** Configure pins as
+        * Analog
+        * Input
         * Output
         * EVENT_OUT
         * EXTI
@@ -278,7 +278,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitTypeDef GPIO_InitStruct;
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  
+
   /*Configure GPIO pin : PA2 */
   GPIO_InitStruct.Pin = GPIO_PIN_2;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -290,10 +290,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-  
+
 #if 0
   __HAL_RCC_GPIOE_CLK_ENABLE();
-  
+
   /*Configure GPIO pin : PE10 */
   GPIO_InitStruct.Pin = GPIO_PIN_10;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -301,9 +301,9 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
   HAL_GPIO_WritePin(GPIOE, GPIO_PIN_10, GPIO_PIN_RESET);
-  
+
   __HAL_RCC_GPIOC_CLK_ENABLE();
-  
+
   /*Configure GPIO pin : PC9 */
   GPIO_InitStruct.Pin = GPIO_PIN_9;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -327,10 +327,10 @@ void _Error_Handler(char * file, int line)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-  while(1) 
+  while(1)
   {
   }
-  /* USER CODE END Error_Handler_Debug */ 
+  /* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef USE_FULL_ASSERT
@@ -355,11 +355,11 @@ void assert_failed(uint8_t* file, uint32_t line)
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-*/ 
+*/
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 
@@ -367,7 +367,7 @@ void led_uart_init(void)
 {
     MX_GPIO_Init();
     MX_USART2_UART_Init();
-    
+
     if(HAL_UART_Receive_IT(&huart2,rcv_buf,1)!=HAL_OK)Error_Handler();
 }
 
@@ -383,6 +383,6 @@ void SysLed(void)
     {
         indicatorFreshCount = 0;
         MicoGpioOutputTrigger( MICO_GPIO_SYS_LED );
-    } 
+    }
 }
 #endif

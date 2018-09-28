@@ -1,6 +1,6 @@
-/* 
-*  Author: Adam Huang
-*  Date:2017/01/23
+/*
+*  Author: Kaka Xie
+*  brief: CAN protocol process
 */
 
 #include "can_protocol.h"
@@ -37,13 +37,13 @@ can_fifo_t *can_fifo = &can_fifo_ram;
 
 can_pkg_t can_pkg[CAN_FIFO_SIZE] = {0};
 
- 
+
 typedef void (*CallBackFunc)(void);
 
-typedef struct 
+typedef struct
 {
 	uint32_t val;
-	CallBackFunc callback;	
+	CallBackFunc callback;
 }CALLBACK_T;
 
 const CALLBACK_T ID_table[]=
@@ -59,8 +59,8 @@ CALLBACK_T FuncId_table[] = {
 
 /**
   * @brief  rx msg handle
-  * @param   
-  * @retval 
+  * @param
+  * @retval
 	* @RevisionHistory
   */
 CALLBACK_T* FuncIdHandle(uint32_t funcid)
@@ -91,11 +91,11 @@ void CanTX(mico_can_t can_type, uint32_t CANx_ID,uint8_t* pdata,uint16_t len)
 	uint8_t modCount;
 	CAN_DATA_UNION TxMsg = {0};
 	//CanTxMsgTypeDef *TxMessage = platform_can_drivers[can_type].handle->pTxMsg;
-    
+
 	t_len = len;
 	roundCount = t_len/7;
 	modCount = t_len%7;
-	
+
 	TxMessage.ExtId = CANx_ID;
 	TxMessage.IDE   = CAN_ID_EXT;					 //扩展模式
 	TxMessage.RTR   = CAN_RTR_DATA;				 //发送的是数据
@@ -103,25 +103,25 @@ void CanTX(mico_can_t can_type, uint32_t CANx_ID,uint8_t* pdata,uint16_t len)
     if(t_len <= 7)
     {
         TxMsg.CanData_Struct.SegPolo = ONLYONCE;
-        TxMessage.DLC = t_len+1;		
-        
-        
+        TxMessage.DLC = t_len+1;
+
+
         memcpy(&TxMessage.Data[1],pdata,t_len);
         TxMessage.Data[0] = TxMsg.CanData[0];
-        
+
         if((CAN_USED->TSR&0x1C000000))
         {
             MicoCanMessageSend(MICO_CAN1, &TxMessage);//
         }
         return ;
     }
-    
+
 	{
 		int num;
         {
             for(num = 0; num < roundCount; num++)
-            {		
-        //SET SEGPOLO				
+            {
+        //SET SEGPOLO
                 if( num == 0)
                 {
                     TxMsg.CanData_Struct.SegPolo = BEGIN;
@@ -130,21 +130,21 @@ void CanTX(mico_can_t can_type, uint32_t CANx_ID,uint8_t* pdata,uint16_t len)
                 {
                     TxMsg.CanData_Struct.SegPolo = TRANSING;
                 }
-                
+
                 if( modCount == 0 && num == roundCount-1)
                 {
                     TxMsg.CanData_Struct.SegPolo = END;
                 }
-                            
+
                 TxMsg.CanData_Struct.SegNum = num;
                 memcpy(TxMsg.CanData_Struct.Data, &pdata[num*7], 7);
                 memcpy(TxMessage.Data, TxMsg.CanData, 8);
                 TxMessage.DLC = 8;
                 if((CAN_USED->TSR&0x1C000000))
                 {
-                    MicoCanMessageSend(MICO_CAN1, &TxMessage);//发送报文	
+                    MicoCanMessageSend(MICO_CAN1, &TxMessage);//发送报文
                 }
-                
+
                 //TRANSMIT LAST MSG
                 if( modCount !=0 && num == roundCount-1 )
                 {
@@ -160,9 +160,9 @@ void CanTX(mico_can_t can_type, uint32_t CANx_ID,uint8_t* pdata,uint16_t len)
                     }
                 }
             }
-            
+
         }
-        
+
 	}
 }
 
@@ -208,7 +208,7 @@ void UploadPowerOffSignal(uint32_t second)
     id.CanID_Struct.SourceID = CAN_SOURCE_ID_POWER_OFF_SIGNAL;
     id.CanID_Struct.SrcMACID = CAN_NOAH_PB_ID;////
     tx_buf[0] = second;
-    
+
     CanTX( MICO_CAN1, id.CANx_ID, tx_buf, sizeof(tx_buf) );
 }
 
@@ -233,7 +233,7 @@ void UploadBatInfo(void)
         *(uint16_t*)&tx_buf[1] = battery_pack.pack_voltage;
         tx_buf[3] = battery_pack.percentage;
     }
-    
+
     CanTX( MICO_CAN1, id.CANx_ID, tx_buf, sizeof(tx_buf) );
 }
 
@@ -246,13 +246,13 @@ void AckLedsEffect(light_mode_t light_mode, color_t *cur_color, uint8_t period)
     id.CanID_Struct.FUNC_ID = CAN_FUN_ID_TRIGGER;
     id.CanID_Struct.SourceID = CAN_SOURCE_ID_SET_LED_EFFECT;
     id.CanID_Struct.SrcMACID = CAN_NOAH_PB_ID;////
-    
+
     tx_buf[0] = 0;
     tx_buf[1] = 0;
     tx_buf[2] = light_mode;
     *(color_t *)&tx_buf[3] = *cur_color;
     tx_buf[6] = period;
-    
+
     CanTX( MICO_CAN1, id.CANx_ID, tx_buf, sizeof(tx_buf) );
 }
 
@@ -272,11 +272,11 @@ void ack_serials_leds_version(uint8_t *data, uint8_t len)
 uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t data_in_len, uint8_t *data_out)
 {
     //uint8_t data_out_len;
-    id->CanID_Struct.ACK = 1;   
+    id->CanID_Struct.ACK = 1;
     id->CanID_Struct.DestMACID = id->CanID_Struct.SrcMACID;
     id->CanID_Struct.SrcMACID = CAN_NOAH_PB_ID;
     id->CanID_Struct.res = 0;
-    //id->CanID_Struct.FUNC_ID = 
+    //id->CanID_Struct.FUNC_ID =
     switch(id->CanID_Struct.FUNC_ID)
     {
         case CAN_FUN_ID_RESET:
@@ -300,7 +300,7 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
                         memcpy(&data_out[2], PROTOCOL_VERSION, sizeof(PROTOCOL_VERSION));
                         data_out[1] = strlen(PROTOCOL_VERSION);
                         return sizeof(PROTOCOL_VERSION) + 2;
-                        
+
                     }
                     else if(data_in[0] == 3)//hardware version
                     {
@@ -311,12 +311,12 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
                     return CMD_NOT_FOUND;
                     break;
                 case CAN_READ_DATA:
-                
+
                     break;
                 case CAN_SOURCE_ID_SET_MODULE_STATE:
 
                     data_out[0] = data_in[0];
-                    
+
                     {
                         if(data_in[1] == 1)//group num = 1
                         {
@@ -352,23 +352,23 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
 #endif
                     }
                     return CMD_NOT_FOUND;
-                    
+
                 case CAN_SOURCE_ID_GET_MODULE_STATE:
-                         
+
                     {
-                        
+
                         if(data_in[1] == 1)//group num = 1
                         {
                             uint32_t tmp = GetModulePowerState(POWER_ALL);
                             data_out[1] = 1;
                             *(uint32_t*)&data_out[2] = tmp;
                             //memcpy( &data_out[2],(uint8_t *)(&tmp) , 4 );
-                            
+
                             return 6;
-                        }       
+                        }
                     }
                     return CMD_NOT_FOUND;
-                    
+
                 case CAN_SOURCE_ID_GET_BAT_STATE:
                     if(battery_pack.com_status == false)
                     {
@@ -380,15 +380,15 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
                         *(uint16_t*)&data_out[1] = battery_pack.pack_voltage;
                         data_out[3] = battery_pack.percentage;
                     }
-                     
+
                     return 4;
-                      
+
                     break;
                 case CAN_SOURCE_ID_GET_SYS_STATE:
                     *(uint16_t*)&data_out[1] = boardStatus->sysStatus;
                     return 3;
                     break;
-                    
+
                 case CAN_SOURCE_ID_GET_ADC_DATA:
                     memcpy(data_out, (uint8_t *)voltageConvert, sizeof(voltageData_t));
                     return sizeof(voltageData_t);
@@ -409,29 +409,29 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
 #endif
                         break;
                     }
-                    
+
                 case CAN_SOURCE_ID_SET_LED_EFFECT:
                     if(data_in[0] == 0)
                     {
                         light_mode_t mode;
                         uint8_t period = data_in[5];
                         color_t *color;
-                        mode =  (light_mode_t)data_in[1]; 
+                        mode =  (light_mode_t)data_in[1];
                         color = (color_t*)&data_in[2];
                         SetSerialLedsEffect(mode, color, period);
                         return 0;
                     }
                     return 0;
                     break;
-                    
-              
-                  
+
+
+
 #if 0
-                case CAN_SOURCE_ID_ERROR_STATE: 
+                case CAN_SOURCE_ID_ERROR_STATE:
                     memcpy( data_out, voltageConvertData->faultBitTemp, 5 );
                     return 5;
-                    
-                case CAN_SOURCE_ID_READ_ADC_DATA:  
+
+                case CAN_SOURCE_ID_READ_ADC_DATA:
                     voltageDebug.isNeedUpload = YES;
                     voltageDebug.uploadRate = data_in[0];
                     return 0;
@@ -442,7 +442,7 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
 
                     break;
 #endif
-                    
+
                 case CAN_SOURCE_ID_REMOTE_POWRER_CTRL:
                     {
                         data_out[0] = data_in[0];
@@ -473,7 +473,7 @@ uint16_t CmdProcessing(CAN_ID_UNION *id, const uint8_t *data_in, const uint16_t 
             }
 
 
-        default: 
+        default:
         break;
     }
 
@@ -495,6 +495,7 @@ static uint8_t GetOneFreeBuf(void)
     }
     return CAN_LONG_BUF_FULL;
 }
+
 static void FreeBuf(uint8_t index)
 {
     can_long_frame_buf->can_rcv_buf[index].can_id = 0;
@@ -512,12 +513,13 @@ static uint8_t GetTheBufById(uint32_t id)
     }
     return CAN_BUF_NO_THIS_ID;
 }
+
 void CanLongBufInit(void)
-{ 
+{
     can_long_frame_buf->GetOneFreeBuf = GetOneFreeBuf;
     can_long_frame_buf->GetTheBufById = GetTheBufById;
     can_long_frame_buf->FreeBuf = FreeBuf;
-    
+
     CanFifoInit(can_fifo, can_pkg, CAN_FIFO_SIZE);
 }
 
@@ -542,7 +544,7 @@ uint32_t can_comm_start_time;
 #define CAN_COM_TIME_OUT    10000/SYSTICK_PERIOD
 static uint32_t can_com_start_time = 0;
 void can_protocol_period( void )
-{   
+{
     static CAN_ID_UNION id;
     uint16_t tx_len;
     uint8_t rx_len;
@@ -551,12 +553,12 @@ void can_protocol_period( void )
     uint8_t buf_index;
     uint8_t seg_polo;
     uint8_t seg_num;
-#if 0 
+#if 0
     static uint8_t set_led_flag = 0;
-  
+
     if(boardStatus->sysStatus & STATE_POWER_ON)
     {
-        
+
         if(os_get_time() - can_com_start_time >= CAN_COM_TIME_OUT)
         {
             SetSerialLedsEffect( LIGHTS_MODE_COM_ERROR, NULL, 0 );
@@ -575,20 +577,20 @@ void can_protocol_period( void )
 
     while(IsCanFifoEmpty(can_fifo) == FALSE)
     {
-        CanFifoGetCanPkg(can_fifo, &can_pkg_tmp); 
-      
+        CanFifoGetCanPkg(can_fifo, &can_pkg_tmp);
+
         memcpy(rx_buf.CanData,  can_pkg_tmp.data.CanData, can_pkg_tmp.len);
         id.CANx_ID = can_pkg_tmp.id.CANx_ID;
         rx_len = can_pkg_tmp.len;
         seg_polo = rx_buf.CanData_Struct.SegPolo;
         seg_num = rx_buf.CanData_Struct.SegNum;
-        
+
         if(id.CanID_Struct.DestMACID == CAN_NOAH_PB_ID)
         {
             can_com_start_time = os_get_time();
             if(rx_buf.CanData_Struct.SegPolo == ONLYONCE)
             {
-                
+
                 //if( (id.CanID_Struct.SourceID < SOURCE_ID_PREPARE_UPDATE) && (id.CanID_Struct.SourceID > SOURCE_ID_CHECK_TRANSMIT) )
                 {
                         //process the data here//
@@ -598,7 +600,7 @@ void can_protocol_period( void )
                         {
                             CanTX( MICO_CAN1, id.CANx_ID, CanTxdataBuff, tx_len );
                         }
-                        
+
                         //CanTX( MICO_CAN1, id.CANx_ID, test_data, sizeof(test_data) );
                 }
             }
@@ -611,11 +613,11 @@ void can_protocol_period( void )
                         if(os_get_time() - can_long_frame_buf->can_rcv_buf[i].start_time > CAN_LONG_FRAME_TIME_OUT)
                         {
                             can_long_frame_buf->FreeBuf(i);
-                            CanProtocolLog("LONG FRAME RCV TIMEOUT! ! ! !\r\n");      
+                            CanProtocolLog("LONG FRAME RCV TIMEOUT! ! ! !\r\n");
                         }
                     }
                 }
-                
+
                 if(seg_polo == BEGIN)
                 {
                     buf_index = can_long_frame_buf->GetTheBufById(id.CANx_ID);
@@ -627,10 +629,10 @@ void can_protocol_period( void )
                     {
                         //
                     }
-                    
+
                     if( (buf_index == CAN_LONG_BUF_FULL) || (buf_index >= CAN_LONG_BUF_NUM) )
                     {
-                        CanProtocolLog("LONG FRAME RCV BUF IS FULL! ! ! !\r\n");              
+                        CanProtocolLog("LONG FRAME RCV BUF IS FULL! ! ! !\r\n");
                         goto exit;
                     }
                     memcpy(&can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf[0], rx_buf.CanData_Struct.Data, CAN_ONE_FRAME_DATA_LENTH);
@@ -656,7 +658,7 @@ void can_protocol_period( void )
                     {
                         memcpy(&can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf[seg_num*CAN_ONE_FRAME_DATA_LENTH], rx_buf.CanData_Struct.Data, rx_len - 1);
                         can_long_frame_buf->can_rcv_buf[buf_index].used_len += rx_len - 1;
-                        
+
                         printf("long frame receive complete\r\n");
                         for(uint8_t j = 0; j < can_long_frame_buf->can_rcv_buf[buf_index].used_len; j++)
                         {
@@ -665,24 +667,24 @@ void can_protocol_period( void )
                         //process the data here//
                         /**********************/
                         //process the data here//
-                        
-                        CanTX( MICO_CAN1, id.CANx_ID, can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf, can_long_frame_buf->can_rcv_buf[buf_index].used_len);  // test :send the data back;             
+
+                        CanTX( MICO_CAN1, id.CANx_ID, can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf, can_long_frame_buf->can_rcv_buf[buf_index].used_len);  // test :send the data back;
                         can_long_frame_buf->FreeBuf(buf_index);
-                    }       
+                    }
                 }
             }
-            
+
         }
-        
-        
-        
+
+
+
     }
     //MicoCanMessageRead( MICO_CAN1, &RxMessage);
 
-    
-exit:    
+
+exit:
     //platform_can_drivers[MICO_CAN1].rx_complete = 0;
-    
+
     return;
 }
 

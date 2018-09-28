@@ -1,4 +1,4 @@
-/* 
+/*
 *  Author: Adam Huang
 *  Date:2016/6/4
 */
@@ -34,9 +34,9 @@ static void ControlSignal_Tick( void );
 static void BoardStatus_Tick( void );
 
 OSStatus Platform_Init( void )
-{ 
+{
   OSStatus err = kNoErr;
-  
+
   require_action( switch_user, exit, err = kNoMemoryErr );
   memset(switch_user, 0x0, sizeof(switch_t));
   if( switch_user )
@@ -91,7 +91,7 @@ OSStatus Platform_Init( void )
     X86_ControlSignal->powerOffHoldTime = X86_POWER_OFF_HOLD_TIME;
     X86_ControlSignal->setControlSigal = BSP_Control_Sigal;
   }
-  
+
   require_action( NV_ControlSignal, exit, err = kNoMemoryErr );
   memset(NV_ControlSignal, 0x0, sizeof(controlSignal_t));
   if( NV_ControlSignal )
@@ -126,31 +126,31 @@ void PowerOnDevices( void )
       boardStatus->isPowerOnFinish = NO;
 #if  HW_TEST
        boardStatus->setPowerOnoff(POWER_ALL , POWER_ON);
-#else   
+#else
       boardStatus->setPowerOnoff(POWER_VSYS_24V_NV + POWER_CAMERA_BACK_LED + POWER_CAMERA_FRONT_LED +  POWER_DOOR_CTRL, POWER_OFF);
       boardStatus->setPowerOnoff(POWER_ALL - (POWER_VSYS_24V_NV +  POWER_CAMERA_BACK_LED + POWER_CAMERA_FRONT_LED +  POWER_DOOR_CTRL + \
        POWER_3V3_CARD_EN_1 + POWER_3V3_CARD_EN_2 + POWER_3V3_CARD_EN_3 + POWER_3V3_CARD_EN_4 ), POWER_ON);
 #endif
-      
-      
+
+
       //boardStatus->setPowerOnoff(POWER_VSYS_24V_NV, POWER_OFF);
       //boardStatus->setPowerOnoff(POWER_DOOR_CTRL, POWER_OFF);
       //boardStatus->setPowerOnoff(POWER_CAMERA_BACK_LED, POWER_OFF);
       //boardStatus->setPowerOnoff(POWER_CAMERA_FRONT_LED, POWER_OFF);
       en_led_mcu();
       led_uart_init();
-      
+
 
       DLP_ControlSignal->isDeviceProcessOver = NO;
       PAD_ControlSignal->isDeviceProcessOver = NO;
       X86_ControlSignal->isDeviceProcessOver = NO;
       NV_ControlSignal->isDeviceProcessOver = NO;
-      
+
       DLP_ControlSignal->startTime = os_get_time();
       PAD_ControlSignal->startTime = os_get_time();
-      X86_ControlSignal->startTime = os_get_time(); 
-      NV_ControlSignal->startTime = os_get_time(); 
-      
+      X86_ControlSignal->startTime = os_get_time();
+      NV_ControlSignal->startTime = os_get_time();
+
       platform_log("devices start to boot");
       boardStatus->sysStatus &= ~(STATE_RUN_BITS);
       boardStatus->sysStatus |= STATE_IS_POWER_ON;
@@ -169,12 +169,12 @@ void PowerOffDevices( void )
       PAD_ControlSignal->isDeviceProcessOver = NO;
       X86_ControlSignal->isDeviceProcessOver = NO;
       NV_ControlSignal->isDeviceProcessOver = NO;
-      
+
       DLP_ControlSignal->startTime = os_get_time();
       PAD_ControlSignal->startTime = os_get_time();
       X86_ControlSignal->startTime = os_get_time();
       NV_ControlSignal->startTime = os_get_time();
-    
+
       boardStatus->startTime = os_get_time();
       boardStatus->isPowerOffFinish = NO;
       platform_log("devices start to shutdown");
@@ -275,18 +275,18 @@ extern void UploadPowerOffSignal(uint32_t second);
 static void Switch_Tick( void )
 {
 #if 0
-  
+
     static uint32_t switch_on_start_time = 0;
     static uint32_t switch_off_start_time = 0;
     static uint32_t power_off_delay_start_time = 0;
     static uint32_t give_up_start_time = 0;
     uint8_t switch_state = 0;
-    
+
     if(STATE_POWER_OFF == (boardStatus->sysStatus & STATE_RUN_BITS) )
     {
         switch_state = switch_user->getSwitchState( SWITCH_USER );
 
-        
+
         if(switch_state == 0)
         {
             switch_on_start_time = os_get_time();
@@ -297,15 +297,15 @@ static void Switch_Tick( void )
             {
                 PowerOnDevices();
             }
-            
-        }  
-        
+
+        }
+
         if(os_get_time() - give_up_start_time >= GIVE_UP_TIME)
         {
             boardStatus->setPowerOnoff(POWER_CTRL_OUT, POWER_OFF);
         }
     }
-    
+
     if(STATE_POWER_ON == (boardStatus->sysStatus & STATE_RUN_BITS) )
     {
         switch_state = switch_user->getSwitchState( SWITCH_USER );
@@ -321,7 +321,7 @@ static void Switch_Tick( void )
                 UploadPowerOffSignal(POWER_OFF_DELAY_TIME * SYSTICK_PERIOD / 1000);
             }
         }
-        
+
         if(power_off_delay_start_time > 0)
         {
             if(os_get_time() - power_off_delay_start_time >= POWER_OFF_DELAY_TIME)
@@ -331,14 +331,14 @@ static void Switch_Tick( void )
             }
         }
     }
-    
+
 #else
-    
-//#define DEVICE_STATE_POWER_ON       1  
+
+//#define DEVICE_STATE_POWER_ON       1
 //#define DEVICE_STATE_POWER_OFF      0
 
     static uint8_t state_change = 0;
-    
+
     if(boardStatus->remote_device_power_ctrl == 0)
     {
         if((boardStatus->isPowerOffFinish == YES) && (boardStatus->isPowerOnFinish == YES))
@@ -352,7 +352,7 @@ static void Switch_Tick( void )
                     platform_log("switch have switched");
                 }
             }
-            
+
             if(state_change == 1)
             {
                 if( switch_user->preIOState != switch_user->getSwitchState( SWITCH_USER ) )
@@ -392,7 +392,7 @@ static void Switch_Tick( void )
                         PowerOnDevices();
                         state_change = 0;
                     }
-                    
+
                     else if( ( STATE_POWER_ON == (boardStatus->sysStatus & STATE_RUN_BITS) ) )
                     {
                         switch_user->switchOnOff = SWITCH_OFF;
@@ -401,7 +401,7 @@ static void Switch_Tick( void )
                         PowerOffDevices();
                         state_change = 0;
                     }
-                }     
+                }
             }
         }
         else
@@ -413,13 +413,13 @@ static void Switch_Tick( void )
     {
         //if(boardStatus->remote_device_power_ctrl == REMOTE_DEVICE_POWER_SHUTDOWN)
         {
-          
+
 #define REMOTE_POWER_CTRL_STATUS_DELAY      1
 #define REMOTE_POWER_CTRL_STATUS_PROCEED    2
 #define REMOTE_POWER_CTRL_STATUS_FINISHED   3
-        
+
 #define REMOTE_POWER_CTRL_DELAY_TIME        5000/SYSTICK_PERIOD
-          
+
             static uint8_t status = 0;
             static uint32_t remote_power_delay_start_time = 0;
 
@@ -445,27 +445,27 @@ static void Switch_Tick( void )
                     {
                         PowerOffDevices();
                         boardStatus->rebootFlag  = REBOOT_YES;
-                        
+
                     }
-                    
+
                     break;
                 case REMOTE_POWER_CTRL_STATUS_FINISHED:
                     //status = 0;
                     break;
-                      
+
                 default:
-                    break;         
+                    break;
             }
         }
         //else if(boardStatus->remote_device_power_ctrl == REMOTE_DEVICE_POWER_REBOOT)
         {
-            
+
         }
-          
 
 
-    } 
-    
+
+    }
+
 #endif
 }
 
@@ -508,7 +508,7 @@ static void ControlSignal_Tick( void )
         }
         break;
       default:
-        break;       
+        break;
       }
     }
     else if( (DEVICE_POWER_ON == PAD_ControlSignal->deviceOnOff) && (PAD_ControlSignal->startTime != 0) )
@@ -544,7 +544,7 @@ static void ControlSignal_Tick( void )
         }
         break;
       default:
-        break;       
+        break;
       }
     }
   }
@@ -587,7 +587,7 @@ static void ControlSignal_Tick( void )
       }
       break;
     default:
-      break;       
+      break;
     }
   }
   else if( (DEVICE_POWER_ON == NV_ControlSignal->deviceOnOff) && (NV_ControlSignal->startTime != 0) )
@@ -625,7 +625,7 @@ static void ControlSignal_Tick( void )
       }
       break;
     default:
-      break;       
+      break;
     }
   }
 /* x86 */
@@ -664,7 +664,7 @@ static void ControlSignal_Tick( void )
         }
         break;
       default:
-        break;       
+        break;
       }
     }
     else if( (DEVICE_POWER_ON == X86_ControlSignal->deviceOnOff) && (X86_ControlSignal->startTime != 0) )
@@ -700,7 +700,7 @@ static void ControlSignal_Tick( void )
         }
         break;
       default:
-        break;       
+        break;
       }
     }
   }
@@ -709,7 +709,7 @@ static void ControlSignal_Tick( void )
 
 static void BoardStatus_Tick( void )
 {
-  // boot 
+  // boot
   if( (NO == boardStatus->isPowerOnFinish) && (YES == boardStatus->isPowerOffFinish) )
   {
     if( os_get_time() - boardStatus->startTime >= POWER_ON_PROCEESING_TIME )
@@ -750,7 +750,7 @@ static void BoardStatus_Tick( void )
       boardStatus->sysStatus |= STATE_POWER_OFF;
       if( ( REBOOT_YES == boardStatus->rebootFlag )
          && (voltageConvert->bat_voltage >= VBAT_POWER_ON_LEVEL) )
-      {       
+      {
         boardStatus->startTime = os_get_time();
         //platform_log("board start to reboot after 5 seconds");
         platform_log("board start to reboot right now");
@@ -764,7 +764,7 @@ static void BoardStatus_Tick( void )
         NVIC_SystemReset();
         boardStatus->sysStatus |= SYSTEM_IS_SLEEP;
         halEnterSleepMode();
-      }      
+      }
     }
   }
   if( (REBOOT_YES == boardStatus->rebootFlag) && (YES == boardStatus->isPowerOffFinish) )
@@ -802,7 +802,7 @@ static void BoardStatus_Tick( void )
 uint32_t GetEachModuleStates( void )
 {
   uint32_t states;
-  
+
   states = GetModulePowerState( POWER_ALL );
 #if 0
   if( SWITCH_ON == switch_user->switchOnOff )
@@ -849,7 +849,7 @@ void ChargerPlugInCallback(void)
     {
         boardStatus->sysStatus &= ~STATE_IS_RECHARGE_IN;
     }
-    
+
     if( (MicoGpioInputGet( MICO_GPIO_CHARGE_IN ) == 0) && (MicoGpioInputGet( MICO_GPIO_RECHARGE_IN ) == 0) )
     {
         boardStatus->sysStatus &= ~STATE_IS_CHARGER_IN;
@@ -858,15 +858,15 @@ void ChargerPlugInCallback(void)
     }
     else
     {
-      if(battery_pack.pack_voltage < 100)  
+      if(battery_pack.pack_voltage < 100)
       {
         boardStatus->sysStatus |= STATE_IS_CHARGING;
-      } 
+      }
     }
     //AckReadSysStatusFrameProcess(serial, 0);
-    
+
     UploadSysState();
-    
+
     MicoGpioOutputHigh( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL);//charger plug in fan ctrl
 }
 
@@ -888,7 +888,7 @@ void ChargerUnplugCallback(void)
     {
         boardStatus->sysStatus &= ~STATE_IS_RECHARGE_IN;
     }
-    
+
     if( (MicoGpioInputGet( MICO_GPIO_CHARGE_IN ) == 0) && (MicoGpioInputGet( MICO_GPIO_RECHARGE_IN ) == 0) )
     {
         boardStatus->sysStatus &= ~STATE_IS_CHARGER_IN;
@@ -897,10 +897,10 @@ void ChargerUnplugCallback(void)
     }
     else
     {
-      if(battery_pack.pack_voltage < 100)  
+      if(battery_pack.pack_voltage < 100)
       {
         boardStatus->sysStatus |= STATE_IS_CHARGING;
-      }   
+      }
     }
     MicoGpioOutputLow( (mico_gpio_t)MICO_GPIO_CHARGE_FAN_CTRL);//charger unplug fan ctrl
     UploadSysState();
@@ -908,10 +908,10 @@ void ChargerUnplugCallback(void)
 #define CHARGING_DEBAUNCE_TIME  20/SYSTICK_PERIOD
 void ChargeTick(void)
 {
-    extern const platform_gpio_t            platform_gpio_pins[];  
+    extern const platform_gpio_t            platform_gpio_pins[];
     static uint8_t state = 0;
     static uint32_t plug_in_start_time = 0;
-    
+
     switch(state)
     {
     case 0:
@@ -925,10 +925,10 @@ void ChargeTick(void)
       if(os_get_time() - plug_in_start_time > CHARGING_DEBAUNCE_TIME)
       {
             state = 2;
-            
+
             platform_log("charge port plug in\r\n");
             ChargerPlugInCallback();
-               
+
       }
       break;
     case 2:
@@ -936,13 +936,13 @@ void ChargeTick(void)
       {
             state = 0;
             platform_log("charge port not plug in\r\n");
-            ChargerUnplugCallback();            
-            
+            ChargerUnplugCallback();
+
       }
     default :
       break;
     }
-    
+
     if( (MicoGpioInputGet( MICO_GPIO_CHARGE_IN ) == 0) && (MicoGpioInputGet( MICO_GPIO_RECHARGE_IN ) == 0) )
     {
         state = 0;
@@ -953,11 +953,11 @@ void ChargeTick(void)
     else
     {
 #if 0
-      if(battery_pack.percentage < 100)  
+      if(battery_pack.percentage < 100)
       {
         boardStatus->sysStatus |= STATE_IS_CHARGING;
       }
-      else if(battery_pack.percentage == 100) 
+      else if(battery_pack.percentage == 100)
       {
         boardStatus->sysStatus &= ~STATE_IS_CHARGING;
       }
@@ -970,9 +970,9 @@ void ChargeTick(void)
       {
         boardStatus->sysStatus &= ~STATE_IS_CHARGING;
       }
-        
+
     }
-    
+
 }
 void Platform_Tick( void )
 {
@@ -989,21 +989,21 @@ void get_hw_version(void)
     uint8_t new_key_value = 0;
     uint8_t old_key_value = 0;
 
-    
+
     static uint32_t start_time = 0;
     start_time = os_get_time();
     uint32_t overtime_start_time = os_get_time();
     while(os_get_time() - start_time <= DEBOUNCE_TIME)
     {
         old_key_value = new_key_value;
-        
+
         new_key_value |=  MicoGpioInputGet(MICO_GPIO_HW_VERSION_ID_0)^1;
         new_key_value |=  (MicoGpioInputGet(MICO_GPIO_HW_VERSION_ID_1)^1)<<1;
-  
+
         if(new_key_value != old_key_value)
         {
             start_time = os_get_time();
-        } 
+        }
         if(os_get_time() - overtime_start_time >= GET_HARD_VERSION_OVER_TIME)
         {
             break;
@@ -1023,7 +1023,7 @@ void get_hw_version(void)
         case 3:
             break;
         default :
-            break;   
+            break;
     }
 }
 void bsp_Init( void )
@@ -1038,8 +1038,8 @@ void key_switch_interrupt_cb( void )
   if( boardStatus->sysStatus & SYSTEM_IS_SLEEP )
   {
     boardStatus->sysStatus &= ~(SYSTEM_IS_SLEEP);
-    halWakeupFormSLeep();       
-  }   
+    halWakeupFormSLeep();
+  }
   switch_user->isSwitchOver = NO;
   switch_user->startTime = os_get_time();
   platform_log("switch have switched");

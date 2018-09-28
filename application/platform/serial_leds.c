@@ -1,4 +1,7 @@
-
+/*
+*  Author: Kaka Xie
+*  brief: communication with serials led
+*/
 #include "serial_leds.h"
 #include "app_platform.h"
 #include "mico.h"
@@ -19,12 +22,12 @@
 extern UART_HandleTypeDef huart2;
 void LedsUartInit(void)
 {
- 
+
     GPIO_InitTypeDef GPIO_InitStruct;
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  
+
 /*Configure GPIO pin : PA2 */
   GPIO_InitStruct.Pin = GPIO_PIN_2;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -48,7 +51,7 @@ void LedsUartInit(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-  
+
   /* Private variables ---------------------------------------------------------*/
 
   huart2.Instance = USART2;
@@ -63,7 +66,7 @@ void LedsUartInit(void)
   {
     printf("led uart init err");
   }
-    
+
 }
 
 
@@ -88,7 +91,7 @@ static void LedsSendFrame(rcv_serial_leds_frame_t *leds_frame)
     memcpy(&leds_send_buf[3], (uint8_t*)leds_frame, sizeof(rcv_serial_leds_frame_t));
     leds_send_buf[8] = CalCheckSum(leds_send_buf, 8);
     leds_send_buf[9] = FRAME_FOOTER;
-    
+
     HAL_StatusTypeDef uart_err = HAL_UART_Transmit(&huart2, leds_send_buf, sizeof(leds_send_buf), 10);
 }
 */
@@ -126,46 +129,46 @@ void SetSerialLedsEffect( light_mode_t light_mode, color_t *cur_color, uint8_t p
     leds_send_buf[9] = FRAME_FOOTER;
     serials_leds_uart_send(leds_send_buf, 10);
 
-/*    
+/*
     rcv_serial_leds_frame_t leds_frame;
     leds_frame.color.r = cur_color->r;
     leds_frame.color.g = cur_color->g;
     leds_frame.color.b = cur_color->b;
     leds_frame.cur_light_mode = light_mode;
     leds_frame.period = period;
-    
+
     LedsSendFrame(&leds_frame);
-*/    
+*/
 #if 0
     switch(light_mode)
     {
     case LIGHTS_MODE_NOMAL:
-       
+
         break;
     case LIGHTS_MODE_ERROR:
-        
+
         break;
     case LIGHTS_MODE_COM_ERROR:
-        
+
         break;
-      
-    case LIGHTS_MODE_LOW_POWER:     
-       
+
+    case LIGHTS_MODE_LOW_POWER:
+
         break;
-    case LIGHTS_MODE_CHARGING: 
-        
+    case LIGHTS_MODE_CHARGING:
+
       break;
     case LIGHTS_MODE_TURN_LEFT:
-        
+
       break;
     case LIGHTS_MODE_TURN_RIGHT:
-       
+
       break;
     case LIGHTS_MODE_EMERGENCY_STOP:
         ;
       break;
     case LIGHTS_MODE_SETTING:
-        
+
         break;
     default :
         break;
@@ -189,11 +192,11 @@ bool CheckFrameSum(uint8_t *data, uint8_t data_len)
         return FALSE;
     }
     //return (sum == data[i]);
-    
+
 }
 void AckLedsFrame(light_mode_t light_mode, color_t *cur_color, uint8_t period )
 {
-    
+
 }
 
 extern OSStatus AckSerialLedsFrameProcess( serial_t *serial, uint8_t mode, color_t *color, uint8_t period );
@@ -251,8 +254,8 @@ void leds_protocol_period(void)
                                 break;
                         }
                     }
-                    
-                    //printf("o\n");                    
+
+                    //printf("o\n");
                     break;
                 }
                 else
@@ -261,26 +264,26 @@ void leds_protocol_period(void)
                     led_com_opt.start_flag = FALSE;
                     led_com_opt.rcv_cnt = 0;
                 }
-            }          
+            }
         }
         else
         {
             if(data_tmp == FRAME_HEADER)
             {
                 led_com_opt.start_flag = TRUE;
-                led_com_opt.end_flag = FALSE;             
+                led_com_opt.end_flag = FALSE;
             }
             led_com_opt.rcv_cnt = 0;
         }
-        
+
         if(led_com_opt.rcv_cnt++ >= sizeof(led_com_opt.rcv_buf) - 1)
         {
             led_com_opt.start_flag = FALSE;
             led_com_opt.end_flag = FALSE;
             led_com_opt.rcv_cnt = 0;
         }
-        
-        
+
+
     }
 }
 

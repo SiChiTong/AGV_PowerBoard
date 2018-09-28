@@ -1,4 +1,7 @@
-
+/*
+*  Author: Kaka Xie
+*  brief: CAN package fifo
+*/
 #include "can_fifo.h"
 
 
@@ -26,28 +29,26 @@ void CanFifoRst(can_fifo_t *head)
         return;
     }
     head->front = 0;
-	head->rear = 0;
+    head->rear = 0;
 }
 
 uint8_t IsCanFifoEmpty(can_fifo_t *head)
-{    
+{
     return ((head->front == head->rear) ? TRUE : FALSE);
 }
 
 static uint8_t IsCanFifoFull(can_fifo_t *head)
-{   
+{
     return ((head->front == ((head->rear + 1) % head->size)) ? TRUE : FALSE);
 }
 
 
 uint32_t CanFifoValidSize(can_fifo_t *head)
 {
-	return ((head->rear < head->front)
-			? (head->rear + head->size - head->front)
-			: (head->rear - head->front));
+    return ((head->rear < head->front)
+            ? (head->rear + head->size - head->front)
+            : (head->rear - head->front));
 }
-
-
 
 uint8_t CanFifoPutCanPkg(can_fifo_t *head, const can_pkg_t data)
 {
@@ -64,7 +65,7 @@ uint8_t CanFifoPutCanPkg(can_fifo_t *head, const can_pkg_t data)
     head->rear++;
     head->rear = head->rear % head->size;
 
-    return TRUE;   
+    return TRUE;
 }
 
 
@@ -82,6 +83,6 @@ uint8_t CanFifoGetCanPkg(can_fifo_t *head, can_pkg_t *data)
     head->front++;
     head->front = head->front % head->size;
 
-    return TRUE;   
+    return TRUE;
 }
 
