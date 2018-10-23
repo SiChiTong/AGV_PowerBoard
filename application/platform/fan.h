@@ -1,7 +1,4 @@
 
-
-
-
 #ifndef _FAN__H
 #define _FAN__H
 
@@ -15,5 +12,5 @@ typedef struct
     uint32_t frq;
 }fan_ctrl_t;
 
-void FanInit(void);
+void fan_init(void);
 #endif

@@ -1,9 +1,5 @@
-
-
 #include "main.h"
 #include "stm32f1xx_hal.h"
-
-
 #include "mico.h"
 #include "platform.h"
 #include "platform_internal.h"
@@ -23,7 +19,7 @@
 
 #define os_PowerBoard_log(format, ...)  custom_log("PowerBoard", format, ##__VA_ARGS__)
 
-extern void Main_Menu(void);
+extern void main_menu(void);
 #define Application_REVISION "v2.1"
 
 #ifdef SIZE_OPTIMIZE
@@ -61,64 +57,60 @@ const char menu[] =
 " Example: Input \"4 -dev 0 -start 0x400 -end 0x800\": Update \r\n"
 "          flash device 0 from 0x400 to 0x800\r\n";
 #endif
-int8_t isNeedAutoBoot( void );
+int8_t is_need_auto_reboot(void);
 #ifdef MIKE_TEST
-void test_power_tick( void );
+void test_power_tick(void);
 #endif
 void OneWireLedTest(void);
 
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart2;
 uint8_t test_data[] = {0x5a,8,1,1,1,1,0x66,0xa5};
-uint8_t rcv_buf[50];
+
 HAL_StatusTypeDef uart_err;
 
 
 /* Private function prototypes -----------------------------------------------*/
-void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-static void MX_USART2_UART_Init(void);
+void config_sys_clock(void);
 
 int main(void)
 {
     HAL_Init();
 
     init_clocks();
-    bsp_Init();
+    bsp_init();
     init_architecture();
     init_platform();
-    printf ( menu, MODEL, SW_VERSION, HARDWARE_REVISION );
-    os_PowerBoard_log( "System clock = %d Hz",HAL_RCC_GetHCLKFreq() );
+    printf (menu, MODEL, SW_VERSION, HARDWARE_REVISION);
+    os_PowerBoard_log("System clock = %d Hz",HAL_RCC_GetHCLKFreq());
 
-    Platform_Init();
+    platform_init();
     get_hw_version();
 
-    VolDetect_Init();
-    Protocol_Init();
-    startTps611xx();
-    FanInit();
+    detect_vol_init();
+    protocol_init();
+    start_tps61xx();
+    fan_init();
 
     battery_init();
 
-    FifoInit(fifo, fifo_data_in_ram, RCV_DATA_LEN_MAX);
+    init_fifo(fifo, fifo_data_in_ram, RCV_DATA_LEN_MAX);
 
-    MicoCanInitialize( MICO_CAN1 );
+    can_init(MICO_CAN1);
 
-
-
-    if( !isNeedAutoBoot() )
+    if(!is_need_auto_reboot())
     {
-        while(os_get_time() <= flashTable.AutoBootDelayTime*1000/SYSTICK_PERIOD);
-        PowerOnDevices();
+        while(os_get_time() <= flashTable.auto_boot_delay_time * 1000 / SYSTICK_PERIOD);
+        power_on_devices();
     }
 
     for(;;)
     {
-        Platform_Tick();
+        platform_tick();
         //protocol_period();
-        VolDetect_Tick();
+        detect_vol_tick();
         can_protocol_period();
-        Main_Menu();
+        main_menu();
         battery_period();
         leds_protocol_period();
     }
@@ -167,222 +159,125 @@ void OneWireLedTest(void)
     {
         if(new_tick != last_tick)
         {
-            SetSerialLedsEffect( (light_mode_t)new_tick, NULL, 50 );
-            //SetSerialLedsEffect(LIGHTS_MODE_SETTING, &color_test[new_tick], 200);
+            set_serial_leds_effect((light_mode_t)new_tick, NULL, 50);
+            //set_serial_leds_effect(LIGHTS_MODE_SETTING, &color_test[new_tick], 200);
             //printf("hello hello");
         }
     }
     last_tick = new_tick;
 }
 
-int8_t isNeedAutoBoot( void )
+int8_t is_need_auto_reboot(void)
 {
-  OSStatus err = kNoErr;
-  uint32_t flash_table_offset = 0x0;
-  save_flash_data_t        flashTableTmp;
-  err = MicoFlashRead( MICO_PARTITION_PARAMETER_2, &flash_table_offset, (uint8_t *)&flashTableTmp, sizeof(save_flash_data_t) );
-  if( err )
-  {
-    printf("\r\n read flash data err\r\n");
+    OSStatus err = kNoErr;
+    uint32_t flash_table_offset = 0x0;
+    save_flash_data_t        flashTableTmp;
+    err = MicoFlashRead(MICO_PARTITION_PARAMETER_2, &flash_table_offset, (uint8_t *)&flashTableTmp, sizeof(save_flash_data_t));
+    if(err)
+    {
+        printf("\r\n read flash data err\r\n");
+        return -1;
+    }
+    if(flashTableTmp.is_need_auto_reboot == 'Y')
+    {//
+        flashTableTmp.is_need_auto_reboot = 'N';
+        flashTable.auto_boot_delay_time = flashTableTmp.auto_boot_delay_time;
+        MICOBootConfiguration(&flashTableTmp);
+        return 0;
+    }
     return -1;
-  }
-  if( flashTableTmp.isNeedAutoBoot == 'Y' )
-  {//
-    flashTableTmp.isNeedAutoBoot = 'N';
-    flashTable.AutoBootDelayTime = flashTableTmp.AutoBootDelayTime;
-    MICOBootConfiguration( &flashTableTmp );
-    return 0;
-  }
-  return -1;
 }
 
 
 /** System Clock Configuration
-*/
-void SystemClock_Config(void)
+ */
+void config_sys_clock(void)
 {
 
-  RCC_OscInitTypeDef RCC_OscInitStruct;
-  RCC_ClkInitTypeDef RCC_ClkInitStruct;
+    RCC_OscInitTypeDef RCC_OscInitStruct;
+    RCC_ClkInitTypeDef RCC_ClkInitStruct;
 
     /**Initializes the CPU, AHB and APB busses clocks
-    */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
-  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
+     */
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+    RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+    RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+    RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+    RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+    RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
+    if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+    {
+        _Error_Handler(__FILE__, __LINE__);
+    }
 
     /**Initializes the CPU, AHB and APB busses clocks
-    */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+     */
+    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+        |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
+    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+    {
+        _Error_Handler(__FILE__, __LINE__);
+    }
 
     /**Configure the Systick interrupt time
-    */
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+     */
+    HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
 
     /**Configure the Systick
-    */
-  HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
+     */
+    HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 
-  /* SysTick_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+    /* SysTick_IRQn interrupt configuration */
+    HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
 
-/* USART2 init function */
-static void MX_USART2_UART_Init(void)
-{
-
-  huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
-  huart2.Init.WordLength = UART_WORDLENGTH_8B;
-  huart2.Init.StopBits = UART_STOPBITS_1;
-  huart2.Init.Parity = UART_PARITY_NONE;
-  huart2.Init.Mode = UART_MODE_TX_RX;
-  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart2) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-  HAL_NVIC_SetPriority(USART2_IRQn, 6, 0);
-  HAL_NVIC_EnableIRQ(USART2_IRQn);
-}
-
-/** Configure pins as
-        * Analog
-        * Input
-        * Output
-        * EVENT_OUT
-        * EXTI
-*/
-static void MX_GPIO_Init(void)
-{
-  GPIO_InitTypeDef GPIO_InitStruct;
-  /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-
-  /*Configure GPIO pin : PA2 */
-  GPIO_InitStruct.Pin = GPIO_PIN_2;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PA3 */
-  GPIO_InitStruct.Pin = GPIO_PIN_3;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-#if 0
-  __HAL_RCC_GPIOE_CLK_ENABLE();
-
-  /*Configure GPIO pin : PE10 */
-  GPIO_InitStruct.Pin = GPIO_PIN_10;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_MEDIUM;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_10, GPIO_PIN_RESET);
-
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-
-  /*Configure GPIO pin : PC9 */
-  GPIO_InitStruct.Pin = GPIO_PIN_9;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_MEDIUM;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-#endif
-
-}
-
-/* USER CODE BEGIN 4 */
-
-/* USER CODE END 4 */
-
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @param  None
-  * @retval None
-  */
-void _Error_Handler(char * file, int line)
-{
-  /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-  while(1)
-  {
-  }
-  /* USER CODE END Error_Handler_Debug */
-}
 
 #ifdef USE_FULL_ASSERT
 
 /**
-   * @brief Reports the name of the source file and the source line number
-   * where the assert_param error has occurred.
-   * @param file: pointer to the source file name
-   * @param line: assert_param error line source number
-   * @retval None
-   */
+ * @brief Reports the name of the source file and the source line number
+ * where the assert_param error has occurred.
+ * @param file: pointer to the source file name
+ * @param line: assert_param error line source number
+ * @retval None
+ */
 void assert_failed(uint8_t* file, uint32_t line)
 {
-  /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-    ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  /* USER CODE END 6 */
+    /* USER CODE BEGIN 6 */
+    /* User can add his own implementation to report the file name and line number,
+ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+    /* USER CODE END 6 */
 
 }
 
 #endif
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /**
-  * @}
-*/
+ * @}
+ */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
-
-void led_uart_init(void)
-{
-    MX_GPIO_Init();
-    MX_USART2_UART_Init();
-
-    if(HAL_UART_Receive_IT(&huart2,rcv_buf,1)!=HAL_OK)Error_Handler();
-}
-
-
 
 
 #if 1
 static uint32_t    indicatorFreshCount = 0;
-void SysLed(void)
+void sys_led_indicator(void)
 {
     indicatorFreshCount ++;
-    if( indicatorFreshCount > 50 )
+    if(indicatorFreshCount > 50)
     {
         indicatorFreshCount = 0;
-        MicoGpioOutputTrigger( MICO_GPIO_SYS_LED );
+        MicoGpioOutputTrigger(MICO_GPIO_SYS_LED);
     }
 }
 #endif

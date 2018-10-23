@@ -1,7 +1,7 @@
-/* 
-*  Author: Adam Huang
-*  Date:2016/12/22
-*/
+/*
+ *  Author: Adam Huang
+ *  Date:2016/12/22
+ */
 
 #ifndef __TEMP_REFERENCE_H__
 #define __TEMP_REFERENCE_H__

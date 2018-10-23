@@ -17,12 +17,12 @@
 #include "platform.h"
 #include "platform_peripheral.h"
 
-OSStatus MicoCanInitialize( mico_can_t can );
+OSStatus can_init( mico_can_t can );
 
-OSStatus MicoCanMessageSend( mico_can_t can, const CanTxMsgTypeDef *msg);
+OSStatus can_message_send( mico_can_t can, const CanTxMsgTypeDef *msg);
 
-OSStatus MicoCanMessageRead( mico_can_t can, const void *msg );
-//OSStatus MicoCanMessageRead( mico_can_t can, const CanRxMsgTypeDef *msg );
+OSStatus can_message_read( mico_can_t can, const void *msg );
+//OSStatus can_message_read( mico_can_t can, const CanRxMsgTypeDef *msg );
 
 #endif
 

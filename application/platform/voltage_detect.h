@@ -1,7 +1,7 @@
-/* 
-*  Author: Adam Huang
-*  Date:2016/6/8
-*/
+/*
+ *  Author: Adam Huang
+ *  Date:2016/6/8
+ */
 #ifndef __VOLTAGE_DETECT_H
 #define __VOLTAGE_DETECT_H
 
@@ -56,97 +56,97 @@
 
 
 struct convert_adc_data {
-  const mico_adc_t      adc_type;
-  const uint8_t         convert_type;
+    const mico_adc_t      adc_type;
+    const uint8_t         convert_type;
 #define                         CONVERT_TYPE_VOLTAGE            0x01
 #define                         CONVERT_TYPE_CURRENTS           0x02
 #define                         CONVERT_TYPE_TEMP               0x03
-  const uint8_t         isNeedDelay;  
-  const float           convert_factor;  
-  const uint16_t        threshold_low;
-  const uint16_t        threshold_high;
-  uint16_t              err_start_time;
-  const uint16_t        err_duration_time;
-  uint16_t              err_value;
-  const uint8_t         err_channel;
-  const uint8_t         fault_bit_mask_num;
+    const uint8_t         isNeedDelay;
+    const float           convert_factor;
+    const uint16_t        threshold_low;
+    const uint16_t        threshold_high;
+    uint16_t              err_start_time;
+    const uint16_t        err_duration_time;
+    uint16_t              err_value;
+    const uint8_t         err_channel;
+    const uint8_t         fault_bit_mask_num;
 };
 
 
 
 #pragma pack(1)
 typedef struct _VoltageData_t {
-  uint16_t              _5V_reserve1_currents;
-  //uint16_t              _24V_nv_currents;
-  //uint16_t              _12V_nv_currents;
-  uint16_t              _48V_extend_currents;
-  
-  uint16_t              _12V_extend_currents;
-  uint16_t              motor_currents;
-  uint16_t              slam_currents;
-  uint16_t              _2_1_pa_currents;
-  
-  uint16_t              pad_currents;
-  uint16_t              printer_currents;
-  uint16_t              x86_currents;
-  uint16_t              ir_led_currents;
-  
-  uint16_t              _5V_leds_currents;
-    
-  uint16_t              recharge_currents;
-  uint16_t              _24V_extend_currents;
-  uint16_t              charge_currents;
-  uint16_t              batin_currents;
-  
-  uint16_t              vbus_currents;
-  uint16_t              bat_motor_currents;
-//  uint16_t              multi_channel_adc;
-  
-  uint16_t              _24V_temp;
-  uint16_t              _12V_temp;
-  uint16_t              _5V_temp;
-  uint16_t              air_temp;
-  
-  uint16_t              _24V_all_currents;
-  uint16_t              _12V_all_currents;
-  uint16_t              _5V_all_currents;
-  uint16_t              _24V_voltage;
-  
-  uint16_t              _12V_voltage;
-  uint16_t               _5V_voltage;
-  uint16_t               bat_voltage;
-  uint16_t               sensor_board_currents;
-  
-  int16_t               _12V_router_currents;
-  
-  uint16_t              _24V_nv_currents;
-  uint16_t              _12V_nv_currents;
-  uint16_t              keypad_currents;
-  
-} voltageData_t;
+    uint16_t              _5V_reserve1_currents;
+    //uint16_t              _24V_nv_currents;
+    //uint16_t              _12V_nv_currents;
+    uint16_t              _48V_extend_currents;
+
+    uint16_t              _12V_extend_currents;
+    uint16_t              motor_currents;
+    uint16_t              slam_currents;
+    uint16_t              _2_1_pa_currents;
+
+    uint16_t              pad_currents;
+    uint16_t              printer_currents;
+    uint16_t              x86_currents;
+    uint16_t              ir_led_currents;
+
+    uint16_t              _5V_leds_currents;
+
+    uint16_t              recharge_currents;
+    uint16_t              _24V_extend_currents;
+    uint16_t              charge_currents;
+    uint16_t              batin_currents;
+
+    uint16_t              vbus_currents;
+    uint16_t              bat_motor_currents;
+    //  uint16_t              multi_channel_adc;
+
+    uint16_t              _24V_temp;
+    uint16_t              _12V_temp;
+    uint16_t              _5V_temp;
+    uint16_t              air_temp;
+
+    uint16_t              _24V_all_currents;
+    uint16_t              _12V_all_currents;
+    uint16_t              _5V_all_currents;
+    uint16_t              _24V_voltage;
+
+    uint16_t              _12V_voltage;
+    uint16_t               _5V_voltage;
+    uint16_t               bat_voltage;
+    uint16_t               sensor_board_currents;
+
+    int16_t               _12V_router_currents;
+
+    uint16_t              _24V_nv_currents;
+    uint16_t              _12V_nv_currents;
+    uint16_t              keypad_currents;
+
+} voltage_data_t;
 #pragma pack()
 
 
 typedef struct _voltageConvert_t {
 #if 0
-  uint8_t              bat_voltage;
-  uint8_t              _5V_reserve1;
-  uint8_t              _12V_reserve2;
-  uint8_t              _24V_all;
-  uint8_t              dh_12V;
-  uint8_t              dh_5V;
-  uint8_t              sensor;
-  uint8_t              dlp;
-  uint8_t              motor_5v;
-  uint8_t              _24V_reserve1;
-  uint8_t              _2_1_pa;
-  uint8_t              pad;
-  uint8_t              printer;
-  uint8_t              x86;
-  uint8_t              motor;
-  uint8_t              _5V_led;   
+    uint8_t              bat_voltage;
+    uint8_t              _5V_reserve1;
+    uint8_t              _12V_reserve2;
+    uint8_t              _24V_all;
+    uint8_t              dh_12V;
+    uint8_t              dh_5V;
+    uint8_t              sensor;
+    uint8_t              dlp;
+    uint8_t              motor_5v;
+    uint8_t              _24V_reserve1;
+    uint8_t              _2_1_pa;
+    uint8_t              pad;
+    uint8_t              printer;
+    uint8_t              x86;
+    uint8_t              motor;
+    uint8_t              _5V_led;
 #endif
- uint8_t                faultBitTemp[4];
+    uint8_t                faultBitTemp[4];
 #define         AMBIENT_TEMP_FAULT_BIT_BIT_MASK_NUM     (0)
 #define         AMBIENT_TEMP_FAULT_BIT                  ((uint32_t)0x00000001)
 #define         SYS_CURRENTS_FAULT_BIT_MASK_NUM         (1)
@@ -211,30 +211,30 @@ typedef struct _voltageConvert_t {
 #define         _12V_REGULATOR_TEMP_FAULT_BIT           ((uint32_t)0x40000000)
 #define         _24V_REGULATOR_TEMP_FAULT_BIT_MASK_NUM  (31)
 #define         _24V_REGULATOR_TEMP_FAULT_BIT           ((uint32_t)0x80000000)
-} voltageConvertData_t;
+} voltage_convert_data_t;
 
 typedef struct _voltageDebug_t {
-  uint8_t               printType;
+    uint8_t               printType;
 #define                         PRINT_NO        0x00
 #define                         PRINT_ONCE      0x01
 #define                         PRINT_PEROID    0x02
 #ifdef  VOLTAGE_DEBUG
-  uint8_t               printMaxType;
+    uint8_t               printMaxType;
 #define                         RESET_MAX_BUF   0x03
 #endif
-  uint16_t              peroid;
-  uint32_t              startTime; 
-  uint8_t               uploadRate;
-  uint8_t               isNeedUpload;
-  uint32_t              uploadFlagTime;
-} voltageDebug_t;
+    uint16_t              peroid;
+    uint32_t              startTime;
+    uint8_t               uploadRate;
+    uint8_t               isNeedUpload;
+    uint32_t              uploadFlagTime;
+} voltage_debug_t;
 
-extern voltageData_t *voltageConvert;
-extern voltageConvertData_t *voltageConvertData;
-extern voltageDebug_t voltageDebug;
+extern voltage_data_t *voltageConvert;
+extern voltage_convert_data_t *voltageConvertData;
+extern voltage_debug_t voltageDebug;
 
-OSStatus VolDetect_Init( void );
-void VolDetect_Tick( void );
+OSStatus detect_vol_init( void );
+void detect_vol_tick( void );
 void battery_percentage_1s_period( void );
 
 #endif

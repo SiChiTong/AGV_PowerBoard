@@ -33,7 +33,7 @@
 #include "common.h"                     /* global project definition file   */
 #include "mico.h"
 #include "platform_config.h"
-   
+
 #define CNTLQ      0x11
 #define CNTLS      0x13
 #define DEL        0x7F
@@ -42,39 +42,39 @@
 #define LF         0x0A
 
 #ifndef NO_BLOCK_MENU
-   
-static void uart_putchar( int c )
+
+static void uart_putchar(int c)
 {
-  MicoUartSend( STDIO_UART, &c, 1 );
+    MicoUartSend(STDIO_UART, &c, 1);
 }
 
 /***************/
 /* Line Editor */
 /***************/
 void getline (char *line, int n)  {
-  int  cnt = 0;
-  char c;
+    int  cnt = 0;
+    char c;
 
-  do  {
-    if( MicoUartRecv( STDIO_UART, &c, 1, MICO_NEVER_TIMEOUT ) )
-      break;
-    if (c == CR)  c = LF;     /* read character                 */
-    if (c == BACKSPACE  ||  c == DEL)  {    /* process backspace              */
-      if (cnt != 0)  {
-        cnt--;                              /* decrement count                */
-        line--;                             /* and line pointer               */
-        uart_putchar (BACKSPACE);                /* echo backspace                 */
-        uart_putchar (' ');
-        uart_putchar (BACKSPACE);
-      }
-    }
-    else if (c != CNTLQ && c != CNTLS)  {   /* ignore Control S/Q             */
-      uart_putchar (*line = c);             /* echo and store character       */
-      line++;                               /* increment line pointer         */
-      cnt++;                                /* and count                      */
-    }
-  }  while (cnt < n - 1  &&  c != LF);      /* check limit and line feed      */
-  *(line - 1) = 0;                          /* mark end of string             */
+    do  {
+        if(MicoUartRecv(STDIO_UART, &c, 1, MICO_NEVER_TIMEOUT))
+            break;
+        if (c == CR)  c = LF;     /* read character                 */
+        if (c == BACKSPACE  ||  c == DEL)  {    /* process backspace              */
+            if (cnt != 0)  {
+                cnt--;                              /* decrement count                */
+                line--;                             /* and line pointer               */
+                uart_putchar (BACKSPACE);                /* echo backspace                 */
+                uart_putchar (' ');
+                uart_putchar (BACKSPACE);
+            }
+        }
+        else if (c != CNTLQ && c != CNTLS)  {   /* ignore Control S/Q             */
+            uart_putchar (*line = c);             /* echo and store character       */
+            line++;                               /* increment line pointer         */
+            cnt++;                                /* and count                      */
+        }
+    }  while (cnt < n - 1  &&  c != LF);      /* check limit and line feed      */
+    *(line - 1) = 0;                          /* mark end of string             */
 }
 #endif
 
@@ -83,18 +83,18 @@ int stdio_break_in(void)
 {
     uint8_t c;
     int i, j;
-    
-    for(i=0, j=0;i<10;i++) {
-      if (kNoErr != MicoUartRecv( STDIO_UART, &c, 1, 10)) 
-        continue;
 
-      if (c == 0x20) {
-        j++;
-        if (j > 3)
-          return 1; 
-      } else {
-        j = 0;
-      }
+    for(i = 0, j = 0;i < 10; i++) {
+        if (kNoErr != MicoUartRecv(STDIO_UART, &c, 1, 10))
+            continue;
+
+        if (c == 0x20) {
+            j++;
+            if (j > 3)
+                return 1;
+        } else {
+            j = 0;
+        }
     }
 
     return 0;

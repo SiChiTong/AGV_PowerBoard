@@ -19,7 +19,7 @@ void init_architecture( void) ;
 void init_platform( void) ;
 void init_platform_bootloader( void );
 void startApplication( uint32_t app_addr );
-void sysTickHandler(void);
+void sys_tick_handler(void);
 
 #endif // __PlatformInternal_h__
 

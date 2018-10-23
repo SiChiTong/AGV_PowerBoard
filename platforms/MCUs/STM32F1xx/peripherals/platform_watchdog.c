@@ -52,65 +52,65 @@ static IWDG_HandleTypeDef iwdg_handle;
  *               Function Definitions
  ******************************************************/
 
-OSStatus platform_watchdog_init( uint32_t timeout_ms )
+OSStatus platform_watchdog_init(uint32_t timeout_ms)
 {
-// PLATFORM_TO_DO
+    // PLATFORM_TO_DO
 #ifndef MICO_DISABLE_WATCHDOG
-  OSStatus err = kNoErr;
-  uint16_t reloadTick;
-  /* Get the LSI frequency:  TIM5 is used to measure the LSI frequency */
-  //LsiFreq = GetLSIFrequency();
-  __HAL_RCC_LSI_ENABLE();
-  /* Set counter reload value to obtain 250ms IWDG TimeOut.
-     Counter Reload Value = timeout_ms /IWDG counter clock period
-                          = timeout_ms * (LSI/256) / 1000
-   */
-  reloadTick = LsiFreq*timeout_ms/32000;
-  require_action( reloadTick <= 0xFFF, exit, err = kParamErr );
+    OSStatus err = kNoErr;
+    uint16_t reloadTick;
+    /* Get the LSI frequency:  TIM5 is used to measure the LSI frequency */
+    //LsiFreq = GetLSIFrequency();
+    __HAL_RCC_LSI_ENABLE();
+    /* Set counter reload value to obtain 250ms IWDG TimeOut.
+       Counter Reload Value = timeout_ms /IWDG counter clock period
+       = timeout_ms * (LSI/256) / 1000
+     */
+    reloadTick = LsiFreq*timeout_ms/32000;
+    require_action(reloadTick <= 0xFFF, exit, err = kParamErr);
 
-  //IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);
-  /*IWDG_ENABLE_WRITE_ACCESS( &iwdg_handle );*/
+    //IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);
+    /*IWDG_ENABLE_WRITE_ACCESS(&iwdg_handle);*/
 
-  /* IWDG counter clock: LSI/256 */
-  //IWDG_SetPrescaler(IWDG_Prescaler_256);
+    /* IWDG counter clock: LSI/256 */
+    //IWDG_SetPrescaler(IWDG_Prescaler_256);
 
-  //IWDG_SetReload(reloadTick);
+    //IWDG_SetReload(reloadTick);
 
-  /* Reload IWDG counter */
-  //IWDG_ReloadCounter();
-  
-  iwdg_handle.Instance = IWDG;
-  iwdg_handle.Init.Prescaler = IWDG_PRESCALER_32;
-  iwdg_handle.Init.Reload = reloadTick;
-  require_action( HAL_IWDG_Init( &iwdg_handle ) == HAL_OK, exit, err = kGeneralErr );
-  
-  /* Enable IWDG (the LSI oscillator will be enabled by hardware) */
-  //IWDG_Enable();
-  require_action( HAL_IWDG_Start( &iwdg_handle ) == HAL_OK, exit, err = kGeneralErr );
+    /* Reload IWDG counter */
+    //IWDG_ReloadCounter();
+
+    iwdg_handle.Instance = IWDG;
+    iwdg_handle.Init.Prescaler = IWDG_PRESCALER_32;
+    iwdg_handle.Init.Reload = reloadTick;
+    require_action(HAL_IWDG_Init(&iwdg_handle) == HAL_OK, exit, err = kGeneralErr);
+
+    /* Enable IWDG (the LSI oscillator will be enabled by hardware) */
+    //IWDG_Enable();
+    require_action(HAL_IWDG_Start(&iwdg_handle) == HAL_OK, exit, err = kGeneralErr);
 
 exit:
-  return err;
+    return err;
 #else
-  UNUSED_PARAMETER( timeout_ms );
-  return kUnsupportedErr;
+    UNUSED_PARAMETER(timeout_ms);
+    return kUnsupportedErr;
 #endif
 }
 
-OSStatus MicoWdgFinalize( void )
+OSStatus MicoWdgFinalize(void)
 {
     // PLATFORM_TO_DO
     return kNoErr;
 }
 
-OSStatus platform_watchdog_kick( void )
+OSStatus platform_watchdog_kick(void)
 {
 #ifndef MICO_DISABLE_WATCHDOG
-  OSStatus err = kNoErr;
-  require_action( HAL_IWDG_Refresh( &iwdg_handle ) == HAL_OK, exit, err = kGeneralErr );
-  
+    OSStatus err = kNoErr;
+    require_action(HAL_IWDG_Refresh(&iwdg_handle) == HAL_OK, exit, err = kGeneralErr);
+
 exit:
-  return err;
+    return err;
 #else
-  return kUnsupportedErr;
+    return kUnsupportedErr;
 #endif
 }

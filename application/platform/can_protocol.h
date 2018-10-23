@@ -1,7 +1,7 @@
-/* 
-*  Author: Adam Huang
-*  Date:2017/01/23
-*/
+/*
+ *  Author: Adam Huang
+ *  Date:2017/01/23
+ */
 
 #ifndef __CAN_PROTOOCOL_H
 #define __CAN_PROTOOCOL_H
@@ -46,126 +46,68 @@
 
 
 
-typedef union
-{
-	 struct{
-		uint32_t start_address; // the address of the bin saved on flash.
-		uint32_t length; // file real length
-		uint8_t version[8];
-		uint8_t type; // B:bootloader, P:boot_table, A:application, 
-		uint8_t upgrade_type; //u:upgrade, 
-		uint8_t reserved[6];
-	}boot_table_t;
- char data[24];
- }BOOTLOADER_UNION;
-
-
 typedef struct
 {
-	uint8_t FuncID;
-	uint16_t len;
-	uint8_t *pdata;
-}CAN_TXDATA_STRUCT;
-
-
+    uint8_t fun_id;
+    uint16_t len;
+    uint8_t *pdata;
+}can_tx_data_t;
 
 
 typedef union
 {
-	struct
-	{
-		uint32_t SourceID  : 8;
-		uint32_t FUNC_ID   : 4;
-		uint32_t ACK       : 1;
-		uint32_t DestMACID : 8;
-		uint32_t SrcMACID  : 8;
-		uint32_t res       : 3;
-	}CanID_Struct;
-	uint32_t  CANx_ID;
-}CAN_ID_UNION;
+    struct
+    {
+        uint32_t source_id  : 8;
+        uint32_t func_id   : 4;
+        uint32_t ack       : 1;
+        uint32_t dest_mac_id : 8;
+        uint32_t src_mac_id  : 8;
+        uint32_t res       : 3;
+    }canx_id_t;
+    uint32_t  canx_id;
+}can_id_union;
 
 typedef union
 {
-	struct
-	{
-        uint8_t SegNum  : 6;
-        uint8_t SegPolo : 2;
-		uint8_t Data[7];
-	}CanData_Struct;
-	uint8_t CanData[8];
-}CAN_DATA_UNION;
+    struct
+    {
+        uint8_t seg_num  : 6;
+        uint8_t seg_polo : 2;
+        uint8_t data[7];
+    }can_data_t;
+    uint8_t can_data[8];
+}can_data_union;
 
 #define CAN_ONE_FRAME_DATA_LENTH    7
 #define CAN_SEG_NUM_MAX             64
 #define CAN_LONG_FRAME_LENTH_MAX    (CAN_ONE_FRAME_DATA_LENTH*CAN_SEG_NUM_MAX)
+
 typedef struct
 {
     uint32_t can_id;
-    uint32_t start_time; 
+    uint32_t start_time;
     uint16_t used_len;
-    uint8_t rcv_buf[CAN_LONG_FRAME_LENTH_MAX];   
-}CAN_RCV_BUFFER_T;
+    uint8_t rcv_buf[CAN_LONG_FRAME_LENTH_MAX];
+}can_rcv_buf_t;
 
-typedef uint8_t (*GetOneFreeBufFn)(void);
-typedef uint8_t (*GetTheBufByIdFn)(uint32_t);
-typedef void (*FreeBufFn)(uint8_t);
+typedef uint8_t (*get_one_free_buf_fn)(void);
+typedef uint8_t (*get_the_buf_by_id_fn)(uint32_t);
+typedef void (*free_buf_fn)(uint8_t);
 
 #define CAN_LONG_BUF_NUM    2
+
 typedef struct
 {
-    CAN_RCV_BUFFER_T can_rcv_buf[CAN_LONG_BUF_NUM];
-    GetOneFreeBufFn GetOneFreeBuf; 
-    GetTheBufByIdFn GetTheBufById;
-    FreeBufFn FreeBuf;
-}CAN_LONG_BUF_T;
+    can_rcv_buf_t can_rcv_buf[CAN_LONG_BUF_NUM];
+    get_one_free_buf_fn get_one_free_buf;
+    get_the_buf_by_id_fn get_the_buf_by_id;
+    free_buf_fn free_buf;
+}can_long_buf_t;
 
 
-#if 0
-extern uint8_t CanUpdataBuff[64];
-extern uint8_t CanRxdataBuff[64];
-#endif
-
-
-
-
-void RxMsgHandle(uint32_t ID,uint8_t* pdata);
-
-void CM_CAN_Init(void);
-void RxMsgHandle(uint32_t ID,uint8_t* pdata);
-
-void CAN_SetMsg(void);
-
-void CM_CanSetMsg(uint32_t id,uint8_t ide,uint8_t rtr,uint8_t dlc,uint8_t* pdata);
-void CM_CAN_Tx( mico_can_t can_type, CAN_ID_UNION id, uint8_t* pdata, uint16_t len );
-
-void UploadAdcData(void);
-
-
+void upload_adc_data(void);
 void can_protocol_period( void );
+void can_long_buf_init(void);
 
-void CanLongBufInit(void);
-
-/*******************  Bit definition for ExtId bytes  ********************/
-#define EXTID_FRAME_TYPE_BITS						((uint32_t)0x10000000)
-#define EXTID_SRC_ID_BITS						((uint32_t)0x0FC00000)
-#define EXTID_DST_ID_BITS						((uint32_t)0x003F0000)
-/* normal */
-#define EXTID_PROPERTY_BITS						((uint32_t)0x0000C000)
-#define EXTID_FUNC_ID_BITS						((uint32_t)0x00003F80)
-#define EXTID_SEGMENT_NUM_D_BITS					((uint32_t)0x00000078)
-#define EXTID_ACK_D_BITS						((uint32_t)0x00000004)
-#define EXTID_END_FLAG_D_BITS						((uint32_t)0x00000002)
-#define EXTID_RESEND_D_BITS						((uint32_t)0x00000001)
-/* update */
-#define EXTID_ACK_U_BITS						((uint32_t)0x00008000)
-#define EXTID_RESEND_U_BITS						((uint32_t)0x00004000)
-#define EXTID_SEGMENT_NUM_U_BITS					((uint32_t)0x00003FFF)
-
-#define EXTID_SRC_ID_BITS_NUM						(22U)
-#define EXTID_DST_ID_BITS_NUM						(16U)
-#define EXTID_PROPERTY_BITS_NUM						(14U)
-#define EXTID_FUNC_ID_BITS_NUM						(4U)
-
-#define EXTID_FRAME_TYPE_DATA						(0)
-#define EXTID_FRAME_TYPE_UPDATE						(1)
 #endif
