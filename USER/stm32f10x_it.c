@@ -197,9 +197,9 @@ void USB_LP_CAN1_RX0_IRQHandler(void)
     CanTxMsg tx_message;
     can_pkg_t can_pkg_tmp;
     CAN_Receive(CAN1, CAN_FIFO0, &RxMessage);
-    can_pkg_tmp.id.CANx_ID = RxMessage.ExtId;
+    can_pkg_tmp.id.canx_id = RxMessage.ExtId;
     can_pkg_tmp.len = RxMessage.DLC;
-    memcpy(can_pkg_tmp.data.CanData, RxMessage.Data, can_pkg_tmp.len);
+    memcpy(can_pkg_tmp.data.can_data, RxMessage.Data, can_pkg_tmp.len);
     put_can_pkg_to_fifo(can_fifo, can_pkg_tmp);
 #if 0 //send data back
     for(uint8_t i = 0; i < RxMessage.DLC; i++)

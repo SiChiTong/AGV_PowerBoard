@@ -10,7 +10,7 @@
 
 #include "can.h"
 
-uint8_t CanInit(void)
+uint8_t can_init(void)
 {
     
     //////-- CAN GPIO Init --//////
@@ -78,7 +78,7 @@ uint8_t CanInit(void)
   	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   	NVIC_Init(&NVIC_InitStructure);
     
-    CanLongBufInit();
+    can_long_buf_init();
 	return 0;
 }
 

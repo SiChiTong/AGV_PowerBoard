@@ -1,6 +1,6 @@
 /*
  *  Author: Kaka Xie
- *  brief: lock task
+ *  brief: battery task
  */
 
 #include "battery_task.h"

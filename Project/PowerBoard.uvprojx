@@ -434,6 +434,11 @@
               <FileType>1</FileType>
               <FilePath>..\Task\can_protocol_task.c</FilePath>
             </File>
+            <File>
+              <FileName>power_on_off_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Task\power_on_off_task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

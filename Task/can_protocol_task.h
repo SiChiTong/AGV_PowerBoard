@@ -1,10 +1,10 @@
 /**
 ******************************************************************************
-* @file    can.c 
+* @file    can.c
 * @author  Kaka.Xie
 * @brief   This file provides CAN driver.
 ******************************************************************************
-*/ 
+*/
 
 #ifndef __CAN_PROTOCOL_H
 #define __CAN_PROTOCOL_H
@@ -49,32 +49,28 @@ void can_protocol_task(void *pdata);
 typedef struct
 {
     uint32_t can_id;
-    uint32_t start_time; 
+    uint32_t start_time;
     uint16_t used_len;
-    uint8_t rcv_buf[CAN_LONG_FRAME_LENTH_MAX];   
-}CAN_RCV_BUFFER_T;
+    uint8_t rcv_buf[CAN_LONG_FRAME_LENTH_MAX];
+}can_rcv_buf_t;
 
-typedef uint8_t (*GetOneFreeBufFn)(void);
-typedef uint8_t (*GetTheBufByIdFn)(uint32_t);
-typedef void (*FreeBufFn)(uint8_t);
+typedef uint8_t (*get_one_free_buf_fn)(void);
+typedef uint8_t (*get_the_buf_by_id_fn)(uint32_t);
+typedef void (*free_buf_fn)(uint8_t);
 
 #define CAN_LONG_BUF_NUM    2   // value can not be 0 ! !
 typedef struct
 {
-    CAN_RCV_BUFFER_T can_rcv_buf[CAN_LONG_BUF_NUM];
-    GetOneFreeBufFn GetOneFreeBuf; 
-    GetTheBufByIdFn GetTheBufById;
-    FreeBufFn FreeBuf;
-}CAN_LONG_BUF_T;
+    can_rcv_buf_t can_rcv_buf[CAN_LONG_BUF_NUM];
+    get_one_free_buf_fn get_one_free_buf;
+    get_the_buf_by_id_fn get_the_buf_by_id;
+    free_buf_fn free_buf;
+}can_long_buf_t;
 
-void RxMsgHandle(uint32_t ID,uint8_t* pdata);
-
-void CM_CAN_Init(void);
-void RxMsgHandle(uint32_t ID,uint8_t* pdata);
 
 void can_protocol_period( void );
 
-void CanLongBufInit(void);
+void can_long_buf_init(void);
 
 
 #endif
