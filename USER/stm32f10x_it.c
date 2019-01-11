@@ -26,7 +26,6 @@
 #include "includes.h"
 #include "usart.h"
 
-#include "lc12s_wireless.h"
 
 void NMI_Handler(void)
 {
@@ -187,6 +186,36 @@ void USART2_IRQHandler(void)
     }
     OSIntExit();
 }
+
+
+
+
+#include "can_fifo.h"
+extern CanRxMsg RxMessage;
+void USB_LP_CAN1_RX0_IRQHandler(void)
+{
+    CanTxMsg tx_message;
+    can_pkg_t can_pkg_tmp;
+    CAN_Receive(CAN1, CAN_FIFO0, &RxMessage);
+    can_pkg_tmp.id.CANx_ID = RxMessage.ExtId;
+    can_pkg_tmp.len = RxMessage.DLC;
+    memcpy(can_pkg_tmp.data.CanData, RxMessage.Data, can_pkg_tmp.len);
+    put_can_pkg_to_fifo(can_fifo, can_pkg_tmp);
+#if 0 //send data back
+    for(uint8_t i = 0; i < RxMessage.DLC; i++)
+    {
+        tx_message.Data[i] = RxMessage.Data[i];
+    }
+    
+    tx_message.ExtId = RxMessage.ExtId;
+    tx_message.IDE = RxMessage.IDE;
+    tx_message.RTR = RxMessage.RTR;
+    tx_message.DLC = RxMessage.DLC;
+
+    CAN_Transmit(CAN1, &tx_message);
+#endif
+}
+
 
 
 /******************************************************************************/

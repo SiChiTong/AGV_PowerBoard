@@ -6,23 +6,14 @@
 #include "led_task.h"
 #include "lock_task.h"
 #include "battery_task.h"
-
-
+#include "can_protocol_task.h"
 
 typedef enum
 {
-    LC12S_UART_COM_RCV_TASK_PRIO = 4,
-    FP_UART_COM_RCV_TASK_PRIO,
-
-    LC12S_UART_COM_SEND_TASK_PRIO,
-    DIS_TEST_TASK_PRIO,
-    FP_UART_COM_SEND_TASK_PRIO,
+    CAN_RPOTOCOL_TASK_PRIO = 4,
     UNLOCK_TASK_PRIO,
-    FP_RECORD_TASK_PRIO,
-    DISPLAY_TASK_PRIO,
     LOCK_STATUS_TASK_PRIO,
     BATTERY_TASK_PRIO,
-    LED1_TASK_PRIO,
     INDICATOR_LED_TASK_PRIO
 }task_prio_e;
 

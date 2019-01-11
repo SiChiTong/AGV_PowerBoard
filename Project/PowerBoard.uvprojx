@@ -48,7 +48,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>..\OBJ\</OutputDirectory>
-          <OutputName>medicine-box</OutputName>
+          <OutputName>powerbaord_M30</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>
@@ -404,6 +404,11 @@
               <FileType>1</FileType>
               <FilePath>..\USER\platform.c</FilePath>
             </File>
+            <File>
+              <FileName>can_protocol.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\can_protocol.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -423,6 +428,11 @@
               <FileName>lock_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Task\lock_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>can_protocol_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Task\can_protocol_task.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -448,6 +458,11 @@
               <FileName>battery.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Modules\battery.c</FilePath>
+            </File>
+            <File>
+              <FileName>can_fifo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Modules\can_fifo.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -478,6 +493,11 @@
               <FileName>adc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>can.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\can.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -563,6 +583,11 @@
               <FileName>stm32f10x_adc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\STM32F10x_FWLib\src\stm32f10x_adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_can.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\STM32F10x_FWLib\src\stm32f10x_can.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -25,6 +25,7 @@ static void task_create(void)
 //    OSTaskCreate(lock_status_task,          (void *)0,  (OS_STK*)&LOCK_STATUS_TASK_STK[LOCK_STATUS_TASK_STK_SIZE - 1],                      LOCK_STATUS_TASK_PRIO);
 
     OSTaskCreate(battery_task,              (void *)0,  (OS_STK*)&BATTERY_TASK_STK[BATTERY_TASK_STK_SIZE - 1],                              BATTERY_TASK_PRIO);
+    OSTaskCreate(can_protocol_task,         (void *)0,  (OS_STK*)&can_protocol_task_stk[CAN_PROTOCOL_TASK_STK_SIZE - 1],                    CAN_RPOTOCOL_TASK_PRIO);
 
 }
 

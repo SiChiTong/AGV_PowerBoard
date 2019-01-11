@@ -7,6 +7,7 @@
 #include "stdio.h"
 #include "battery.h"
 #include "led.h"
+#include "can.h"
 
 uint32_t get_tick(void)
 {
@@ -18,6 +19,7 @@ void hardware_init(void)
 {
     battery_adc_init();
     led_init();
+    CanInit();
 }
 
 
