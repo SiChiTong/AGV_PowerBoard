@@ -129,6 +129,9 @@ typedef enum
 } platform_gpio_e;
 
 
+#define MODULE_POWER_ON     1
+#define MODULE_POWER_OFF    0
+
 typedef struct
 {
     GPIO_TypeDef* GPIOx;
@@ -139,5 +142,9 @@ typedef struct
 uint32_t get_tick(void);
 
 void hardware_init(void);
+void hold_on_power(void);
+void main_power_module_5v_ctrl(uint8_t on_off);
+void main_power_module_12v_ctrl(uint8_t on_off);
+void main_power_module_24v_ctrl(uint8_t on_off);
 
 #endif

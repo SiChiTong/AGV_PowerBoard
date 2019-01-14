@@ -22,7 +22,7 @@ void lock_gpio_init(void)
 
     /* lock input detection config */
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;               // 端口配置
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;        //推挽输出
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
     GPIO_Init(GPIOG, &GPIO_InitStructure);                  //根据设定参数初始化GPIO
 
 }

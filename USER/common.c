@@ -4,6 +4,7 @@
  */
 
 #include "common.h"
+#include "power_on_off_task.h"
 
 extern void falsh_test_task(void *pdata);
 
@@ -26,6 +27,7 @@ static void task_create(void)
 
     OSTaskCreate(battery_task,              (void *)0,  (OS_STK*)&BATTERY_TASK_STK[BATTERY_TASK_STK_SIZE - 1],                              BATTERY_TASK_PRIO);
     OSTaskCreate(can_protocol_task,         (void *)0,  (OS_STK*)&can_protocol_task_stk[CAN_PROTOCOL_TASK_STK_SIZE - 1],                    CAN_RPOTOCOL_TASK_PRIO);
+    OSTaskCreate(power_on_task,             (void *)0,  (OS_STK*)&power_on_stk[POWER_ON_STK_SIZE - 1],                                      POWER_ON_TASK_PRIO);
 
 }
 
