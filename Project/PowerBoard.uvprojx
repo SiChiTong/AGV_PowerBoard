@@ -439,6 +439,11 @@
               <FileType>1</FileType>
               <FilePath>..\Task\power_on_off_task.c</FilePath>
             </File>
+            <File>
+              <FileName>switch_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Task\switch_task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -468,6 +473,11 @@
               <FileName>can_fifo.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Modules\can_fifo.c</FilePath>
+            </File>
+            <File>
+              <FileName>string_utils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Modules\string_utils.c</FilePath>
             </File>
           </Files>
         </Group>

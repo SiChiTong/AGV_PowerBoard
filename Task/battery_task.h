@@ -3,7 +3,7 @@
 #include "stm32f10x.h"
 #include "ucos_ii.h"
 
-#define BATTERY_TASK_STK_SIZE   256
+#define BATTERY_TASK_STK_SIZE   1024
 
 
 extern OS_STK BATTERY_TASK_STK[BATTERY_TASK_STK_SIZE];

@@ -110,6 +110,7 @@ void DMA1_Channel5_IRQHandler(void)     //USART1-TX
 
 uint32_t uart1_rcv_test_cnt = 0;
 
+#if 0
 /*    USART1 IDLE interrupt    */
 void USART1_IRQHandler(void)
 {
@@ -135,7 +136,39 @@ void USART1_IRQHandler(void)
     }
     OSIntExit();
 }
+#else
+void USART1_IRQHandler(void)
+{
+    volatile unsigned char temper=0;
 
+    OSIntEnter();
+    if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+    {
+        temper = USART1->SR;
+        temper = USART1->DR;    //«ÂUSART_IT_IDLE
+        uart1_rcv_test_cnt++;
+    }
+    OSIntExit();
+}
+#endif
+
+
+#include "battery.h"
+void UART4_IRQHandler(void)
+{
+    volatile unsigned char temper=0;
+
+    OSIntEnter();
+
+    if (USART_GetITStatus(UART4, USART_IT_RXNE) != RESET)
+    {
+        temper = UART4->SR;
+        temper = UART4->DR;    //«ÂUSART_IT_IDLE
+        battery_data_recieved(temper);
+        uart1_rcv_test_cnt++;
+    }
+    OSIntExit();
+}
 
 void DMA1_Channel7_IRQHandler(void)     //USART2-TX
 {
@@ -188,32 +221,16 @@ void USART2_IRQHandler(void)
 }
 
 
-
-
 #include "can_fifo.h"
 extern CanRxMsg RxMessage;
 void USB_LP_CAN1_RX0_IRQHandler(void)
 {
-    CanTxMsg tx_message;
     can_pkg_t can_pkg_tmp;
     CAN_Receive(CAN1, CAN_FIFO0, &RxMessage);
     can_pkg_tmp.id.canx_id = RxMessage.ExtId;
     can_pkg_tmp.len = RxMessage.DLC;
     memcpy(can_pkg_tmp.data.can_data, RxMessage.Data, can_pkg_tmp.len);
     put_can_pkg_to_fifo(can_fifo, can_pkg_tmp);
-#if 0 //send data back
-    for(uint8_t i = 0; i < RxMessage.DLC; i++)
-    {
-        tx_message.Data[i] = RxMessage.Data[i];
-    }
-    
-    tx_message.ExtId = RxMessage.ExtId;
-    tx_message.IDE = RxMessage.IDE;
-    tx_message.RTR = RxMessage.RTR;
-    tx_message.DLC = RxMessage.DLC;
-
-    CAN_Transmit(CAN1, &tx_message);
-#endif
 }
 
 

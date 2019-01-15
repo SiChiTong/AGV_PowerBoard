@@ -19,6 +19,11 @@ void uart2_dma_init(u32 bound);
 int uart2_send(uint8_t *data, uint16_t len);
 
 void uart1_dma_init(u32 bound);
-int uart1_send(uint8_t *data, uint16_t len);
+
+void uart_3_init(u32 bound);
+void uart_4_init(u32 bound);
+//int uart1_send(uint8_t *data, uint16_t len);
+int uart_3_send(uint8_t *data, uint16_t len);
+int uart_4_send(uint8_t *data, uint16_t len);
 #endif
 

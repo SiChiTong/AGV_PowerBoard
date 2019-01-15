@@ -27,6 +27,8 @@ void battery_task(void *pdata)
         }
         battery_voltage = voltage_sum / BATTERY_VOLTAGE_BUF_SIZE;
         delay_ms(100);
+
+        battery_period();
     }
 }
 

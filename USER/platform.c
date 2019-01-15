@@ -278,7 +278,7 @@ void x86_power_signal_ctrl(uint8_t on_off)
 
 void beeper_on(void)
 {
-    GPIO_SetBits(GPIOB, GPIO_Pin_0);
+//    GPIO_SetBits(GPIOB, GPIO_Pin_0);
 }
 
 void beeper_off(void)
@@ -314,6 +314,7 @@ void hardware_init(void)
 {
     platform_gpio_init();
     battery_adc_init();
+    bat_uart_init();
     led_init();
     can_init();
 }
