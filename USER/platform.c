@@ -89,7 +89,7 @@ const platform_gpio_t platform_gpio_pins[] =
     [PLATFORM_GPIO_24V_EXTEND_ADC]      = { GPIOA, GPIO_Pin_7 },
     [PLATFORM_GPIO_IRLED_ADC]           = { GPIOC, GPIO_Pin_4 },
     [PLATFORM_GPIO_5V_LEDS_ADC]         = { GPIOC, GPIO_Pin_5 },
-    [PLATFORM_GPIO_5V_MOTOR_ADC]        = { GPIOB, GPIO_Pin_0 },
+//    [PLATFORM_GPIO_5V_MOTOR_ADC]        = { GPIOB, GPIO_Pin_0 },
     [PLATFORM_GPIO_24V_SLAM_ADC]        = { GPIOB, GPIO_Pin_1 },
 
     [PLATFORM_GPIO_5V_POLE_MOTOR_ADC]   = { GPIOA, GPIO_Pin_1 },
@@ -119,6 +119,7 @@ const platform_gpio_t platform_gpio_pins[] =
     [PLATFORM_GPIO_3V3_CARD_EN_4]       = { GPIOE, GPIO_Pin_12},
 
     [PLATFORM_GPIO_FAN_12V_DC_CTRL]     = { GPIOA, GPIO_Pin_15},
+    [PLATFORM_GPIO_BEEPER_CTRL]         = { GPIOB, GPIO_Pin_0 },
 
 };
 
@@ -139,9 +140,15 @@ static void input_gpio_init(void)
 
     /*GPIO_D*/
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_11;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
     GPIO_Init(GPIOD, &GPIO_InitStructure);
+
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
+    GPIO_Init(GPIOD, &GPIO_InitStructure);
+
 
     /*GPIO_E*/
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);
@@ -161,6 +168,13 @@ static void output_gpio_init(void)
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    /*GPIO_B*/
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
 
     /*GPIO_C*/
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
@@ -201,7 +215,7 @@ static void output_gpio_init(void)
 
 static void init_reset_gpio(void)
 {
-
+    GPIO_ResetBits(GPIOG, GPIO_Pin_0);
 }
 
 static void init_set_gpio(void)
@@ -215,12 +229,27 @@ static void platform_gpio_init(void)
     output_gpio_init();
     input_gpio_init();
     init_set_gpio();
+    init_reset_gpio();
 }
 
+void switch_init(void)
+{
+
+}
+
+uint8_t get_switch_state(void)
+{
+    return GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_11);
+}
 
 void hold_on_power(void)
 {
     GPIO_SetBits(GPIOD, GPIO_Pin_10);
+}
+
+void release_power(void)
+{
+    GPIO_ResetBits(GPIOD, GPIO_Pin_10);
 }
 
 void main_power_module_5v_ctrl(uint8_t on_off)
@@ -233,6 +262,28 @@ void main_power_module_5v_ctrl(uint8_t on_off)
     {
         GPIO_SetBits(GPIOE, GPIO_Pin_7);
     }
+}
+
+void x86_power_signal_ctrl(uint8_t on_off)
+{
+    if(on_off == MODULE_POWER_ON)
+    {
+        GPIO_SetBits(GPIOG, GPIO_Pin_0);
+    }
+    else if(on_off == MODULE_POWER_OFF)
+    {
+        GPIO_ResetBits(GPIOG, GPIO_Pin_0);
+    }
+}
+
+void beeper_on(void)
+{
+    GPIO_SetBits(GPIOB, GPIO_Pin_0);
+}
+
+void beeper_off(void)
+{
+    GPIO_ResetBits(GPIOB, GPIO_Pin_0);
 }
 
 void main_power_module_12v_ctrl(uint8_t on_off)

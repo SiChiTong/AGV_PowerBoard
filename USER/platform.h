@@ -123,6 +123,7 @@ typedef enum
     PLATFORM_GPIO_3V3_CARD_EN_4,
 
     PLATFORM_GPIO_FAN_12V_DC_CTRL,
+    PLATFORM_GPIO_BEEPER_CTRL,
 
     PLATFORM_GPIO_MAX, /* Denotes the total number of GPIO port aliases. Not a valid GPIO alias */
     PLATFORM_GPIO_NONE,
@@ -143,8 +144,14 @@ uint32_t get_tick(void);
 
 void hardware_init(void);
 void hold_on_power(void);
+void release_power(void);
 void main_power_module_5v_ctrl(uint8_t on_off);
 void main_power_module_12v_ctrl(uint8_t on_off);
 void main_power_module_24v_ctrl(uint8_t on_off);
+void x86_power_signal_ctrl(uint8_t on_off);
+uint8_t get_switch_state(void);
+
+void beeper_on(void);
+void beeper_off(void);
 
 #endif
