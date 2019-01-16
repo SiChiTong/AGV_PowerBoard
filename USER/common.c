@@ -15,6 +15,7 @@ static void task_create(void)
     OSTaskCreate(power_on_off_task,         (void *)0,  (OS_STK*)&power_on_off_stk[POWER_ON_OFF_STK_SIZE - 1],                              POWER_ON_OFF_TASK_PRIO);
     OSTaskCreate(switch_task,               (void *)0,  (OS_STK*)&switch_task_stk[SWITCH_TASK_STK_SIZE - 1],                                SWITCH_TASK_PRIO);
     OSTaskCreate(power_on_off_x86_task,     (void *)0,  (OS_STK*)&x86_power_on_off_stk[X86_POWER_ON_OFF_STK_SIZE - 1],                      X86_POWER_ON_OFF_TASK_PRIO);
+    OSTaskCreate(power_on_off_rk_task,      (void *)0,  (OS_STK*)&rk_power_on_off_stk[RK_POWER_ON_OFF_STK_SIZE - 1],                        RK_POWER_ON_OFF_TASK_PRIO);
 
 }
 
@@ -23,6 +24,8 @@ static void sem_create(void)
     powerkey_long_press_sem = OSSemCreate(0);
     x86_power_on_sem = OSSemCreate(0);
     x86_power_off_sem = OSSemCreate(0);
+    rk_power_on_sem = OSSemCreate(0);
+    rk_power_off_sem = OSSemCreate(0);
     power_on_sem = OSSemCreate(0);
     power_off_sem = OSSemCreate(0);
 }

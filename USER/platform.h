@@ -149,6 +149,7 @@ void main_power_module_5v_ctrl(uint8_t on_off);
 void main_power_module_12v_ctrl(uint8_t on_off);
 void main_power_module_24v_ctrl(uint8_t on_off);
 void x86_power_signal_ctrl(uint8_t on_off);
+void rk_power_signal_ctrl(uint8_t on_off);
 uint8_t get_switch_state(void);
 
 void beeper_on(void);

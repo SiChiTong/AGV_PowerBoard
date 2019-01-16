@@ -492,7 +492,6 @@ void battery_period(void)
                 battery_pack.com_status = TRUE;
             }
             pBatteryData->cmd_type = 0x00;
-//            StartDmaReciveEx(BATT_UART, (uint8_t *)rx_data , RX_MAX_DATA_LENGTH);
         }
     }
 

@@ -276,9 +276,21 @@ void x86_power_signal_ctrl(uint8_t on_off)
     }
 }
 
+void rk_power_signal_ctrl(uint8_t on_off)
+{
+    if(on_off == MODULE_POWER_ON)
+    {
+        GPIO_SetBits(GPIOF, GPIO_Pin_15);
+    }
+    else if(on_off == MODULE_POWER_OFF)
+    {
+        GPIO_ResetBits(GPIOF, GPIO_Pin_15);
+    }
+}
+
 void beeper_on(void)
 {
-//    GPIO_SetBits(GPIOB, GPIO_Pin_0);
+    GPIO_SetBits(GPIOB, GPIO_Pin_0);
 }
 
 void beeper_off(void)

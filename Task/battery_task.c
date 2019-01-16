@@ -9,7 +9,6 @@
 
 OS_STK BATTERY_TASK_STK[BATTERY_TASK_STK_SIZE];
 
-
 uint16_t battery_voltage = 0;
 #define BATTERY_VOLTAGE_BUF_SIZE    50
 uint16_t battery_voltage_buffer[BATTERY_VOLTAGE_BUF_SIZE] = {0};
