@@ -26,6 +26,7 @@ void led1_task(void *pdata)
 
 void indicator_led_task(void *pdata)
 {
+    delay_ms(500);
     while(1)
     {
         INDICATOR_LED = 0;

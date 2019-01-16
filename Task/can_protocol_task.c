@@ -205,7 +205,7 @@ void can_protocol_task(void *pdata)
 {
     static can_id_union id = {0};
     static can_data_union rx_buf = {0};
-
+    delay_ms(500);
     while(1)
     {
         can_pkg_t can_pkg_tmp = {0};

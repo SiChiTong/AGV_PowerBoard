@@ -16,6 +16,8 @@ void battery_task(void *pdata)
 {
     uint32_t cnt = 0;
     uint32_t voltage_sum = 0;
+    delay_ms(500);
+    battery_protocol_init();
     while(1)
     {
         battery_voltage_buffer[cnt++ % BATTERY_VOLTAGE_BUF_SIZE] =  get_battery_voltage();

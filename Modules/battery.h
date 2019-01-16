@@ -34,4 +34,5 @@ void bat_uart_init(void);
 uint16_t get_battery_voltage(void);
 void battery_data_recieved(uint8_t data);
 void battery_period(void);
+void battery_protocol_init(void);
 #endif

@@ -14,7 +14,6 @@ void battery_adc_init(void)
     adc_init();
 }
 
-void battery_protocol_init(void);
 uint8_t string_to_unsigned(const char* string, uint8_t str_length, uint32_t* value_out, uint8_t is_hex);
 
 

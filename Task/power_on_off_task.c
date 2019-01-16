@@ -91,7 +91,7 @@ void power_on_off_task(void *pdata)
         main_power_module_12v_ctrl(MODULE_POWER_OFF);
         main_power_module_24v_ctrl(MODULE_POWER_OFF);
         release_power();
-        delay_ms(2000);
+        delay_ms(30 * 1000);
     }
 }
 

@@ -83,7 +83,7 @@ const platform_gpio_t platform_gpio_pins[] =
     [PLATFORM_GPIO_5V_RES1_ADC]         = { GPIOA, GPIO_Pin_0 },
     [PLATFORM_GPIO_VSYS_24V_NV_ADC]     = { GPIOA, GPIO_Pin_2 },
     [PLATFORM_GPIO_12V_NV_ADC]          = { GPIOA, GPIO_Pin_3 },
-    [PLATFORM_GPIO_48V_EXTEND_ADC]      = { GPIOA, GPIO_Pin_4 },
+//    [PLATFORM_GPIO_48V_EXTEND_ADC]      = { GPIOA, GPIO_Pin_4 },
     [PLATFORM_GPIO_12V_EXTEND_ADC]      = { GPIOA, GPIO_Pin_5 },
     [PLATFORM_GPIO_RECHARGE_ADC]        = { GPIOA, GPIO_Pin_6 },
     [PLATFORM_GPIO_24V_EXTEND_ADC]      = { GPIOA, GPIO_Pin_7 },
@@ -139,10 +139,10 @@ static void input_gpio_init(void)
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
 
     /*GPIO_D*/
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-    GPIO_Init(GPIOD, &GPIO_InitStructure);
+//    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
+//    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
+//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+//    GPIO_Init(GPIOD, &GPIO_InitStructure);
 
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
@@ -185,7 +185,7 @@ static void output_gpio_init(void)
 
     /*GPIO_D*/
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_14;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOD, &GPIO_InitStructure);
@@ -206,7 +206,7 @@ static void output_gpio_init(void)
 
     /*GPIO_G*/
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_0 | GPIO_Pin_2 | GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_0 | GPIO_Pin_2 | GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOG, &GPIO_InitStructure);
@@ -215,13 +215,15 @@ static void output_gpio_init(void)
 
 static void init_reset_gpio(void)
 {
-    GPIO_ResetBits(GPIOG, GPIO_Pin_0);
+    GPIO_ResetBits(GPIOG, GPIO_Pin_0 | GPIO_Pin_1);
+    GPIO_ResetBits(GPIOF, GPIO_Pin_15);
 }
 
 static void init_set_gpio(void)
 {
-
+    GPIO_SetBits(GPIOD, GPIO_Pin_10 | GPIO_Pin_14);
     GPIO_SetBits(GPIOE, GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9);
+    GPIO_SetBits(GPIOG, GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_8);
 }
 
 static void platform_gpio_init(void)
