@@ -23,27 +23,231 @@ CanTxMsg TxMessage;
 uint8_t CanTxdataBuff[CAN_LONG_FRAME_LENTH_MAX] = {0};
 
 
+#define HW_VERSION_V0_2                  "NOAH_PM_V0.2"
+#define HW_VERSION_V0_3                  "NOAH_PM_V0.3"
+#define SW_VERSION                      "NOAHC001M08B109"
+#define PROTOCOL_VERSION                "20170619P0001"
+
+#define CMD_NOT_FOUND   0
+
 uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, uint8_t *data_out)
 {
     id->can_id_t.ack = 1;
     switch(id->can_id_t.func_id)
     {
-        case CAN_FUN_ID_RESET:
-            //          platform_mcu_reset();
+//        case CAN_FUN_ID_RESET:
+//            //          platform_mcu_reset();
+//            break;
+//        case CAN_FUN_ID_WRITE:
+//        case CAN_FUN_ID_READ:
+//            switch(id->can_id_t.source_id)
+//            {
+//                case CAN_SOURCE_ID_READ_VERSION:
+//                    //SW_VERSION
+//                    break;
+//                case CAN_READ_DATA:
+
+//                    return 1;
+//                default :
+//                    break;
+//            }
+//        default:
+//            break;
+
+                case CAN_FUN_ID_RESET:
+//            platform_mcu_reset();
             break;
         case CAN_FUN_ID_WRITE:
         case CAN_FUN_ID_READ:
             switch(id->can_id_t.source_id)
             {
                 case CAN_SOURCE_ID_READ_VERSION:
-                    //SW_VERSION
-                    break;
-                case CAN_READ_DATA:
+                    data_out[0] = data_in[0];
+                    if(data_in[0] == 1)//read software version
+                    {
+                        memcpy(&data_out[2], SW_VERSION, sizeof(SW_VERSION));
+                        //return strlen(SW_VERSION) + 1;
+                        data_out[1] = strlen(SW_VERSION);
+                        return sizeof(SW_VERSION) + 2;
+                    }
+                    else if(data_in[0] == 2)//protocol version
+                    {
+                        memcpy(&data_out[2], PROTOCOL_VERSION, sizeof(PROTOCOL_VERSION));
+                        data_out[1] = strlen(PROTOCOL_VERSION);
+                        return sizeof(PROTOCOL_VERSION) + 2;
 
-                    return 1;
+                    }
+                    else if(data_in[0] == 3)//hardware version
+                    {
+//                        memcpy(&data_out[2], boardStatus->hw_version, strlen(boardStatus->hw_version));
+//                        data_out[1] = strlen(boardStatus->hw_version);
+//                        return strlen(boardStatus->hw_version) + 2;
+                    }
+                    return CMD_NOT_FOUND;
+                    break;
+//                case CAN_READ_DATA:
+
+//                    break;
+                case CAN_SOURCE_ID_SET_MODULE_STATE:
+
+                    data_out[0] = data_in[0];
+
+                    {
+                        if(data_in[1] == 1)//group num = 1
+                        {
+//                            //uint32_t module = (data_in[5]) | (data_in[4]<<8) | (data_in[3] << 16) | (data_in[2] << 24);
+//                            uint32_t module = *(uint32_t *)&data_in[2];
+//                            power_on_off_type_def on_off;
+//                            if((data_in[6] != POWER_OFF) && (data_in[6] != POWER_ON))
+//                            {
+//                                return 0;
+//                            }
+//                            on_off = (power_on_off_type_def)data_in[6];
+//                            module &= 0xffffffff;
+//                            power_ctrl((power_enable_type_def)module, on_off);
+//                            uint32_t tmp = get_module_power_state(POWER_ALL);
+//                            data_out[1] = data_in[1];
+//                            *(uint32_t*)&data_out[2] = module;
+//                            *(uint32_t*)&data_out[6] = tmp;
+//                            data_out[10] = on_off;
+//                            return 11;
+                        }
+#if 0
+                        if(data_in[1] == 2)//group num = 2
+                        {
+
+                            uint32_t module = (data_in[5]) | (data_in[4] << 8) | (data_in[3] << 16) | (data_in[2] << 24);
+                            module &= 0xffffffff;
+                            BSP_Power_OnOffEx((PowerEnable_2_TypeDef)module,(power_on_off_type_def)data_in[6]);
+                            uint32_t tmp = GetModulePowerStateEx(POWER_ALL_2);
+                            data_out[1] = data_in[1];
+                            memcpy(&data_out[2],(uint8_t *)(&tmp) , 4);
+                            return 6;
+                        }
+#endif
+                    }
+                    return CMD_NOT_FOUND;
+
+                case CAN_SOURCE_ID_GET_MODULE_STATE:
+
+                    {
+
+                        if(data_in[1] == 1)//group num = 1
+                        {
+//                            uint32_t tmp = get_module_power_state(POWER_ALL);
+//                            data_out[1] = 1;
+//                            *(uint32_t*)&data_out[2] = tmp;
+
+
+                            return 6;
+                        }
+                    }
+                    return CMD_NOT_FOUND;
+
+                case CAN_SOURCE_ID_GET_BAT_STATE:
+//                    if(battery_pack.com_status == false)
+//                    {
+//                        *(uint16_t*)&data_out[1] = voltageConvert->bat_voltage;
+//                        data_out[3] = 0;
+//                    }
+//                    else
+//                    {
+//                        *(uint16_t*)&data_out[1] = battery_pack.pack_voltage;
+//                        data_out[3] = battery_pack.percentage;
+//                    }
+
+                    return 4;
+
+                    break;
+                case CAN_SOURCE_ID_GET_SYS_STATE:
+//                    *(uint16_t*)&data_out[1] = boardStatus->system_status;
+                    return 3;
+                    break;
+
+                case CAN_SOURCE_ID_GET_ADC_DATA:
+//                    memcpy(data_out, (uint8_t *)voltageConvert, sizeof(voltage_data_t));
+//                    return sizeof(voltage_data_t);
+                    break;
+                case CAN_SOURCE_ID_SET_IR_LED_LIGHTNESS:
+                    {
+#if 1
+//                        uint8_t duty = data_in[0];
+//                        if(duty > 100)
+//                        {
+//                            duty = 100;
+//                        }
+//                        brightness_dimming(50000,  duty);
+//                        boardStatus->irled_duty = duty;
+//                        data_out[0] = data_in[0];
+//                        data_out[1] = duty;
+                        return 2;
+#endif
+                        break;
+                    }
+
+                case CAN_SOURCE_ID_SET_LED_EFFECT:
+                    if(data_in[0] == 0)
+                    {
+//                        light_mode_t mode;
+//                        uint8_t period = data_in[5];
+//                        color_t *color;
+//                        mode =  (light_mode_t)data_in[1];
+//                        color = (color_t*)&data_in[2];
+//                        set_serial_leds_effect(mode, color, period);
+                        return 0;
+                    }
+                    return 0;
+                    break;
+
+
+
+#if 0
+                case CAN_SOURCE_ID_ERROR_STATE:
+                    memcpy(data_out, voltageConvertData->faultBitTemp, 5);
+                    return 5;
+
+                case CAN_SOURCE_ID_READ_ADC_DATA:
+                    voltageDebug.isNeedUpload = YES;
+                    voltageDebug.uploadRate = data_in[0];
+                    return 0;
+                case CAN_SOURCE_ID_READ_RK_STATE:
+
+                    break;
+                case CAN_SOURCE_ID_PWM_LED:
+
+                    break;
+#endif
+
+                case CAN_SOURCE_ID_REMOTE_POWRER_CTRL:
+                    {
+                        data_out[0] = data_in[0];
+//                        if((YES == boardStatus->is_power_off_finished) && (YES == boardStatus->is_power_on_finished) && (boardStatus->system_status & STATE_RUN_BITS))
+//                        {
+//                            if((data_in[0] == 1) || (data_in[0] == 2))
+//                            {
+//                                boardStatus->remote_device_power_ctrl = data_in[0];
+//                                data_out[1] = 0; //succeed
+//                            }
+//                            else
+//                            {
+//                                data_out[1] = 1; //parameter error
+//                            }
+//                        }
+//                        else
+//                        {
+//                            data_out[1] = 2;    //device is not power on yet
+//                        }
+//                        return 2;
+//                        break;
+                    }
+                case CAN_SOURCE_ID_GET_SERIALS_LEDS_VERSION:
+//                    get_serials_leds_version();
+                    break;
                 default :
                     break;
             }
+
+
         default:
             break;
     }

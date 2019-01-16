@@ -38,9 +38,19 @@ void can_protocol_task(void *pdata);
 #define CAN_FUN_ID_RESET        0x06
 
 //////  source id define  //////
-#define CAN_SOURCE_ID_READ_VERSION  0x01
-#define CAN_READ_DATA               0x80
-#define CAN_SOURCE_ID_GET_SLIDER_VALUE      0x81
+#define CAN_SOURCE_ID_READ_VERSION                  0x01
+#define CAN_SOURCE_ID_SET_MODULE_STATE              0x81
+#define CAN_SOURCE_ID_GET_MODULE_STATE              0x82
+#define CAN_SOURCE_ID_GET_SYS_STATE                 0x83
+#define CAN_SOURCE_ID_GET_ERR_STATE                 0x84
+#define CAN_SOURCE_ID_GET_BAT_STATE                 0x85
+#define CAN_SOURCE_ID_GET_ADC_DATA                  0x86
+#define CAN_SOURCE_ID_SET_IR_LED_LIGHTNESS          0x87
+#define CAN_SOURCE_ID_GET_IR_LED_LIGHTNESS          0x88
+#define CAN_SOURCE_ID_SET_LED_EFFECT                0x89
+#define CAN_SOURCE_ID_POWER_OFF_SIGNAL              0x8a
+#define CAN_SOURCE_ID_REMOTE_POWRER_CTRL            0x8b
+#define CAN_SOURCE_ID_GET_SERIALS_LEDS_VERSION      0x8c
 
 
 #define CAN_ONE_FRAME_DATA_LENTH    7

@@ -324,10 +324,15 @@ void main_power_module_24v_ctrl(uint8_t on_off)
     }
 }
 
+void device_ctrl(uint32_t power_en, uint8_t on_off)
+{
+
+}
+
 void hardware_init(void)
 {
     platform_gpio_init();
-    battery_adc_init();
+//    battery_adc_init();
     bat_uart_init();
     led_init();
     can_init();

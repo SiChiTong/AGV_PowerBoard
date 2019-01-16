@@ -453,6 +453,7 @@ void  battery_parse_rx_buffer(const uint8_t * const hex_rx_buf)
         }
     }
 }
+
 void print_bat_info(void)
 {
     printf("battery current is %d",battery_pack.pack_current);
