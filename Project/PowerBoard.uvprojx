@@ -474,11 +474,6 @@
               <FileType>1</FileType>
               <FilePath>..\Modules\can_fifo.c</FilePath>
             </File>
-            <File>
-              <FileName>string_utils.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Modules\string_utils.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>

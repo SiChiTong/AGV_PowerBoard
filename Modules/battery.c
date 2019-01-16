@@ -15,6 +15,7 @@ void battery_adc_init(void)
 }
 
 void battery_protocol_init(void);
+uint8_t string_to_unsigned(const char* string, uint8_t str_length, uint32_t* value_out, uint8_t is_hex);
 
 
 uint16_t get_battery_voltage(void)
@@ -22,6 +23,11 @@ uint16_t get_battery_voltage(void)
     uint16_t ref_adc_value;
     uint16_t adc_value;
 
+#if 0
+    uint32_t test_value = 0;
+    char *test_str = "ab23cd";
+    string_to_unsigned(test_str, 6, &test_value, 1);
+#endif
     adc_value = get_adc(ADC3, 5);
     ref_adc_value = get_adc(ADC1, 17);
     return (uint16_t)((float)adc_value  * 1.2 * 1000 * 60.0 / ((float)ref_adc_value * 13.0));
@@ -164,9 +170,52 @@ error:
     return NULL;
 }
 
-uint8_t string_to_unsigned( const char* string, uint8_t str_length, uint32_t* value_out, uint8_t is_hex )
+uint8_t string_to_unsigned(const char* string, uint8_t str_length, uint32_t* value_out, uint8_t is_hex)
 {
-
+    uint8_t i = 0;
+    uint32_t value = 0;
+    uint32_t product = 1;
+    uint8_t tmp = 0;
+    if(str_length > 8)
+    {
+        return 0;
+    }
+//    for(i = 0; i < str_length - 1; i++)
+//    {
+//        product *= 10;
+//    }
+    for(i = str_length; i > 0; i--)
+    {
+        tmp = string[i - 1];
+        if(is_hex)
+        {
+            product *= 0x10;
+            if((tmp >= '0') && (tmp <= '9'))
+            {
+                value += product * (tmp - '0');
+            }
+            else if((tmp >= 'a') && (tmp <= 'f'))
+            {
+                value += product * ((tmp - 'a') + 0x0a);
+            }
+            else if((tmp >= 'A') && (tmp <= 'F'))
+            {
+                value += product * ((tmp - 'A') + 0x0a);
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            /*
+            TODO:
+            */
+            return 0;
+        }
+    }
+    *value_out = (value / 0x10)/* & 0xff*/;
     return 1;
 }
 
