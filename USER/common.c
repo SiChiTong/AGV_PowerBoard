@@ -16,6 +16,7 @@ static void task_create(void)
     OSTaskCreate(switch_task,               (void *)0,  (OS_STK*)&switch_task_stk[SWITCH_TASK_STK_SIZE - 1],                                SWITCH_TASK_PRIO);
     OSTaskCreate(power_on_off_x86_task,     (void *)0,  (OS_STK*)&x86_power_on_off_stk[X86_POWER_ON_OFF_STK_SIZE - 1],                      X86_POWER_ON_OFF_TASK_PRIO);
     OSTaskCreate(power_on_off_rk_task,      (void *)0,  (OS_STK*)&rk_power_on_off_stk[RK_POWER_ON_OFF_STK_SIZE - 1],                        RK_POWER_ON_OFF_TASK_PRIO);
+    OSTaskCreate(charge_task,               (void *)0,  (OS_STK*)&charge_task_stk[CHARGE_TASK_STK_SIZE - 1],                                CHARGE_TASK_PRIO);
 
 }
 

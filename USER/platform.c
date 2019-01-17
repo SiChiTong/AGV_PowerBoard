@@ -9,6 +9,7 @@
 #include "led.h"
 #include "can.h"
 #include "timer.h"
+#include "sys.h"
 
 
 
@@ -213,6 +214,37 @@ static void output_gpio_init(void)
     GPIO_Init(GPIOG, &GPIO_InitStructure);
 }
 
+void charge_gpio_init(void)
+{
+    GPIO_InitTypeDef  GPIO_InitStructure;
+    EXTI_InitTypeDef exit_init_structure;
+    NVIC_InitTypeDef NVIC_InitStructure;
+
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);   // πƒ‹ ±÷”
+
+
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource6);
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource7);
+
+    exit_init_structure.EXTI_Line = EXTI_Line6 | EXTI_Line7;
+    exit_init_structure.EXTI_Mode = EXTI_Mode_Interrupt;
+    exit_init_structure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+    exit_init_structure.EXTI_LineCmd = ENABLE;
+    EXTI_Init(&exit_init_structure);
+
+    NVIC_InitStructure.NVIC_IRQChannel = EXTI9_5_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x01;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x03;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+}
+
 
 static void init_reset_gpio(void)
 {
@@ -233,6 +265,7 @@ static void platform_gpio_init(void)
     input_gpio_init();
     init_set_gpio();
     init_reset_gpio();
+    charge_gpio_init();
 }
 
 void switch_init(void)
@@ -346,7 +379,7 @@ void hardware_init(void)
     led_init();
     can_init();
 //    ir_led_pwm_ctrl(13);
-    timer_1_ch1_pwm_init(720 , 1, 720 * 13 / 100);
+    timer_1_ch1_pwm_init(720 , 1, 720 * 20 / 100);
 }
 
 

@@ -221,6 +221,21 @@ void USART2_IRQHandler(void)
 }
 
 
+void EXTI9_5_IRQHandler(void)
+{
+    OSIntEnter();
+    if(EXTI_GetITStatus(EXTI_Line6) != RESET)
+    {
+        EXTI_ClearITPendingBit(EXTI_Line6);
+    }
+    if(EXTI_GetITStatus(EXTI_Line7) != RESET)
+    {
+        EXTI_ClearITPendingBit(EXTI_Line7);
+    }
+    OSIntExit();
+}
+
+
 #include "can_fifo.h"
 extern CanRxMsg RxMessage;
 void USB_LP_CAN1_RX0_IRQHandler(void)
@@ -232,7 +247,6 @@ void USB_LP_CAN1_RX0_IRQHandler(void)
     memcpy(can_pkg_tmp.data.can_data, RxMessage.Data, can_pkg_tmp.len);
     put_can_pkg_to_fifo(can_fifo, can_pkg_tmp);
 }
-
 
 
 /******************************************************************************/

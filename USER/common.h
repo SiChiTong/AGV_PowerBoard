@@ -9,18 +9,20 @@
 #include "can_protocol_task.h"
 #include "power_on_off_task.h"
 #include "switch_task.h"
+#include "charge_task.h"
 
 typedef enum
 {
     CAN_RPOTOCOL_TASK_PRIO = 5,
-    UNLOCK_TASK_PRIO,
-    LOCK_STATUS_TASK_PRIO,
-    BATTERY_TASK_PRIO,
-    INDICATOR_LED_TASK_PRIO,
-    POWER_ON_OFF_TASK_PRIO,
+    CHARGE_TASK_PRIO,
+//    UNLOCK_TASK_PRIO,
+//    LOCK_STATUS_TASK_PRIO,
     SWITCH_TASK_PRIO,
+    BATTERY_TASK_PRIO,
+    POWER_ON_OFF_TASK_PRIO,
     X86_POWER_ON_OFF_TASK_PRIO,
-    RK_POWER_ON_OFF_TASK_PRIO
+    RK_POWER_ON_OFF_TASK_PRIO,
+    INDICATOR_LED_TASK_PRIO
 }task_prio_e;
 
 
