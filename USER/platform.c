@@ -8,6 +8,7 @@
 #include "battery.h"
 #include "led.h"
 #include "can.h"
+#include "timer.h"
 
 
 
@@ -329,13 +330,23 @@ void device_ctrl(uint32_t power_en, uint8_t on_off)
 
 }
 
+void ir_led_pwm_ctrl(uint16_t duty)
+{
+    if(duty <= 100)
+    {
+        timer_1_ch1_pwm_init(720, 1, 720 * duty / 100 );
+    }
+
+}
+
 void hardware_init(void)
 {
     platform_gpio_init();
-//    battery_adc_init();
     bat_uart_init();
     led_init();
     can_init();
+//    ir_led_pwm_ctrl(13);
+    timer_1_ch1_pwm_init(720 , 1, 720 * 13 / 100);
 }
 
 

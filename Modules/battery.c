@@ -35,7 +35,7 @@ uint16_t get_battery_voltage(void)
 void bat_uart_init(void)
 {
     uart_4_init(9600);
-    battery_protocol_init();
+//    battery_protocol_init();
 }
 
 
