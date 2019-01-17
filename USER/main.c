@@ -13,7 +13,6 @@
 #include "platform.h"
 #include "flash.h"
 #include "id.h"
-#include "lock.h"
 #include "battery.h"
 
 uint8_t test_id = 0;

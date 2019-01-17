@@ -1,6 +1,6 @@
 /*
  *  Author: Kaka Xie
- *  brief:  battery power percent processing
+ *  brief:  battery power processing
  */
 #include "battery.h"
 #include "adc.h"

@@ -4,7 +4,6 @@
 #include "ucos_ii.h"
 
 #include "led_task.h"
-#include "lock_task.h"
 #include "battery_task.h"
 #include "can_protocol_task.h"
 #include "power_on_off_task.h"

@@ -1,8 +1,6 @@
 #include "spi.h"
 
 
-
-
 void spi2_init(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure;

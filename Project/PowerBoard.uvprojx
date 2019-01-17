@@ -425,11 +425,6 @@
               <FilePath>..\Task\led_task.c</FilePath>
             </File>
             <File>
-              <FileName>lock_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Task\lock_task.c</FilePath>
-            </File>
-            <File>
               <FileName>can_protocol_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Task\can_protocol_task.c</FilePath>
@@ -463,11 +458,6 @@
               <FileName>id.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Modules\id.c</FilePath>
-            </File>
-            <File>
-              <FileName>lock.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Modules\lock.c</FilePath>
             </File>
             <File>
               <FileName>battery.c</FileName>
