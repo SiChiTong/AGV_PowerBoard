@@ -12,7 +12,7 @@
 void spi2_flash_init(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
-    RCC_APB2PeriphClockCmd(	RCC_APB2Periph_GPIOB, ENABLE );//PORTB时钟使能
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE );//PORTB时钟使能
 
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;  // PB12 推挽
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;  //推挽输出

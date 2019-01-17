@@ -214,7 +214,7 @@ static void output_gpio_init(void)
     GPIO_Init(GPIOG, &GPIO_InitStructure);
 }
 
-void charge_gpio_init(void)
+static void charge_gpio_init(void)
 {
     GPIO_InitTypeDef  GPIO_InitStructure;
     EXTI_InitTypeDef exit_init_structure;
@@ -268,7 +268,7 @@ static void platform_gpio_init(void)
     charge_gpio_init();
 }
 
-void switch_init(void)
+static void switch_init(void)
 {
 
 }
@@ -372,6 +372,11 @@ void ir_led_pwm_ctrl(uint16_t duty)
 
 }
 
+static void ir_led_pwm_init(void)
+{
+    timer_1_ch1_pwm_init(720 , 1, 720 * 20 / 100);
+}
+
 void hardware_init(void)
 {
     platform_gpio_init();
@@ -379,7 +384,7 @@ void hardware_init(void)
     led_init();
     can_init();
 //    ir_led_pwm_ctrl(13);
-    timer_1_ch1_pwm_init(720 , 1, 720 * 20 / 100);
+    ir_led_pwm_init();
 }
 
 

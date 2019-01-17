@@ -9,9 +9,9 @@
 //返回值:对应数据.
 u16 STMFLASH_ReadHalfWord(u32 faddr)
 {
-	return *(vu16*)faddr;
+    return *(vu16*)faddr;
 }
-#if STM32_FLASH_WREN	//如果使能了写
+#if STM32_FLASH_WREN    //如果使能了写
 //不检查的写入
 //write_addr:起始地址
 //buffer:数据指针
@@ -103,12 +103,12 @@ void flash_write(u32 write_addr, u16 *buffer, u16 num_to_write)
 //num_to_write:半字(16位)数
 void flash_read(u32 ReadAddr,u16 *buffer,u16 NumToRead)
 {
-	u16 i;
-	for(i=0;i<NumToRead;i++)
-	{
-		buffer[i]=STMFLASH_ReadHalfWord(ReadAddr);//读取2个字节.
-		ReadAddr+=2;//偏移2个字节.
-	}
+    u16 i;
+    for(i=0;i<NumToRead;i++)
+    {
+        buffer[i]=STMFLASH_ReadHalfWord(ReadAddr);//读取2个字节.
+        ReadAddr+=2;//偏移2个字节.
+    }
 }
 
 
@@ -130,7 +130,7 @@ uint8_t flash_erase(uint32_t addr)
 //WriteData:要写入的数据
 void Test_Write(u32 write_addr,u16 WriteData)
 {
-	flash_write(write_addr,&WriteData,1);//写入一个字
+    flash_write(write_addr,&WriteData,1);//写入一个字
 }
 
 

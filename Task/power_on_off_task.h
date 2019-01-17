@@ -42,18 +42,6 @@ extern OS_EVENT *rk_power_off_sem;
 #define RK_POWER_OFF_PROCESSING_TIME    20000
 
 
-#define SYS_POWER_STATE_BOOTING_UP      1
-#define SYS_POWER_STATE_ON              2
-#define SYS_POWER_STATE_SHUTTING_DOWN   3
-#define SYS_POWER_STATE_OFF             0
-typedef struct
-{
-    uint8_t power_state;
-    uint32_t sys_state;
-    uint8_t is_booting_up_finished;
-    uint8_t is_shutting_down_finished;
-}sys_power_t;
-
 void power_on_off_task(void *pdata);
 void power_on_off_x86_task(void *pdata);
 void power_on_off_rk_task(void *pdata);

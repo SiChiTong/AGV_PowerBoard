@@ -3,34 +3,14 @@
  *  brief:  battery power processing
  */
 #include "battery.h"
-#include "adc.h"
 #include "delay.h"
 #include "platform.h"
 #include <stdio.h>
 #include "usart.h"
 #include <string.h>
-void battery_adc_init(void)
-{
-    adc_init();
-}
+
 
 uint8_t string_to_unsigned(const char* string, uint8_t str_length, uint32_t* value_out, uint8_t is_hex);
-
-
-uint16_t get_battery_voltage(void)
-{
-    uint16_t ref_adc_value;
-    uint16_t adc_value;
-
-#if 0
-    uint32_t test_value = 0;
-    char *test_str = "ab23cd";
-    string_to_unsigned(test_str, 6, &test_value, 1);
-#endif
-    adc_value = get_adc(ADC3, 5);
-    ref_adc_value = get_adc(ADC1, 17);
-    return (uint16_t)((float)adc_value  * 1.2 * 1000 * 60.0 / ((float)ref_adc_value * 13.0));
-}
 
 void bat_uart_init(void)
 {

@@ -140,6 +140,25 @@ typedef struct
 
 }platform_gpio_t;
 
+
+
+
+
+#define SYS_POWER_STATE_BOOTING_UP      1
+#define SYS_POWER_STATE_ON              2
+#define SYS_POWER_STATE_SHUTTING_DOWN   3
+#define SYS_POWER_STATE_OFF             0
+typedef struct
+{
+    uint8_t power_state;
+    uint32_t sys_state;
+    uint8_t is_booting_up_finished;
+    uint8_t is_shutting_down_finished;
+    uint8_t charge_state;
+    uint8_t recharge_state;
+}sys_power_t;
+
+
 uint32_t get_tick(void);
 
 void hardware_init(void);

@@ -495,11 +495,6 @@
               <FilePath>..\HARDWARE\mcu_flash.c</FilePath>
             </File>
             <File>
-              <FileName>adc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\adc.c</FilePath>
-            </File>
-            <File>
               <FileName>can.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\can.c</FilePath>
