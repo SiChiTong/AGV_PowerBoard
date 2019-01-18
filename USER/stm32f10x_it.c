@@ -221,17 +221,28 @@ void USART2_IRQHandler(void)
 }
 
 
+#include "platform.h"
+#include "charge_task.h"
+uint16_t charge_state_tmp = 0;
 void EXTI9_5_IRQHandler(void)
 {
+    uint8_t value = 0;
     OSIntEnter();
     if(EXTI_GetITStatus(EXTI_Line6) != RESET)
     {
         EXTI_ClearITPendingBit(EXTI_Line6);
+        value = get_recharge_gpio_value();
+        charge_state_tmp &= 0xff00;
+        charge_state_tmp += value;
     }
     if(EXTI_GetITStatus(EXTI_Line7) != RESET)
     {
         EXTI_ClearITPendingBit(EXTI_Line7);
+        value = get_charge_gpio_value();
+        charge_state_tmp &= 0x00ff;
+        charge_state_tmp += value << 8;
     }
+    OSMboxPost(charge_state_mailbox, (void*)charge_state_tmp);
     OSIntExit();
 }
 

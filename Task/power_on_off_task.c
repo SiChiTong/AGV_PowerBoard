@@ -73,6 +73,8 @@ void power_on_off_task(void *pdata)
         }
         else if(err == OS_ERR_NONE)
         {
+            sys_status->sys_status &= 0xfff0;
+            sys_status->sys_status |= STATE_IS_POWER_ON;
             hold_on_power();
             beeper_on();
             main_power_module_5v_ctrl(MODULE_POWER_ON);
@@ -83,10 +85,15 @@ void power_on_off_task(void *pdata)
             OSSemPost(x86_power_on_sem);
             OSSemPost(rk_power_on_sem);
             delay_ms(BOOTING_UP_TIME);
+            sys_status->sys_status &= 0xfff0;
+            sys_status->sys_status |= STATE_POWER_ON;
+
 
             /*shutdown*/
             powerkey_long_press_sem = OSSemCreate(0);
             OSSemPend(powerkey_long_press_sem, 0, &err);
+            sys_status->sys_status &= 0xfff0;
+            sys_status->sys_status |= STATE_IS_POWER_OFF;
             beeper_on();
             delay_ms(500);
             beeper_off();

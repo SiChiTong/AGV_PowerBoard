@@ -11,7 +11,8 @@
 #include "timer.h"
 #include "sys.h"
 
-
+sys_status_t sys_status_ram = {0};
+sys_status_t *sys_status;
 
 const platform_gpio_t platform_gpio_pins[] =
 {
@@ -186,11 +187,14 @@ static void output_gpio_init(void)
     GPIO_Init(GPIOC, &GPIO_InitStructure);
 
     /*GPIO_D*/
+    GPIO_SetBits(GPIOD, GPIO_Pin_10);//must hold on power
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_14;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOD, &GPIO_InitStructure);
+
+    GPIO_SetBits(GPIOD, GPIO_Pin_10);//must hold on power immediately
 
     /*GPIO_E*/
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);
@@ -208,7 +212,7 @@ static void output_gpio_init(void)
 
     /*GPIO_G*/
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_0 | GPIO_Pin_2 | GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_0 | GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOG, &GPIO_InitStructure);
@@ -248,7 +252,7 @@ static void charge_gpio_init(void)
 
 static void init_reset_gpio(void)
 {
-    GPIO_ResetBits(GPIOG, GPIO_Pin_0 | GPIO_Pin_1);
+    GPIO_ResetBits(GPIOG, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_3);
     GPIO_ResetBits(GPIOF, GPIO_Pin_15);
 }
 
@@ -262,9 +266,10 @@ static void init_set_gpio(void)
 static void platform_gpio_init(void)
 {
     output_gpio_init();
-    input_gpio_init();
     init_set_gpio();
     init_reset_gpio();
+
+    input_gpio_init();
     charge_gpio_init();
 }
 
@@ -357,6 +362,17 @@ void main_power_module_24v_ctrl(uint8_t on_off)
         GPIO_SetBits(GPIOE, GPIO_Pin_9);
     }
 }
+
+uint8_t get_charge_gpio_value(void)
+{
+    return GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_7);
+}
+
+uint8_t get_recharge_gpio_value(void)
+{
+    return GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_6);
+}
+
 
 void device_ctrl(uint32_t power_en, uint8_t on_off)
 {

@@ -23,12 +23,127 @@ CanTxMsg TxMessage;
 uint8_t CanTxdataBuff[CAN_LONG_FRAME_LENTH_MAX] = {0};
 
 
-#define HW_VERSION_V0_2                  "NOAH_PM_V0.2"
-#define HW_VERSION_V0_3                  "NOAH_PM_V0.3"
-#define SW_VERSION                      "NOAHC001M08B109"
-#define PROTOCOL_VERSION                "20170619P0001"
+can_buf_t can_send_buf_mem[CAN_SEND_BUF_SIZE][1];
+OS_MEM *can_send_buf_mem_handle;
 
-#define CMD_NOT_FOUND   0
+OS_EVENT *can_send_buf_queue_handle;
+void* can_send_buf_queue_p[CAN_SEND_BUF_QUEUE_NUM];
+
+
+#define ONLYONCE       0x00
+#define BEGIN         0x01
+#define TRANSING       0x02
+#define END            0x03
+
+
+void Can1_TX(uint32_t canx_id,uint8_t* pdata,uint16_t len)
+{
+    //return ;
+    uint16_t t_len;
+    uint16_t roundCount;
+    uint8_t modCount;
+    can_data_union TxMsg = {0};
+    //CanTxMsgTypeDef *TxMessage = platform_can_drivers[can_type].handle->pTxMsg;
+
+    t_len = len;
+    roundCount = t_len/7;
+    modCount = t_len%7;
+
+    TxMessage.ExtId = canx_id;
+    TxMessage.IDE   = CAN_ID_EXT;
+    TxMessage.RTR   = CAN_RTR_DATA;
+    //if(roundCount <= 1)
+    if(t_len <= 7)
+    {
+        TxMsg.can_data_t.seg_polo = ONLYONCE;
+        TxMessage.DLC = t_len+1;
+
+        memcpy(&TxMessage.Data[1],pdata,t_len);
+        TxMessage.Data[0] = TxMsg.can_data[0];
+
+        if((CAN_USED->TSR&0x1C000000))
+        {
+            CAN_Transmit(CAN1, &TxMessage);//
+        }
+        else
+        {
+            printf("TX busy ! \r\n");
+        }
+        return ;
+    }
+
+    {
+        int num;
+        {
+            for(num = 0; num < roundCount; num++)
+            {
+                //SET SEGPOLO
+                if( num == 0)
+                {
+                    TxMsg.can_data_t.seg_polo = BEGIN;
+                }
+                else
+                {
+                    TxMsg.can_data_t.seg_polo = TRANSING;
+                }
+
+                if( modCount == 0 && num == roundCount-1)
+                {
+                    TxMsg.can_data_t.seg_polo = END;
+                }
+
+                TxMsg.can_data_t.seg_num = num;
+                memcpy(TxMsg.can_data_t.data, &pdata[num*7], 7);
+                memcpy(TxMessage.Data, TxMsg.can_data, 8);
+                TxMessage.DLC = 8;
+                if((CAN_USED->TSR&0x1C000000))
+                {
+                    CAN_Transmit(CAN1, &TxMessage);//
+                }
+                else
+                {
+                    printf("TX busy ! \r\n");
+                }
+
+                //TRANSMIT LAST MSG
+                if( modCount !=0 && num == roundCount-1 )
+                {
+                    num++;
+                    TxMsg.can_data_t.seg_polo = END;
+                    TxMsg.can_data_t.seg_num = num;
+                    memcpy(TxMsg.can_data_t.data,&pdata[num*7],modCount);
+                    memcpy(TxMessage.Data,TxMsg.can_data,modCount+1);
+                    TxMessage.DLC = modCount+1;
+                    if((CAN_USED->TSR&0x1C000000))
+                    {
+                        CAN_Transmit(CAN1, &TxMessage);//
+                    }
+                    else
+                    {
+                        printf("TX busy ! \r\n");
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
+void upload_sys_state(void)
+{
+    can_id_union id;
+    can_buf_t can_buf;
+    id.can_id_t.ack = 0;
+    id.can_id_t.dest_mac_id = 0;////
+    id.can_id_t.func_id = CAN_FUN_ID_TRIGGER;
+    id.can_id_t.source_id = CAN_SOURCE_ID_GET_SYS_STATE;
+    id.can_id_t.src_mac_id = POWERBOARD_CAN_MAC_SRC_ID;////
+    can_buf.id = id.canx_id;
+    can_buf.data[0] = 0;
+    *(uint16_t*)&can_buf.data[1] = sys_status->sys_status;
+    send_can_msg(&can_buf);
+}
 
 uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, uint8_t *data_out)
 {
@@ -254,107 +369,6 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
     return 0;
 }
 
-
-#define ONLYONCE       0x00
-#define BEGIN         0x01
-#define TRANSING       0x02
-#define END            0x03
-
-
-void Can1_TX(uint32_t canx_id,uint8_t* pdata,uint16_t len)
-{
-    //return ;
-    uint16_t t_len;
-    uint16_t roundCount;
-    uint8_t modCount;
-    can_data_union TxMsg = {0};
-    //CanTxMsgTypeDef *TxMessage = platform_can_drivers[can_type].handle->pTxMsg;
-
-    t_len = len;
-    roundCount = t_len/7;
-    modCount = t_len%7;
-
-    TxMessage.ExtId = canx_id;
-    TxMessage.IDE   = CAN_ID_EXT;
-    TxMessage.RTR   = CAN_RTR_DATA;
-    //if(roundCount <= 1)
-    if(t_len <= 7)
-    {
-        TxMsg.can_data_t.seg_polo = ONLYONCE;
-        TxMessage.DLC = t_len+1;
-
-        memcpy(&TxMessage.Data[1],pdata,t_len);
-        TxMessage.Data[0] = TxMsg.can_data[0];
-
-        if((CAN_USED->TSR&0x1C000000))
-        {
-            CAN_Transmit(CAN1, &TxMessage);//
-        }
-        else
-        {
-            printf("TX busy ! \r\n");
-        }
-        return ;
-    }
-
-    {
-        int num;
-        {
-            for(num = 0; num < roundCount; num++)
-            {
-                //SET SEGPOLO
-                if( num == 0)
-                {
-                    TxMsg.can_data_t.seg_polo = BEGIN;
-                }
-                else
-                {
-                    TxMsg.can_data_t.seg_polo = TRANSING;
-                }
-
-                if( modCount == 0 && num == roundCount-1)
-                {
-                    TxMsg.can_data_t.seg_polo = END;
-                }
-
-                TxMsg.can_data_t.seg_num = num;
-                memcpy(TxMsg.can_data_t.data, &pdata[num*7], 7);
-                memcpy(TxMessage.Data, TxMsg.can_data, 8);
-                TxMessage.DLC = 8;
-                if((CAN_USED->TSR&0x1C000000))
-                {
-                    CAN_Transmit(CAN1, &TxMessage);//
-                }
-                else
-                {
-                    printf("TX busy ! \r\n");
-                }
-
-                //TRANSMIT LAST MSG
-                if( modCount !=0 && num == roundCount-1 )
-                {
-                    num++;
-                    TxMsg.can_data_t.seg_polo = END;
-                    TxMsg.can_data_t.seg_num = num;
-                    memcpy(TxMsg.can_data_t.data,&pdata[num*7],modCount);
-                    memcpy(TxMessage.Data,TxMsg.can_data,modCount+1);
-                    TxMessage.DLC = modCount+1;
-                    if((CAN_USED->TSR&0x1C000000))
-                    {
-                        CAN_Transmit(CAN1, &TxMessage);//
-                    }
-                    else
-                    {
-                        printf("TX busy ! \r\n");
-                    }
-                }
-            }
-        }
-    }
-}
-
-
-
 can_long_buf_t can_long_frame_buf_ram;
 can_long_buf_t *can_long_frame_buf = &can_long_frame_buf_ram;
 
@@ -409,6 +423,7 @@ void can_protocol_task(void *pdata)
 {
     static can_id_union id = {0};
     static can_data_union rx_buf = {0};
+    can_buf_t can_buf;
     delay_ms(500);
     while(1)
     {
@@ -442,6 +457,10 @@ void can_protocol_task(void *pdata)
                         if(tx_len > 0)
                         {
                             Can1_TX(id.canx_id, CanTxdataBuff, tx_len);
+                            can_buf.data_len = tx_len;
+                            can_buf.id = id.canx_id;
+                            memcpy(can_buf.data, CanTxdataBuff, tx_len);
+                            send_can_msg(&can_buf);
                         }
 
                         //CanTX(MICO_CAN1, id.canx_id, test_data, sizeof(test_data));
@@ -528,4 +547,54 @@ exit:
     return;
 }
 
+int send_can_msg(can_buf_t *can_msg)
+{
+    can_buf_t *can_buf;
+    uint8_t err = 0;
+    can_buf = (can_buf_t *)OSMemGet(can_send_buf_mem_handle, &err);
+    if(can_buf)
+    {
+        can_buf->id = can_msg->id;
+        can_buf->data_len = can_msg->data_len;
+        memcpy(can_buf->data, can_msg->data, can_msg->data_len);
+        OSQPost(can_send_buf_queue_handle, (void *)can_buf);
+    }
+    else
+    {
+        /*
+        error: TODO
+        */
+        return -1;
+    }
 
+    return 0;
+}
+
+
+OS_STK can_send_task_stk[CAN_SEND_TASK_STK_SIZE];
+void can_send_task(void *pdata)
+{
+    can_buf_t *can_send_buf;
+    uint8_t err = 0;
+    while(1)
+    {
+        can_send_buf = (can_buf_t *)OSQPend(can_send_buf_queue_handle, 0, &err);
+        if(err == OS_ERR_NONE)
+        {
+            /*
+            TODO
+            */
+            Can1_TX(can_send_buf->id, can_send_buf->data, can_send_buf->data_len);
+            OSMemPut(can_send_buf_mem_handle, can_send_buf);
+//            delay_ms(10);
+        }
+        else if(err == OS_ERR_TIMEOUT)
+        {
+            /*
+            TODO
+            */
+        }
+//        delay_ms(10);
+
+    }
+}

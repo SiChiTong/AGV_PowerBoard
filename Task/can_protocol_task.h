@@ -12,8 +12,21 @@
 #include "ucos_ii.h"
 
 #define CAN_PROTOCOL_TASK_STK_SIZE  1024
+#define CAN_SEND_TASK_STK_SIZE      256
 extern OS_STK can_protocol_task_stk[CAN_PROTOCOL_TASK_STK_SIZE];
+extern OS_STK can_send_task_stk[CAN_SEND_TASK_STK_SIZE];
 void can_protocol_task(void *pdata);
+void can_send_task(void *pdata);
+
+
+
+#define HW_VERSION_V0_2                  "NOAH_PM_V0.2"
+#define HW_VERSION_V0_3                  "NOAH_PM_V0.3"
+#define SW_VERSION                      "NOAHC001M08B109"
+#define PROTOCOL_VERSION                "20170619P0001"
+
+#define CMD_NOT_FOUND   0
+
 
 
 #define CAN_USED    CAN1
@@ -78,9 +91,30 @@ typedef struct
 }can_long_buf_t;
 
 
+#define CAN_SEND_BUF_SIZE           10
+#define CAN_SEND_BUF_QUEUE_NUM      CAN_SEND_BUF_SIZE
+
+
+typedef struct
+{
+    uint32_t id;
+    uint8_t data_len;
+    uint8_t data[64];
+}__attribute__ ((__packed__)) can_buf_t;
+
+
+extern can_buf_t can_send_buf_mem[10][1];
+extern OS_MEM *can_send_buf_mem_handle;
+
+extern OS_EVENT *can_send_buf_queue_handle;
+extern void* can_send_buf_queue_p[CAN_SEND_BUF_QUEUE_NUM];
+
+
 void can_protocol_period( void );
 
 void can_long_buf_init(void);
+int send_can_msg(can_buf_t *can_msg);
 
+void upload_sys_state(void);
 
 #endif

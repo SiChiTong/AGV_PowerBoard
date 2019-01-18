@@ -148,16 +148,33 @@ typedef struct
 #define SYS_POWER_STATE_ON              2
 #define SYS_POWER_STATE_SHUTTING_DOWN   3
 #define SYS_POWER_STATE_OFF             0
+
+
+#define                 STATE_RUN_BITS     0x0F
+#define                 STATE_POWER_OFF    0x00
+#define                 STATE_IS_POWER_ON  0x01
+#define                 STATE_POWER_ON     0x02
+#define                 STATE_IS_POWER_OFF 0x03
+//#define                 STATE_ERROR        0x04
+
+#define                 STATE_IS_CHARGING       0x10
+#define                 STATE_IS_LOW_POWER      0x20
+#define                 STATE_IS_AUTO_UPLOAD    0x40
+#define                 STATE_IS_CHARGER_IN     0x80
+#define                 STATE_IS_RECHARGE_IN    0x0100
+#define                 SYSTEM_IS_SLEEP         0x00 //set 0x00 to no use
+
 typedef struct
 {
+    uint16_t sys_status;    //œÚ«∞ºÊ»›
     uint8_t power_state;
-    uint32_t sys_state;
     uint8_t is_booting_up_finished;
     uint8_t is_shutting_down_finished;
     uint8_t charge_state;
     uint8_t recharge_state;
-}sys_power_t;
+}sys_status_t;
 
+extern sys_status_t *sys_status;
 
 uint32_t get_tick(void);
 
@@ -170,6 +187,8 @@ void main_power_module_24v_ctrl(uint8_t on_off);
 void x86_power_signal_ctrl(uint8_t on_off);
 void rk_power_signal_ctrl(uint8_t on_off);
 uint8_t get_switch_state(void);
+uint8_t get_charge_gpio_value(void);
+uint8_t get_recharge_gpio_value(void);
 
 void beeper_on(void);
 void beeper_off(void);
