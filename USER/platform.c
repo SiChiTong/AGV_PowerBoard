@@ -12,7 +12,7 @@
 #include "sys.h"
 
 sys_status_t sys_status_ram = {0};
-sys_status_t *sys_status;
+sys_status_t *sys_status = &sys_status_ram;
 
 const platform_gpio_t platform_gpio_pins[] =
 {

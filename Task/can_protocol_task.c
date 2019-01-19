@@ -148,6 +148,10 @@ void upload_sys_state(void)
 uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, uint8_t *data_out)
 {
     id->can_id_t.ack = 1;
+    id->can_id_t.ack = 1;
+    id->can_id_t.dest_mac_id = id->can_id_t.src_mac_id;
+    id->can_id_t.src_mac_id = POWERBOARD_CAN_MAC_SRC_ID;
+    id->can_id_t.res = 0;
     switch(id->can_id_t.func_id)
     {
 //        case CAN_FUN_ID_RESET:
