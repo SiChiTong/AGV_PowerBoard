@@ -1,6 +1,6 @@
 #ifndef __MODULE_CAN_FIFO_H_
 #define __MODULE_CAN_FIFO_H_
-#include "Common.h"
+
 #include "can.h"
 
 

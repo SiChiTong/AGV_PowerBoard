@@ -6,6 +6,7 @@
 
 typedef enum
 {
+#if 0
     PLATFORM_GPIO_CAN_RX,
     PLATFORM_GPIO_CAN_TX,
     PLATFORM_GPIO_CAN_STB,
@@ -32,6 +33,7 @@ typedef enum
 
     PLATFORM_GPIO_I2C_SCL,
     PLATFORM_GPIO_I2C_SDA,
+#endif
 
     PLATFORM_GPIO_5V_MOTOR_EN,
     PLATFORM_GPIO_5V_RECHARGE_EN,
@@ -56,11 +58,13 @@ typedef enum
     PLATFORM_GPIO_CHARGE_IN,
     PLATFORM_GPIO_RECHARGE_IN,
 
+#if 0
     PLATFORM_GPIO_SWITCH_EN,
     PLATFORM_GPIO_SWITCH_SEL0,
     PLATFORM_GPIO_SWITCH_SEL1,
     PLATFORM_GPIO_SWITCH_SEL2,
     PLATFORM_GPIO_SWITCH_SEL3,
+#endif
 
     PLATFORM_GPIO_PWRKEY,
     PLATFORM_GPIO_485_EN,
@@ -74,7 +78,7 @@ typedef enum
     PLATFORM_GPIO_24V_PRINTER_EN,
     PLATFORM_GPIO_24V_EXTEND_EN,
 
-
+#if 0
     PLATFORM_GPIO_CHARGE_ADC,
     PLATFORM_GPIO_BATIN_ADC,
     PLATFORM_GPIO_VBUS_ADC,
@@ -97,6 +101,7 @@ typedef enum
     PLATFORM_GPIO_24V_EXTEND_ADC,
     PLATFORM_GPIO_5V_LEDS_ADC,
     PLATFORM_GPIO_24V_SLAM_ADC,
+#endif
 
     PLATFORM_GPIO_LED_MCU_POWER_EN,
     PLATFORM_GPIO_LED_MCU_RESET,
@@ -124,6 +129,12 @@ typedef enum
 
     PLATFORM_GPIO_FAN_12V_DC_CTRL,
     PLATFORM_GPIO_BEEPER_CTRL,
+
+    PLATFORM_GPIO_SERIAL_LED_FRONT_LEFT,
+    PLATFORM_GPIO_SERIAL_LED_FRONT_RIGHT,
+    PLATFORM_GPIO_SERIAL_LED_BACK_LEFT,
+    PLATFORM_GPIO_SERIAL_LED_BACK_RIGHT,
+    PLATFORM_GPIO_SERIAL_LED_EYES,
 
     PLATFORM_GPIO_MAX, /* Denotes the total number of GPIO port aliases. Not a valid GPIO alias */
     PLATFORM_GPIO_NONE,
@@ -244,6 +255,7 @@ typedef struct
 }sys_status_t;
 
 extern sys_status_t *sys_status;
+extern const platform_gpio_t platform_gpio_pins[];
 
 uint32_t get_tick(void);
 void mcu_restart(void);

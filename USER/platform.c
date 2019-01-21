@@ -16,7 +16,7 @@ sys_status_t *sys_status = &sys_status_ram;
 
 const platform_gpio_t platform_gpio_pins[] =
 {
-    ////////////////////////////////////////////
+#if 0
     [PLATFORM_GPIO_CAN_RX]            = { GPIOA, GPIO_Pin_11 },
     [PLATFORM_GPIO_CAN_TX]            = { GPIOA, GPIO_Pin_12 },
     [PLATFORM_GPIO_CAN_STB]           = { GPIOD, GPIO_Pin_3 },
@@ -32,18 +32,20 @@ const platform_gpio_t platform_gpio_pins[] =
 
     [PLATFORM_GPIO_UART1_TX]          = { GPIOA,  GPIO_Pin_9 },
     [PLATFORM_GPIO_UART1_RX]          = { GPIOA, GPIO_Pin_10 },
+#endif
 
     [PLATFORM_GPIO_SYS_LED]             = { GPIOC,  GPIO_Pin_9 },
     [PLATFORM_GPIO_CHARGE_IN]           = { GPIOB,  GPIO_Pin_7 },
     [PLATFORM_GPIO_RECHARGE_IN]         = { GPIOB,  GPIO_Pin_6 },
     [PLATFORM_GPIO_RECHARGE_LED]        = { GPIOC,  GPIO_Pin_8 },
     [PLATFORM_GPIO_PWRKEY]              = { GPIOD,  GPIO_Pin_4 },
+#if 0
     [PLATFORM_GPIO_SWITCH_EN]           = { GPIOD,  GPIO_Pin_7 },
     [PLATFORM_GPIO_SWITCH_SEL0]         = { GPIOG,  GPIO_Pin_9 },
     [PLATFORM_GPIO_SWITCH_SEL1]         = { GPIOG, GPIO_Pin_10 },
     [PLATFORM_GPIO_SWITCH_SEL2]         = { GPIOG, GPIO_Pin_11 },
     [PLATFORM_GPIO_SWITCH_SEL3]         = { GPIOG, GPIO_Pin_12 },
-
+#endif
 
 
 
@@ -73,7 +75,7 @@ const platform_gpio_t platform_gpio_pins[] =
     [PLATFORM_GPIO_24V_EXTEND_EN]       = { GPIOG, GPIO_Pin_2 },
 
     [PLATFORM_GPIO_IRLED_PWM]           = { GPIOA,  GPIO_Pin_8 },
-
+#if 0
     [PLATFORM_GPIO_CHARGE_ADC]          = { GPIOF, GPIO_Pin_6 },
     [PLATFORM_GPIO_BATIN_ADC]           = { GPIOF, GPIO_Pin_7 },
     [PLATFORM_GPIO_VBUS_ADC]            = { GPIOF, GPIO_Pin_8 },
@@ -96,7 +98,7 @@ const platform_gpio_t platform_gpio_pins[] =
     [PLATFORM_GPIO_24V_SLAM_ADC]        = { GPIOB, GPIO_Pin_1 },
 
     [PLATFORM_GPIO_5V_POLE_MOTOR_ADC]   = { GPIOA, GPIO_Pin_1 },
-
+#endif
     [PLATFORM_GPIO_LED_MCU_POWER_EN]    = { GPIOE, GPIO_Pin_10},
     [PLATFORM_GPIO_LED_MCU_RESET]       = { GPIOE, GPIO_Pin_11},
 
@@ -123,6 +125,12 @@ const platform_gpio_t platform_gpio_pins[] =
 
     [PLATFORM_GPIO_FAN_12V_DC_CTRL]     = { GPIOA, GPIO_Pin_15},
     [PLATFORM_GPIO_BEEPER_CTRL]         = { GPIOB, GPIO_Pin_0 },
+
+    [PLATFORM_GPIO_SERIAL_LED_FRONT_LEFT] = {GPIOA, GPIO_Pin_0},
+    [PLATFORM_GPIO_SERIAL_LED_FRONT_RIGHT] = {GPIOA, GPIO_Pin_1},
+    [PLATFORM_GPIO_SERIAL_LED_BACK_RIGHT] = {GPIOA, GPIO_Pin_6},
+    [PLATFORM_GPIO_SERIAL_LED_BACK_LEFT] = {GPIOA, GPIO_Pin_7},
+    [PLATFORM_GPIO_SERIAL_LED_EYES]     = {GPIOA, GPIO_Pin_5},
 
 };
 
@@ -175,7 +183,7 @@ static void output_gpio_init(void)
 
     /*GPIO_A*/
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_15;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
@@ -281,10 +289,10 @@ static void platform_gpio_init(void)
     charge_gpio_init();
 }
 
-static void switch_init(void)
-{
+//static void switch_init(void)
+//{
 
-}
+//}
 
 uint8_t get_switch_state(void)
 {
@@ -799,10 +807,10 @@ void ir_led_pwm_ctrl(uint16_t duty)
 
 }
 
-static void ir_led_pwm_init(void)
-{
-    timer_1_ch1_pwm_init(720 , 1, 720 * 30 / 100);
-}
+//static void ir_led_pwm_init(void)
+//{
+//    timer_1_ch1_pwm_init(720 , 1, 720 * 30 / 100);
+//}
 
 void hardware_init(void)
 {

@@ -16,7 +16,7 @@ void charge_task(void *pdata)
 {
     uint8_t err;
     uint32_t charge_recharge_state = 0;
-    uint16_t pre_charge_recharge_state = 0;
+//    uint16_t pre_charge_recharge_state = 0;
     while(1)
     {
         charge_recharge_state = (uint32_t)OSMboxPend(charge_state_mailbox, 0, &err);
@@ -42,7 +42,7 @@ void charge_task(void *pdata)
             }
             upload_sys_state();
         }
-        pre_charge_recharge_state = charge_recharge_state;
+//        pre_charge_recharge_state = charge_recharge_state;
         delay_ms(100);
     }
 }

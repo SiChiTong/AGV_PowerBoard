@@ -444,6 +444,11 @@
               <FileType>1</FileType>
               <FilePath>..\Task\charge_task.c</FilePath>
             </File>
+            <File>
+              <FileName>serial_led_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Task\serial_led_task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -468,6 +473,11 @@
               <FileName>can_fifo.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Modules\can_fifo.c</FilePath>
+            </File>
+            <File>
+              <FileName>serial_led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Modules\serial_led.c</FilePath>
             </File>
           </Files>
         </Group>

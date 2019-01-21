@@ -18,6 +18,7 @@ static void task_create(void)
     OSTaskCreate(power_on_off_rk_task,      (void *)0,  (OS_STK*)&rk_power_on_off_stk[RK_POWER_ON_OFF_STK_SIZE - 1],                        RK_POWER_ON_OFF_TASK_PRIO);
     OSTaskCreate(charge_task,               (void *)0,  (OS_STK*)&charge_task_stk[CHARGE_TASK_STK_SIZE - 1],                                CHARGE_TASK_PRIO);
     OSTaskCreate(can_send_task,             (void *)0,  (OS_STK*)&can_send_task_stk[CAN_SEND_TASK_STK_SIZE - 1],                            CAN_SEND_TASK_PRIO);
+    OSTaskCreate(serial_led_task,           (void *)0,  (OS_STK*)&serial_led_task_stk[SERIAL_LED_TASK_STK_SIZE - 1],                        SERIAL_LED_TASK_PRIO);
 
 }
 

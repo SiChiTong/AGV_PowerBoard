@@ -9,6 +9,7 @@
 #include "power_on_off_task.h"
 #include "switch_task.h"
 #include "charge_task.h"
+#include "serial_led_task.h"
 
 typedef enum
 {
@@ -22,6 +23,7 @@ typedef enum
     POWER_ON_OFF_TASK_PRIO,
     X86_POWER_ON_OFF_TASK_PRIO,
     RK_POWER_ON_OFF_TASK_PRIO,
+    SERIAL_LED_TASK_PRIO,
     INDICATOR_LED_TASK_PRIO
 }task_prio_e;
 
