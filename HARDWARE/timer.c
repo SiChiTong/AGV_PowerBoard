@@ -6,7 +6,11 @@ void timer_1_ch1_pwm_init(u16 arr, u16 psc, uint16_t pulse)
     GPIO_InitTypeDef GPIO_InitStructure;
     TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
     TIM_OCInitTypeDef  TIM_OCInitStructure;
-
+//    TIM_Cmd(TIM1, DISABLE);
+//    TIM_CtrlPWMOutputs(TIM1, DISABLE);
+//    TIM_DeInit(TIM1);
+//    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, DISABLE);
+//    TIM_DeInit(TIM1);
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO, ENABLE);
 

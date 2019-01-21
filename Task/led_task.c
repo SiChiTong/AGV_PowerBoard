@@ -26,11 +26,12 @@ void led1_task(void *pdata)
 ////// test code //////
 //#include "can_protocol_task.h"
 //#include <string.h>
+//#include "platform.h"
 
 void indicator_led_task(void *pdata)
 {
     ////// test code //////
-//    uint16_t i = 1000;
+//    uint16_t i = 0;
 //    can_buf_t can_buf;
 
     delay_ms(500);
@@ -51,6 +52,7 @@ void indicator_led_task(void *pdata)
 //            i = 0;
 //        }
 
+//        ir_led_pwm_ctrl(i++);
         INDICATOR_LED = 0;
         delay_ms(500);
         INDICATOR_LED = 1;

@@ -57,7 +57,7 @@ void can_send_task(void *pdata);
 #define CAN_SOURCE_ID_GET_SYS_STATE                 0x83
 #define CAN_SOURCE_ID_GET_ERR_STATE                 0x84
 #define CAN_SOURCE_ID_GET_BAT_STATE                 0x85
-#define CAN_SOURCE_ID_GET_ADC_DATA                  0x86
+
 #define CAN_SOURCE_ID_SET_IR_LED_LIGHTNESS          0x87
 #define CAN_SOURCE_ID_GET_IR_LED_LIGHTNESS          0x88
 #define CAN_SOURCE_ID_SET_LED_EFFECT                0x89

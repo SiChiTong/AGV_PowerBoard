@@ -240,6 +240,7 @@ typedef struct
     uint8_t is_shutting_down_finished;
     uint8_t charge_state;
     uint8_t recharge_state;
+    uint8_t ir_led_pwm_duty;
 }sys_status_t;
 
 extern sys_status_t *sys_status;
@@ -259,6 +260,7 @@ uint8_t get_switch_state(void);
 uint8_t get_charge_gpio_value(void);
 uint8_t get_recharge_gpio_value(void);
 
+void ir_led_pwm_ctrl(uint16_t duty);
 void beeper_on(void);
 void beeper_off(void);
 

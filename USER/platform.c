@@ -794,14 +794,14 @@ void ir_led_pwm_ctrl(uint16_t duty)
 {
     if(duty <= 100)
     {
-        timer_1_ch1_pwm_init(720, 1, 720 * duty / 100 );
+        timer_1_ch1_pwm_init(720, 1, 720 * (100 - duty) / 100 );
     }
 
 }
 
 static void ir_led_pwm_init(void)
 {
-    timer_1_ch1_pwm_init(720 , 1, 720 * 20 / 100);
+    timer_1_ch1_pwm_init(720 , 1, 720 * 30 / 100);
 }
 
 void hardware_init(void)
@@ -810,8 +810,8 @@ void hardware_init(void)
     bat_uart_init();
     led_init();
     can_init();
-//    ir_led_pwm_ctrl(13);
-    ir_led_pwm_init();
+    ir_led_pwm_ctrl(20);
+//    ir_led_pwm_init();
 }
 
 

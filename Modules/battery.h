@@ -29,6 +29,8 @@ typedef struct _battery_pack_t{
     uint8_t  com_status;
 } battery_pack_t;
 
+extern battery_pack_t battery_pack;
+
 void battery_adc_init(void);
 void bat_uart_init(void);
 uint16_t get_battery_voltage(void);

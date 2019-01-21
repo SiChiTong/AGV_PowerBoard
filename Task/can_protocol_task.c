@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include "can.h"
 #include "can_fifo.h"
-
+#include "battery.h"
 
 //#define CanProtocolLog(format, ...)  custom_log("can protocol", format, ##__VA_ARGS__)
 
@@ -198,15 +198,12 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
                     }
                     else if(data_in[0] == 3)//hardware version
                     {
-//                        memcpy(&data_out[2], boardStatus->hw_version, strlen(boardStatus->hw_version));
-//                        data_out[1] = strlen(boardStatus->hw_version);
-//                        return strlen(boardStatus->hw_version) + 2;
+                        memcpy(&data_out[2], HW_VERSION_V0_3, strlen(HW_VERSION_V0_3));
+                        data_out[1] = strlen(HW_VERSION_V0_3);
+                        return strlen(HW_VERSION_V0_3) + 2;
                     }
                     return CMD_NOT_FOUND;
 
-//                case CAN_READ_DATA:
-
-//                    break;
                 case CAN_SOURCE_ID_SET_MODULE_STATE:
 
                     data_out[0] = data_in[0];
@@ -249,35 +246,35 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
                     return CMD_NOT_FOUND;
 
                 case CAN_SOURCE_ID_GET_BAT_STATE:
-//                    if(battery_pack.com_status == false)
-//                    {
-//                        *(uint16_t*)&data_out[1] = voltageConvert->bat_voltage;
-//                        data_out[3] = 0;
-//                    }
-//                    else
-//                    {
-//                        *(uint16_t*)&data_out[1] = battery_pack.pack_voltage;
-//                        data_out[3] = battery_pack.percentage;
-//                    }
+                    if(battery_pack.com_status == FALSE)
+                    {
+                        *(uint16_t*)&data_out[1] = 0;
+                        data_out[3] = 0;
+                    }
+                    else
+                    {
+                        *(uint16_t*)&data_out[1] = battery_pack.pack_voltage;
+                        data_out[3] = battery_pack.percentage;
+                    }
 
                     return 4;
 
                 case CAN_SOURCE_ID_GET_SYS_STATE:
-//                    *(uint16_t*)&data_out[1] = boardStatus->system_status;
+                    *(uint16_t*)&data_out[1] = sys_status->sys_status;
                     return 3;
 
                 case CAN_SOURCE_ID_SET_IR_LED_LIGHTNESS:
                     {
 #if 1
-//                        uint8_t duty = data_in[0];
-//                        if(duty > 100)
-//                        {
-//                            duty = 100;
-//                        }
-//                        brightness_dimming(50000,  duty);
-//                        boardStatus->irled_duty = duty;
-//                        data_out[0] = data_in[0];
-//                        data_out[1] = duty;
+                        uint8_t duty = data_in[0];
+                        if(duty > 100)
+                        {
+                            duty = 100;
+                        }
+                        ir_led_pwm_ctrl(duty);
+                        sys_status->ir_led_pwm_duty = duty;
+                        data_out[0] = data_in[0];
+                        data_out[1] = duty;
                         return 2;
 #endif
 
