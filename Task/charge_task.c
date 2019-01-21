@@ -15,11 +15,11 @@ OS_EVENT * charge_state_mailbox;
 void charge_task(void *pdata)
 {
     uint8_t err;
-    uint16_t charge_recharge_state = 0;
+    uint32_t charge_recharge_state = 0;
     uint16_t pre_charge_recharge_state = 0;
     while(1)
     {
-        charge_recharge_state = (uint16_t)OSMboxPend(charge_state_mailbox, 0, &err);
+        charge_recharge_state = (uint32_t)OSMboxPend(charge_state_mailbox, 0, &err);
 //        if(charge_recharge_state == pre_charge_recharge_state)
         {
             sys_status->charge_state = charge_recharge_state & 0xff;

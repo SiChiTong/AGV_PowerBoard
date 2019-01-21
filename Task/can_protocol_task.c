@@ -203,7 +203,7 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
 //                        return strlen(boardStatus->hw_version) + 2;
                     }
                     return CMD_NOT_FOUND;
-                    break;
+
 //                case CAN_READ_DATA:
 
 //                    break;
@@ -214,36 +214,23 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
                     {
                         if(data_in[1] == 1)//group num = 1
                         {
-//                            //uint32_t module = (data_in[5]) | (data_in[4]<<8) | (data_in[3] << 16) | (data_in[2] << 24);
-//                            uint32_t module = *(uint32_t *)&data_in[2];
-//                            power_on_off_type_def on_off;
-//                            if((data_in[6] != POWER_OFF) && (data_in[6] != POWER_ON))
-//                            {
-//                                return 0;
-//                            }
-//                            on_off = (power_on_off_type_def)data_in[6];
-//                            module &= 0xffffffff;
-//                            power_ctrl((power_enable_type_def)module, on_off);
-//                            uint32_t tmp = get_module_power_state(POWER_ALL);
-//                            data_out[1] = data_in[1];
-//                            *(uint32_t*)&data_out[2] = module;
-//                            *(uint32_t*)&data_out[6] = tmp;
-//                            data_out[10] = on_off;
-//                            return 11;
-                        }
-#if 0
-                        if(data_in[1] == 2)//group num = 2
-                        {
-
-                            uint32_t module = (data_in[5]) | (data_in[4] << 8) | (data_in[3] << 16) | (data_in[2] << 24);
+                            //uint32_t module = (data_in[5]) | (data_in[4]<<8) | (data_in[3] << 16) | (data_in[2] << 24);
+                            uint32_t module = *(uint32_t *)&data_in[2];
+                            uint8_t on_off;
+                            if((data_in[6] != MODULE_POWER_OFF) && (data_in[6] != MODULE_POWER_ON))
+                            {
+                                return 0;
+                            }
+                            on_off = data_in[6];
                             module &= 0xffffffff;
-                            BSP_Power_OnOffEx((PowerEnable_2_TypeDef)module,(power_on_off_type_def)data_in[6]);
-                            uint32_t tmp = GetModulePowerStateEx(POWER_ALL_2);
+                            power_ctrl(module, on_off);
+                            uint32_t tmp = get_module_power_state(POWER_ALL);
                             data_out[1] = data_in[1];
-                            memcpy(&data_out[2],(uint8_t *)(&tmp) , 4);
-                            return 6;
+                            *(uint32_t*)&data_out[2] = module;
+                            *(uint32_t*)&data_out[6] = tmp;
+                            data_out[10] = on_off;
+                            return 11;
                         }
-#endif
                     }
                     return CMD_NOT_FOUND;
 
@@ -253,11 +240,9 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
 
                         if(data_in[1] == 1)//group num = 1
                         {
-//                            uint32_t tmp = get_module_power_state(POWER_ALL);
-//                            data_out[1] = 1;
-//                            *(uint32_t*)&data_out[2] = tmp;
-
-
+                            uint32_t tmp = get_module_power_state(POWER_ALL);
+                            data_out[1] = 1;
+                            *(uint32_t*)&data_out[2] = tmp;
                             return 6;
                         }
                     }
@@ -277,16 +262,10 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
 
                     return 4;
 
-                    break;
                 case CAN_SOURCE_ID_GET_SYS_STATE:
 //                    *(uint16_t*)&data_out[1] = boardStatus->system_status;
                     return 3;
-                    break;
 
-                case CAN_SOURCE_ID_GET_ADC_DATA:
-//                    memcpy(data_out, (uint8_t *)voltageConvert, sizeof(voltage_data_t));
-//                    return sizeof(voltage_data_t);
-                    break;
                 case CAN_SOURCE_ID_SET_IR_LED_LIGHTNESS:
                     {
 #if 1
@@ -301,7 +280,7 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
 //                        data_out[1] = duty;
                         return 2;
 #endif
-                        break;
+
                     }
 
                 case CAN_SOURCE_ID_SET_LED_EFFECT:
@@ -316,26 +295,6 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
                         return 0;
                     }
                     return 0;
-                    break;
-
-
-
-#if 0
-                case CAN_SOURCE_ID_ERROR_STATE:
-                    memcpy(data_out, voltageConvertData->faultBitTemp, 5);
-                    return 5;
-
-                case CAN_SOURCE_ID_READ_ADC_DATA:
-                    voltageDebug.isNeedUpload = YES;
-                    voltageDebug.uploadRate = data_in[0];
-                    return 0;
-                case CAN_SOURCE_ID_READ_RK_STATE:
-
-                    break;
-                case CAN_SOURCE_ID_PWM_LED:
-
-                    break;
-#endif
 
                 case CAN_SOURCE_ID_REMOTE_POWRER_CTRL:
                     {

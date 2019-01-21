@@ -130,8 +130,76 @@ typedef enum
 } platform_gpio_e;
 
 
-#define MODULE_POWER_ON     1
-#define MODULE_POWER_OFF    0
+
+#define POWER_5V_MOTOR             0x00000001
+#define POWER_5V_RECHARGE          0x00000002
+#define POWER_5V_SENSOR_BOARD      0x00000004
+    //POWER_5V_SWITCH           = 0x00000008,
+#define POWER_5V_ROUTER            0x00000010
+#define POWER_5V_EN                0x00000020
+
+#define POWER_12V_PAD              0x00000040
+#define POWER_12V_2_1_PA           0x00000080
+#define POWER_12V_EXTEND           0x00000100
+#define POWER_12V_X86              0x00000200
+#define POWER_12V_NV               0x00000400
+#define POWER_12V_EN               0x00000800
+
+#define POWER_24V_EN               0x00001000
+#define POWER_24V_PRINTER          0x00002000
+#define POWER_24V_EXTEND           0x00004000
+#define POWER_VSYS_24V_NV          0x00008000
+
+#define POWER_485                  0x00010000
+#define POWER_SYS_LED              0x00020000
+#define POWER_RECHARGE_LED         0x00040000
+#define POWER_SLAM                 0x00080000
+
+#define POWER_LED_MCU              0x00100000
+#define POWER_CHARGE_FAN           0x00200000
+    //POWER_POLE_MOTOR          = 0x00400000,
+    //POWER_5V_KEYPAD           = 0x00800000,
+
+#define POWER_CAMERA_FRONT_LED     0x01000000
+#define POWER_CAMERA_BACK_LED      0x02000000
+#define POWER_CTRL_OUT             0x04000000
+#define POWER_DOOR_CTRL            0x08000000
+
+#define POWER_3V3_CARD_EN_1        0x10000000
+#define POWER_3V3_CARD_EN_2        0x20000000
+#define POWER_3V3_CARD_EN_3        0x40000000
+#define POWER_3V3_CARD_EN_4        0x80000000
+
+
+#define POWER_ALL                  0xFFFFFFFF
+
+
+//#define MODULE_POWER_ON     1
+//#define MODULE_POWER_OFF    0
+
+typedef enum
+{
+    MODULE_POWER_OFF = 0,
+    MODULE_POWER_ON
+}module_power_state_e;
+
+typedef enum
+{
+    LED_CAMERA_FRONT = 0x01,
+    LED_CAMERA_BACK = 0x02,
+}led_e;
+
+typedef enum
+{
+    DOOR_NO_ID_1 = 0x01,
+    DOOR_NO_ID_2 = 0x02,
+    DOOR_NO_ID_3 = 0x04,
+    DOOR_ID_1 = 0x10,
+    DOOR_ID_2 = 0x20,
+    DOOR_ID_3 = 0x40,
+    DOOR_ID_4 = 0x800
+}door_e;
+
 
 typedef struct
 {
@@ -177,6 +245,7 @@ typedef struct
 extern sys_status_t *sys_status;
 
 uint32_t get_tick(void);
+void mcu_restart(void);
 
 void hardware_init(void);
 void hold_on_power(void);
@@ -192,5 +261,8 @@ uint8_t get_recharge_gpio_value(void);
 
 void beeper_on(void);
 void beeper_off(void);
+
+void power_ctrl(uint32_t power_en, uint8_t on_off);
+uint32_t get_module_power_state(uint32_t power_en);
 
 #endif

@@ -104,10 +104,21 @@ void power_on_off_task(void *pdata)
             main_power_module_5v_ctrl(MODULE_POWER_OFF);
             main_power_module_12v_ctrl(MODULE_POWER_OFF);
             main_power_module_24v_ctrl(MODULE_POWER_OFF);
-            release_power();
-            delay_ms(30 * 1000);
+            if(0)   // reboot
+            {
+                delay_ms(5000);
+                /*
+                TODO_MARK: post power on signal, clear reboot signal
+                */
+            }
+            else    // shutdown
+            {
+                release_power();
+                delay_ms(1000);
+                mcu_restart();
+                delay_ms(30 * 1000);
+            }
         }
-
     }
 }
 
