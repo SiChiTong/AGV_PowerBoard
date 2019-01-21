@@ -92,5 +92,6 @@ typedef struct
 }one_wire_led_para_t;
 
 void serial_leds_tick(void);
+void set_serial_leds_effect(const light_mode_t light_mode, color_t  *cur_color, const uint8_t period);
 
 #endif

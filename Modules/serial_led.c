@@ -5,6 +5,7 @@
 
 #include "serial_led.h"
 #include "delay.h"
+#include <string.h>
 
 
 __IO uint32_t front_left_buff[FRONT_LEFT_LED_NUM] = {0};
@@ -223,10 +224,203 @@ static void write_color(one_wire_led_t led, color_t *color)
     }
 }
 
+void open_eyss(void)
+{
+    one_wire_led[EYES_LED].color[0] = led_color[SERIAL_LED_COLOR_WHITE_C];
+
+    one_wire_led[EYES_LED].color_number = 1;
+
+}
+
+void close_eyes(void)
+{
+    one_wire_led[EYES_LED].color[0] = led_color[SERIAL_LED_COLOR_NONE_C];
+
+    one_wire_led[EYES_LED].color_number = 1;
+
+}
+
+#define SHINE_HIGH_SPEED_PERIOD         3 * OS_TICKS_PER_SEC / 10
+#define SHINE_MEDIUM_SPEED_PERIOD       6 * OS_TICKS_PER_SEC / 10
+#define SHINE_LOW_SPEED_PERIOD          1 * OS_TICKS_PER_SEC
+void set_serial_leds_effect(const light_mode_t light_mode, color_t  *cur_color, const uint8_t period)
+{
+    static  light_mode_t pre_mode = LIGHTS_MODE_NONE;
+    static  color_t      pre_color;
+    static  uint8_t      pre_period;
+    if((light_mode == pre_mode) && (light_mode != LIGHTS_MODE_SETTING))
+    {
+        return;
+    }
+
+    if(light_mode == LIGHTS_MODE_SETTING)
+    {
+        if( (pre_color.b == cur_color->b) && (pre_color.g == cur_color->g) && (pre_color.r == cur_color->r))
+        {
+            if(pre_period == period)
+            {
+                return;
+            }
+
+        }
+    }
+
+    pre_mode = light_mode;
+    memcpy(&pre_color, cur_color, sizeof(color_t));
+    pre_period = period;
+
+    switch(light_mode)
+    {
+        case LIGHTS_MODE_NORMAL:
+            for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
+            {
+                one_wire_led[(one_wire_led_t)i].color[0] = led_color[SERIAL_LED_COLOR_ORANGE_C];
+                one_wire_led[(one_wire_led_t)i].color[1] = led_color[SERIAL_LED_COLOR_NONE_C];
+                one_wire_led[(one_wire_led_t)i].color_number = 2;
+                one_wire_led[(one_wire_led_t)i].period = SHINE_MEDIUM_SPEED_PERIOD;
+                one_wire_led[(one_wire_led_t)i].tick = 0;
+            }
+            open_eyss();
+            break;
+        case LIGHTS_MODE_ERROR:
+            for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
+            {
+                one_wire_led[(one_wire_led_t)i].color[0] = led_color[SERIAL_LED_COLOR_RED_C];
+                one_wire_led[(one_wire_led_t)i].color[1] = led_color[SERIAL_LED_COLOR_NONE_C];
+                one_wire_led[(one_wire_led_t)i].color_number = 2;
+                one_wire_led[(one_wire_led_t)i].period = SHINE_MEDIUM_SPEED_PERIOD;
+                one_wire_led[(one_wire_led_t)i].tick = 0;
+            }
+            close_eyes();
+            break;
+        case LIGHTS_MODE_COM_ERROR:
+            for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
+            {
+                one_wire_led[(one_wire_led_t)i].color[0] = led_color[SERIAL_LED_COLOR_RED_C];
+                one_wire_led[(one_wire_led_t)i].color[1] = led_color[SERIAL_LED_COLOR_NONE_C];
+                one_wire_led[(one_wire_led_t)i].color_number = 2;
+                one_wire_led[(one_wire_led_t)i].period = SHINE_MEDIUM_SPEED_PERIOD;
+                one_wire_led[(one_wire_led_t)i].tick = 0;
+            }
+            close_eyes();
+            break;
+
+        case LIGHTS_MODE_LOW_POWER:
+            for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
+            {
+                one_wire_led[(one_wire_led_t)i].color[0] = led_color[SERIAL_LED_COLOR_RED_C];
+                one_wire_led[(one_wire_led_t)i].color[1] = led_color[SERIAL_LED_COLOR_NONE_C];
+                one_wire_led[(one_wire_led_t)i].color_number = 2;
+                one_wire_led[(one_wire_led_t)i].period = SHINE_HIGH_SPEED_PERIOD;
+                one_wire_led[(one_wire_led_t)i].tick = 0;
+            }
+            close_eyes();
+            break;
+        case LIGHTS_MODE_CHARGING_POWER_LOW:
+
+            for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
+            {
+                one_wire_led[(one_wire_led_t)i].color[0] = led_color[SERIAL_LED_COLOR_RED_C];
+                one_wire_led[(one_wire_led_t)i].color[1] = led_color[SERIAL_LED_COLOR_ORANGE_C];
+                one_wire_led[(one_wire_led_t)i].color_number = 2;
+                one_wire_led[(one_wire_led_t)i].period = SHINE_LOW_SPEED_PERIOD;
+                one_wire_led[(one_wire_led_t)i].tick = 0;
+            }
+
+            close_eyes();
+            break;
+        case LIGHTS_MODE_CHARGING_POWER_MEDIUM:
+
+            for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
+            {
+                one_wire_led[(one_wire_led_t)i].color[0] = led_color[SERIAL_LED_COLOR_ORANGE_C];
+                one_wire_led[(one_wire_led_t)i].color[1] = led_color[SERIAL_LED_COLOR_GREEN_C];
+                one_wire_led[(one_wire_led_t)i].color_number = 2;
+                one_wire_led[(one_wire_led_t)i].period = SHINE_LOW_SPEED_PERIOD;
+                one_wire_led[(one_wire_led_t)i].tick = 0;
+            }
+
+
+            close_eyes();
+            break;
+        case LIGHTS_MODE_CHARGING_FULL:
+
+            for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
+            {
+                one_wire_led[(one_wire_led_t)i].color[0] = led_color[SERIAL_LED_COLOR_GREEN_C];
+                one_wire_led[(one_wire_led_t)i].color_number = 1;
+                one_wire_led[(one_wire_led_t)i].tick = 0;
+            }
+
+            close_eyes();
+            break;
+        case LIGHTS_MODE_TURN_LEFT:
+            for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
+            {
+                if((i == FRONT_LEFT_LED) || ( i == BACK_LEFT_LED))
+                {
+                    one_wire_led[(one_wire_led_t)i].color[0] = led_color[SERIAL_LED_COLOR_ORANGE_C];
+                }
+                else
+                {
+                    one_wire_led[(one_wire_led_t)i].color[0] = led_color[SERIAL_LED_COLOR_NONE_C];
+                }
+
+                one_wire_led[(one_wire_led_t)i].color[1] = led_color[SERIAL_LED_COLOR_NONE_C];
+                one_wire_led[(one_wire_led_t)i].color_number = 2;
+                one_wire_led[(one_wire_led_t)i].period = SHINE_MEDIUM_SPEED_PERIOD;
+                one_wire_led[(one_wire_led_t)i].tick = 0;
+            }
+            open_eyss();
+            break;
+        case LIGHTS_MODE_TURN_RIGHT:
+            for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
+            {
+                if((i == FRONT_RIGHT_LED) || ( i == BACK_RIGHT_LED))
+                {
+                    one_wire_led[(one_wire_led_t)i].color[0] = led_color[SERIAL_LED_COLOR_ORANGE_C];
+                }
+                else
+                {
+                    one_wire_led[(one_wire_led_t)i].color[0] = led_color[SERIAL_LED_COLOR_NONE_C];
+                }
+
+                one_wire_led[(one_wire_led_t)i].color[1] = led_color[SERIAL_LED_COLOR_NONE_C];
+                one_wire_led[(one_wire_led_t)i].color_number = 2;
+                one_wire_led[(one_wire_led_t)i].period = SHINE_MEDIUM_SPEED_PERIOD;
+                one_wire_led[(one_wire_led_t)i].tick = 0;
+            }
+            open_eyss();
+            break;
+        case LIGHTS_MODE_EMERGENCY_STOP:
+            for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
+            {
+                one_wire_led[(one_wire_led_t)i].color[0] = led_color[SERIAL_LED_COLOR_RED_C];//led_color[WHITE_C];
+                one_wire_led[(one_wire_led_t)i].color_number = 1;
+                one_wire_led[(one_wire_led_t)i].tick = 0;
+            }
+            close_eyes();
+            break;
+        case LIGHTS_MODE_SETTING:
+            for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
+            {
+                memcpy(&led_color[SERIAL_LED_COLOR_SETTING_C], cur_color, sizeof(color_t));
+                one_wire_led[(one_wire_led_t)i].color[0] = led_color[SERIAL_LED_COLOR_SETTING_C];
+                one_wire_led[(one_wire_led_t)i].color[1] = led_color[SERIAL_LED_COLOR_NONE_C];
+                one_wire_led[(one_wire_led_t)i].color_number = 2;
+                one_wire_led[(one_wire_led_t)i].period = period * 10;
+                one_wire_led[(one_wire_led_t)i].tick = 0;
+            }
+            open_eyss();
+            break;
+        default :
+            break;
+    }
+
+}
 
 void serial_leds_tick(void)
 {
-
     for(uint8_t i = FRONT_LEFT_LED; i < LED_NONE; i++)
     {
         if(get_tick() - one_wire_led[i].start_time >= one_wire_led[i].period)
@@ -235,9 +429,8 @@ void serial_leds_tick(void)
             one_wire_led[i].start_time = get_tick();
         }
 
-        if(one_wire_led[i].color_number <= sizeof(charge_color)/sizeof(charge_color[0]))
+        if(one_wire_led[i].color_number <= sizeof(charge_color) / sizeof(charge_color[0]))
         {
-
             write_color((one_wire_led_t)i, &(one_wire_led[i].color[one_wire_led[i].tick % one_wire_led[i].color_number]));
 #if 1
 //            DISABLE_INTERRUPTS();
@@ -246,7 +439,5 @@ void serial_leds_tick(void)
 #endif
         }
     }
-
-
 }
 

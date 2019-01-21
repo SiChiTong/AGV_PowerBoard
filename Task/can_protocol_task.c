@@ -15,6 +15,7 @@
 #include "can.h"
 #include "can_fifo.h"
 #include "battery.h"
+#include "serial_led.h"
 
 //#define CanProtocolLog(format, ...)  custom_log("can protocol", format, ##__VA_ARGS__)
 
@@ -283,13 +284,18 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
                 case CAN_SOURCE_ID_SET_LED_EFFECT:
                     if(data_in[0] == 0)
                     {
-//                        light_mode_t mode;
-//                        uint8_t period = data_in[5];
-//                        color_t *color;
-//                        mode =  (light_mode_t)data_in[1];
-//                        color = (color_t*)&data_in[2];
-//                        set_serial_leds_effect(mode, color, period);
-                        return 0;
+                        light_mode_t mode;
+                        uint8_t period = data_in[5];
+                        color_t *color;
+                        mode =  (light_mode_t)data_in[1];
+                        color = (color_t*)&data_in[2];
+                        set_serial_leds_effect(mode, color, period);
+                        data_out[0] = 0;
+                        data_out[1] = 0;
+                        data_out[2] = mode;
+                        *(color_t *)&data_out[3] = *color;
+                        data_out[6] = period;
+                        return 7;
                     }
                     return 0;
 
