@@ -58,6 +58,15 @@ static int mem_create(void)
         return -1;
     }
 
+    can_rcv_buf_mem_handle = OSMemCreate((void *)&can_rcv_buf_mem[0][0], sizeof(can_rcv_buf_mem) / sizeof(can_rcv_buf_mem[0]), sizeof(can_pkg_t), &err);
+    if(can_rcv_buf_mem_handle == 0)
+    {
+        /*
+        todo: err process
+        */
+        return -1;
+    }
+
     return 0;
 }
 
@@ -65,6 +74,15 @@ static int queue_create(void)
 {
     can_send_buf_queue_handle = OSQCreate(&can_send_buf_queue_p[0], CAN_SEND_BUF_QUEUE_NUM);
     if(can_send_buf_queue_handle == 0)
+    {
+        /*
+        todo: err process
+        */
+        return -1;
+    }
+
+    can_rcv_buf_queue_handle = OSQCreate(&can_rcv_buf_queue_p[0], CAN_RCV_BUF_QUEUE_NUM);
+    if(can_rcv_buf_queue_handle == 0)
     {
         /*
         todo: err process

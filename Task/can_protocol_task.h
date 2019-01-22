@@ -10,7 +10,7 @@
 #define __CAN_PROTOCOL_H
 #include "stm32f10x.h"
 #include "ucos_ii.h"
-
+#include "can_fifo.h"
 #define CAN_PROTOCOL_TASK_STK_SIZE  1024
 #define CAN_SEND_TASK_STK_SIZE      256
 extern OS_STK can_protocol_task_stk[CAN_PROTOCOL_TASK_STK_SIZE];
@@ -94,6 +94,8 @@ typedef struct
 #define CAN_SEND_BUF_SIZE           10
 #define CAN_SEND_BUF_QUEUE_NUM      CAN_SEND_BUF_SIZE
 
+#define CAN_RCV_BUF_SIZE           10
+#define CAN_RCV_BUF_QUEUE_NUM      CAN_RCV_BUF_SIZE
 
 typedef struct
 {
@@ -108,6 +110,14 @@ extern OS_MEM *can_send_buf_mem_handle;
 
 extern OS_EVENT *can_send_buf_queue_handle;
 extern void* can_send_buf_queue_p[CAN_SEND_BUF_QUEUE_NUM];
+
+
+
+extern can_pkg_t can_rcv_buf_mem[CAN_RCV_BUF_SIZE][1];
+extern OS_MEM *can_rcv_buf_mem_handle;
+
+extern OS_EVENT *can_rcv_buf_queue_handle;
+extern void* can_rcv_buf_queue_p[CAN_RCV_BUF_QUEUE_NUM];
 
 
 void can_protocol_period( void );

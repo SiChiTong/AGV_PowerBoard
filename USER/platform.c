@@ -337,7 +337,7 @@ void rk_power_signal_ctrl(uint8_t on_off)
 
 void beeper_on(void)
 {
-    GPIO_SetBits(GPIOB, GPIO_Pin_0);
+//    GPIO_SetBits(GPIOB, GPIO_Pin_0);
 }
 
 void beeper_off(void)

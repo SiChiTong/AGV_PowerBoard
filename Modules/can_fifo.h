@@ -1,6 +1,7 @@
 #ifndef __MODULE_CAN_FIFO_H_
 #define __MODULE_CAN_FIFO_H_
 
+#include "sys.h"
 #include "can.h"
 
 
@@ -21,8 +22,8 @@ typedef struct{
 }can_fifo_t;
 
 
-#define TRUE    1
-#define FALSE   0
+//#define TRUE    1
+//#define FALSE   0
 
 extern can_fifo_t *can_fifo;
 extern can_pkg_t can_pkg[CAN_FIFO_SIZE];

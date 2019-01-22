@@ -7,9 +7,9 @@
 #include "can_fifo.h"
 
 
-can_fifo_t can_fifo_ram;
-can_fifo_t *can_fifo = &can_fifo_ram;
-can_pkg_t can_pkg[CAN_FIFO_SIZE] = {0};
+//can_fifo_t can_fifo_ram;
+//can_fifo_t *can_fifo = &can_fifo_ram;
+//can_pkg_t can_pkg[CAN_FIFO_SIZE] = {0};
 
 static uint8_t is_can_fifo_full(can_fifo_t *head);
 

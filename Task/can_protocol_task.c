@@ -32,6 +32,13 @@ OS_EVENT *can_send_buf_queue_handle;
 void* can_send_buf_queue_p[CAN_SEND_BUF_QUEUE_NUM];
 
 
+can_pkg_t can_rcv_buf_mem[CAN_RCV_BUF_SIZE][1];
+OS_MEM *can_rcv_buf_mem_handle;
+
+OS_EVENT *can_rcv_buf_queue_handle;
+void* can_rcv_buf_queue_p[CAN_RCV_BUF_QUEUE_NUM];
+
+
 #define ONLYONCE       0x00
 #define BEGIN         0x01
 #define TRANSING       0x02
@@ -377,7 +384,7 @@ void can_long_buf_init(void)
     can_long_frame_buf->get_one_free_buf = get_one_free_buf;
     can_long_frame_buf->get_the_buf_by_id = get_the_buf_by_id;
     can_long_frame_buf->free_buf = free_buf;
-    can_fifo_init(can_fifo, can_pkg, CAN_FIFO_SIZE);
+//    can_fifo_init(can_fifo, can_pkg, CAN_FIFO_SIZE);
 }
 
 #define CAN_LONG_FRAME_TIME_OUT     5 * OS_TICKS_PER_SEC
@@ -392,29 +399,29 @@ OS_STK can_protocol_task_stk[CAN_PROTOCOL_TASK_STK_SIZE];
 
 void can_protocol_task(void *pdata)
 {
-    static can_id_union id = {0};
-    static can_data_union rx_buf = {0};
+    can_id_union id = {0};
+    can_data_union rx_buf = {0};
     can_buf_t can_buf;
+    can_pkg_t *can_rcv_buf;
+    uint8_t err = 0;
     delay_ms(500);
     while(1)
     {
-        can_pkg_t can_pkg_tmp = {0};
         uint8_t buf_index = 0;
         uint8_t seg_polo = 0;
         uint8_t seg_num = 0;
         uint16_t tx_len = 0;
         uint8_t rx_len = 0;
 
-        if(is_can_fifo_empty(can_fifo) == FALSE)
+        can_rcv_buf = (can_pkg_t *)OSQPend(can_rcv_buf_queue_handle, 0, &err);
+        if(err == OS_ERR_NONE)
         {
-            get_can_pkg_from_fifo(can_fifo, &can_pkg_tmp);
-
-            memcpy(rx_buf.can_data,  can_pkg_tmp.data.can_data, can_pkg_tmp.len);
-            id.canx_id = can_pkg_tmp.id.canx_id;
-            rx_len = can_pkg_tmp.len;
+            memcpy(rx_buf.can_data,  can_rcv_buf->data.can_data, can_rcv_buf->len);
+            id.canx_id = can_rcv_buf->id.canx_id;
+            rx_len = can_rcv_buf->len;
             seg_polo = rx_buf.can_data_t.seg_polo;
             seg_num = rx_buf.can_data_t.seg_num;
-
+            OSMemPut(can_rcv_buf_mem_handle, can_rcv_buf);
             if(id.can_id_t.dest_mac_id == POWERBOARD_CAN_MAC_SRC_ID)
             {
                 can_com_start_time = get_tick();
@@ -507,10 +514,6 @@ void can_protocol_task(void *pdata)
                     }
                 }
             }
-        }
-        else
-        {
-            delay_ms(20);
         }
     }
 
