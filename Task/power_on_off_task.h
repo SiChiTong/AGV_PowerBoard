@@ -45,5 +45,6 @@ extern OS_EVENT *rk_power_off_sem;
 void power_on_off_task(void *pdata);
 void power_on_off_x86_task(void *pdata);
 void power_on_off_rk_task(void *pdata);
+void post_power_on_off_signal(void);
 #endif
 

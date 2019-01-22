@@ -243,6 +243,9 @@ typedef struct
 #define                 STATE_IS_RECHARGE_IN    0x0100
 #define                 SYSTEM_IS_SLEEP         0x00 //set 0x00 to no use
 
+
+#define                 REMOTE_DEVICE_POWER_SHUTDOWN    1
+#define                 REMOTE_DEVICE_POWER_REBOOT      2
 typedef struct
 {
     uint16_t sys_status;    //œÚ«∞ºÊ»›
@@ -252,6 +255,7 @@ typedef struct
     uint8_t charge_state;
     uint8_t recharge_state;
     uint8_t ir_led_pwm_duty;
+    uint8_t remote_device_power_ctrl;
 }sys_status_t;
 
 extern sys_status_t *sys_status;

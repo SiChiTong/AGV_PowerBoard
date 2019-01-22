@@ -59,6 +59,11 @@ void power_on_off_rk_task(void *pdata)
     }
 }
 
+void post_power_on_off_signal(void)
+{
+    OSSemPost(powerkey_long_press_sem);
+}
+
 void power_on_off_task(void *pdata)
 {
     uint8_t err = 0;
@@ -66,6 +71,7 @@ void power_on_off_task(void *pdata)
     {
         /*boot up*/
         OSSemPend(powerkey_long_press_sem, 5 * OS_TICKS_PER_SEC, &err);
+        powerkey_long_press_sem = OSSemCreate(0);
         if(err == OS_ERR_TIMEOUT)
         {
             release_power();
@@ -75,11 +81,14 @@ void power_on_off_task(void *pdata)
         {
             sys_status->sys_status &= 0xfff0;
             sys_status->sys_status |= STATE_IS_POWER_ON;
+            sys_status->is_booting_up_finished = 0;
+            sys_status->is_shutting_down_finished = 0;
             hold_on_power();
             beeper_on();
-            main_power_module_5v_ctrl(MODULE_POWER_ON);
-            main_power_module_12v_ctrl(MODULE_POWER_ON);
-            main_power_module_24v_ctrl(MODULE_POWER_ON);
+//            main_power_module_5v_ctrl(MODULE_POWER_ON);
+//            main_power_module_12v_ctrl(MODULE_POWER_ON);
+//            main_power_module_24v_ctrl(MODULE_POWER_ON);
+            power_ctrl(POWER_5V_EN | POWER_12V_EN | POWER_24V_EN, MODULE_POWER_ON);
             delay_ms(500);
             beeper_off();
             OSSemPost(x86_power_on_sem);
@@ -87,13 +96,17 @@ void power_on_off_task(void *pdata)
             delay_ms(BOOTING_UP_TIME);
             sys_status->sys_status &= 0xfff0;
             sys_status->sys_status |= STATE_POWER_ON;
-
+            sys_status->is_booting_up_finished = 1;
+            sys_status->is_shutting_down_finished = 0;
 
             /*shutdown*/
             powerkey_long_press_sem = OSSemCreate(0);
             OSSemPend(powerkey_long_press_sem, 0, &err);
+            powerkey_long_press_sem = OSSemCreate(0);
             sys_status->sys_status &= 0xfff0;
             sys_status->sys_status |= STATE_IS_POWER_OFF;
+            sys_status->is_booting_up_finished = 0;
+            sys_status->is_shutting_down_finished = 0;
             beeper_on();
             delay_ms(500);
             beeper_off();
@@ -101,12 +114,14 @@ void power_on_off_task(void *pdata)
             OSSemPost(x86_power_off_sem);
             OSSemPost(rk_power_off_sem);
             delay_ms(SHUTTING_DOWN_TIME);
-            main_power_module_5v_ctrl(MODULE_POWER_OFF);
-            main_power_module_12v_ctrl(MODULE_POWER_OFF);
-            main_power_module_24v_ctrl(MODULE_POWER_OFF);
-            if(0)   // reboot
+//            main_power_module_5v_ctrl(MODULE_POWER_OFF);
+//            main_power_module_12v_ctrl(MODULE_POWER_OFF);
+//            main_power_module_24v_ctrl(MODULE_POWER_OFF);
+            power_ctrl(POWER_5V_EN | POWER_12V_EN | POWER_24V_EN, MODULE_POWER_OFF);
+            if(sys_status->remote_device_power_ctrl == REMOTE_DEVICE_POWER_REBOOT)   // reboot
             {
-                delay_ms(5000);
+                delay_ms(7000);
+                post_power_on_off_signal();
                 /*
                 TODO_MARK: post power on signal, clear reboot signal
                 */
@@ -114,7 +129,11 @@ void power_on_off_task(void *pdata)
             else    // shutdown
             {
                 release_power();
-                delay_ms(1000);
+                delay_ms(2000);
+                sys_status->sys_status &= 0xfff0;
+                sys_status->sys_status |= STATE_POWER_OFF;
+                sys_status->is_booting_up_finished = 0;
+                sys_status->is_shutting_down_finished = 1;
                 mcu_restart();
                 delay_ms(30 * 1000);
             }

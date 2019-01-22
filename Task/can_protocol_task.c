@@ -16,6 +16,7 @@
 #include "can_fifo.h"
 #include "battery.h"
 #include "serial_led.h"
+#include "power_on_off_task.h"
 
 //#define CanProtocolLog(format, ...)  custom_log("can protocol", format, ##__VA_ARGS__)
 
@@ -302,25 +303,29 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
                 case CAN_SOURCE_ID_REMOTE_POWRER_CTRL:
                     {
                         data_out[0] = data_in[0];
-//                        if((YES == boardStatus->is_power_off_finished) && (YES == boardStatus->is_power_on_finished) && (boardStatus->system_status & STATE_RUN_BITS))
-//                        {
-//                            if((data_in[0] == 1) || (data_in[0] == 2))
-//                            {
-//                                boardStatus->remote_device_power_ctrl = data_in[0];
-//                                data_out[1] = 0; //succeed
-//                            }
-//                            else
-//                            {
-//                                data_out[1] = 1; //parameter error
-//                            }
-//                        }
-//                        else
-//                        {
-//                            data_out[1] = 2;    //device is not power on yet
-//                        }
-//                        return 2;
-//                        break;
+                        if((sys_status->is_booting_up_finished == 1) && (sys_status->sys_status & STATE_POWER_ON))
+                        {
+                            if((data_in[0] == REMOTE_DEVICE_POWER_SHUTDOWN) || (data_in[0] == REMOTE_DEVICE_POWER_REBOOT))
+                            {
+                                sys_status->remote_device_power_ctrl = data_in[0];
+                                data_out[1] = 0; //succeed
+                                post_power_on_off_signal();
+                                /*
+                                TODO_MARK:post power off signal
+                                */
+                            }
+                            else
+                            {
+                                data_out[1] = 1; //parameter error
+                            }
+                        }
+                        else
+                        {
+                            data_out[1] = 2;    //device is not power on yet
+                        }
+                        return 2;
                     }
+
                 case CAN_SOURCE_ID_GET_SERIALS_LEDS_VERSION:
 //                    get_serials_leds_version();
                     break;
@@ -547,9 +552,6 @@ void can_send_task(void *pdata)
         can_send_buf = (can_buf_t *)OSQPend(can_send_buf_queue_handle, 0, &err);
         if(err == OS_ERR_NONE)
         {
-            /*
-            TODO
-            */
             Can1_TX(can_send_buf->id, can_send_buf->data, can_send_buf->data_len);
             OSMemPut(can_send_buf_mem_handle, can_send_buf);
 //            delay_ms(10);
