@@ -16,7 +16,7 @@ void serial_led_task(void *pdata)
     while(1)
     {
         serial_leds_tick();
-        delay_ms(50);
+        delay_ms(110);
     }
 }
 

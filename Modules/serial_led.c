@@ -92,16 +92,6 @@ color_t  right_eye_color[2] =
 
 one_wire_led_para_t one_wire_led[] =
 {
-    [FRONT_RIGHT_LED] =
-    {
-        .gpio               = PLATFORM_GPIO_SERIAL_LED_FRONT_RIGHT,
-        .color              = front_right_color,
-        .color_number       = 1,
-        .period             = 5 * OS_TICKS_PER_SEC / 10,
-        .data_buf           = front_right_buff,
-        .led_num            = FRONT_RIGHT_LED_NUM,
-        .start_time         = 0,
-    },
     [FRONT_LEFT_LED] =
     {
         .gpio               = PLATFORM_GPIO_SERIAL_LED_FRONT_LEFT,
@@ -110,6 +100,16 @@ one_wire_led_para_t one_wire_led[] =
         .period             = 5 * OS_TICKS_PER_SEC / 10,
         .data_buf           = front_left_buff,
         .led_num            = FRONT_LEFT_LED_NUM,
+        .start_time         = 0,
+    },
+    [FRONT_RIGHT_LED] =
+    {
+        .gpio               = PLATFORM_GPIO_SERIAL_LED_FRONT_RIGHT,
+        .color              = front_right_color,
+        .color_number       = 1,
+        .period             = 5 * OS_TICKS_PER_SEC / 10,
+        .data_buf           = front_right_buff,
+        .led_num            = FRONT_RIGHT_LED_NUM,
         .start_time         = 0,
     },
     [BACK_RIGHT_LED] =
@@ -264,7 +264,6 @@ void set_serial_leds_effect(const light_mode_t light_mode, color_t  *cur_color, 
             {
                 return;
             }
-
         }
     }
 
