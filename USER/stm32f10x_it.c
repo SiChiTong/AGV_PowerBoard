@@ -260,7 +260,6 @@ void USB_LP_CAN1_RX0_IRQHandler(void)
     put_can_pkg_to_fifo(can_fifo, can_pkg_tmp);
 #else
     can_pkg_t *can_buf;
-    can_pkg_t can_pkg_tmp;
     uint8_t err = 0;
     CAN_Receive(CAN1, CAN_FIFO0, &RxMessage);
     can_buf = (can_pkg_t *)OSMemGet(can_rcv_buf_mem_handle, &err);

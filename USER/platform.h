@@ -142,26 +142,26 @@ typedef enum
 
 
 
-#define POWER_5V_MOTOR             0x00000001
+//#define POWER_5V_MOTOR             0x00000001
 #define POWER_5V_RECHARGE          0x00000002
 #define POWER_5V_SENSOR_BOARD      0x00000004
     //POWER_5V_SWITCH           = 0x00000008,
-#define POWER_5V_ROUTER            0x00000010
+//#define POWER_5V_ROUTER            0x00000010
 #define POWER_5V_EN                0x00000020
 
 #define POWER_12V_PAD              0x00000040
-#define POWER_12V_2_1_PA           0x00000080
-#define POWER_12V_EXTEND           0x00000100
+//#define POWER_12V_2_1_PA           0x00000080
+//#define POWER_12V_EXTEND           0x00000100
 #define POWER_12V_X86              0x00000200
 #define POWER_12V_NV               0x00000400
 #define POWER_12V_EN               0x00000800
 
 #define POWER_24V_EN               0x00001000
-#define POWER_24V_PRINTER          0x00002000
+//#define POWER_24V_PRINTER          0x00002000
 #define POWER_24V_EXTEND           0x00004000
 #define POWER_VSYS_24V_NV          0x00008000
 
-#define POWER_485                  0x00010000
+//#define POWER_485                  0x00010000
 #define POWER_SYS_LED              0x00020000
 #define POWER_RECHARGE_LED         0x00040000
 #define POWER_SLAM                 0x00080000
@@ -170,6 +170,7 @@ typedef enum
 #define POWER_CHARGE_FAN           0x00200000
     //POWER_POLE_MOTOR          = 0x00400000,
     //POWER_5V_KEYPAD           = 0x00800000,
+#define LED_MCU_RST                0x00400000
 
 #define POWER_CAMERA_FRONT_LED     0x01000000
 #define POWER_CAMERA_BACK_LED      0x02000000
@@ -282,5 +283,7 @@ void beeper_off(void);
 
 void power_ctrl(uint32_t power_en, uint8_t on_off);
 uint32_t get_module_power_state(uint32_t power_en);
+void led_mcu_ctrl_init_and_power_on(void);
+void led_mcu_ctrl_deinit_and_power_off(void);
 
 #endif

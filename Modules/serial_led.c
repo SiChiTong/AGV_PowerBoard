@@ -97,7 +97,7 @@ one_wire_led_para_t one_wire_led[] =
         .gpio               = PLATFORM_GPIO_SERIAL_LED_FRONT_RIGHT,
         .color              = front_right_color,
         .color_number       = 1,
-        .period             = 500,
+        .period             = 5 * OS_TICKS_PER_SEC / 10,
         .data_buf           = front_right_buff,
         .led_num            = FRONT_RIGHT_LED_NUM,
         .start_time         = 0,
@@ -107,7 +107,7 @@ one_wire_led_para_t one_wire_led[] =
         .gpio               = PLATFORM_GPIO_SERIAL_LED_FRONT_LEFT,
         .color              = front_left_color,
         .color_number       = 1,
-        .period             = 500,
+        .period             = 5 * OS_TICKS_PER_SEC / 10,
         .data_buf           = front_left_buff,
         .led_num            = FRONT_LEFT_LED_NUM,
         .start_time         = 0,
@@ -117,7 +117,7 @@ one_wire_led_para_t one_wire_led[] =
         .gpio               = PLATFORM_GPIO_SERIAL_LED_BACK_RIGHT,
         .color              = back_right_color,
         .color_number       = 1,
-        .period             = 500,
+        .period             = 5 * OS_TICKS_PER_SEC / 10,
         .data_buf           = back_right_buff,
         .led_num            = BACK_RIGHT_LED_NUM,
         .start_time         = 0,
@@ -127,7 +127,7 @@ one_wire_led_para_t one_wire_led[] =
         .gpio               = PLATFORM_GPIO_SERIAL_LED_BACK_LEFT,
         .color              = back_left_color,
         .color_number       = 1,
-        .period             = 500,
+        .period             = 5 * OS_TICKS_PER_SEC / 10,
         .data_buf           = back_left_buff,
         .led_num            = BACK_LEFT_LED_NUM,
         .start_time         = 0,
@@ -138,7 +138,7 @@ one_wire_led_para_t one_wire_led[] =
         .gpio               = PLATFORM_GPIO_SERIAL_LED_EYES,
         .color              = right_eye_color,
         .color_number       = 1,
-        .period             = 500,
+        .period             = 5 * OS_TICKS_PER_SEC / 10,
         .data_buf           = eyes_buff,
         .led_num            = EYES_LED_NUM,
         .start_time         = 0,
@@ -146,23 +146,26 @@ one_wire_led_para_t one_wire_led[] =
 };
 
 
-void write_bit_0(platform_gpio_e gpio)
+static inline void write_bit_0(platform_gpio_e gpio)
 {
     serial_led_output_high(gpio);
-    delay_200ns();
+    delay_40ns();
 
     serial_led_output_low(gpio);
     delay_200ns();
     delay_500ns();
 }
 
-void write_bit_1(platform_gpio_e gpio)
+static inline void write_bit_1(platform_gpio_e gpio)
 {
     serial_led_output_high(gpio);
-    delay_500ns();
+//    delay_500ns();
+    delay_300ns();
 
     serial_led_output_low(gpio);
-    delay_500ns();
+//    delay_500ns();
+//    delay_300ns();
+    delay_450ns();
 }
 
 
@@ -181,7 +184,7 @@ void write_rgb(platform_gpio_e gpio, uint32_t word)
 
     RGB = (R << 16)|(G << 8)|(B << 0);
 
-    for(i=0;i<24;i++)
+    for(i = 0; i < 24; i++)
     {
 
         if((RGB & 0x800000) == 0)

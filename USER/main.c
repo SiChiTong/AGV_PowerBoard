@@ -12,7 +12,6 @@
 #include "common.h"
 #include "platform.h"
 #include "flash.h"
-#include "id.h"
 #include "battery.h"
 
 uint8_t test_id = 0;

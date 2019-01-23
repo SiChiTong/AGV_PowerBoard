@@ -35,8 +35,11 @@ void delay_us(u32 nus);
 #define delay_200ns()     do {asm("nop");asm("nop");asm("nop");asm("nop");\
                               asm("nop");asm("nop");asm("nop");asm("nop");\
                               asm("nop");asm("nop");asm("nop");asm("nop");\
-                              asm("nop");asm("nop");asm("nop");asm("nop");\
-                              asm("nop");\
+                              asm("nop");asm("nop");\
+                              } while(1==0)
+
+#define delay_40ns()     do {\
+                              asm("nop");asm("nop");asm("nop");\
                               } while(1==0)
 
 #define delay_500ns()     do { asm("nop");asm("nop");asm("nop");asm("nop");\
@@ -48,7 +51,17 @@ void delay_us(u32 nus);
                                asm("nop");asm("nop");asm("nop");asm("nop");\
                                asm("nop");asm("nop");asm("nop");asm("nop");\
                                asm("nop");asm("nop");asm("nop");asm("nop");\
-                               asm("nop");asm("nop");} while(1==0)
+                            } while(1==0)
+
+#define delay_450ns()     do { asm("nop");asm("nop");asm("nop");asm("nop");\
+                               asm("nop");asm("nop");asm("nop");asm("nop");\
+                               asm("nop");asm("nop");asm("nop");asm("nop");\
+                               asm("nop");asm("nop");asm("nop");asm("nop");\
+                               asm("nop");asm("nop");asm("nop");asm("nop");\
+                               asm("nop");asm("nop");asm("nop");asm("nop");\
+                               asm("nop");asm("nop");asm("nop");asm("nop");\
+                               asm("nop");asm("nop");asm("nop");asm("nop");\
+                            } while(1==0)
 
 #define delay_us_ex(n)       do {\
                                     uint32_t i=0;\
