@@ -447,9 +447,6 @@ void print_bat_info(void)
 #define BAT_SOI     0x7E
 #define BAT_EOI     0x0D
 #define BATTERY_COM_ERR_DEBOUNCE_CNT    3
-#define BATTERY_READ_PERIOD             3 * OS_TICKS_PER_SEC
-#define BATTERY_FIRST_READ_PERIOD       2.8 * OS_TICKS_PER_SEC
-static uint32_t battery_period_start_time;
 static uint8_t battery_com_err_cnt = 0;
 extern void upload_bat_info(void);
 void battery_period(void)
@@ -475,30 +472,16 @@ void battery_period(void)
         }
     }
 
-    if(get_tick() + BATTERY_FIRST_READ_PERIOD - battery_period_start_time >= BATTERY_READ_PERIOD)
+    battery_read_infomation();
+
+    if(battery_com_err_cnt++ >= BATTERY_COM_ERR_DEBOUNCE_CNT)
     {
-        static uint8_t err_cnt = 0;
-        battery_period_start_time = get_tick() + BATTERY_FIRST_READ_PERIOD;
-        battery_com_err_cnt++;
-
-        battery_read_infomation();
-
-        if(battery_com_err_cnt >= BATTERY_COM_ERR_DEBOUNCE_CNT)
+        printf(" CAN NOT GET BATTERY INFO ! ! !\r\n");
         {
-            printf(" CAN NOT GET BATTERY INFO ! ! !\r\n");
-            if(err_cnt++ >= 3)
-            {
-                battery_pack.com_status = FALSE;
-                err_cnt = 0;
+            battery_pack.com_status = FALSE;
 //                upload_bat_info();
-            }
-
         }
-        else
-        {
-            err_cnt = 0;
-        }
-
+        battery_com_err_cnt = 0;
     }
 }
 #endif

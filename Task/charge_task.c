@@ -43,6 +43,6 @@ void charge_task(void *pdata)
             upload_sys_state();
         }
 //        pre_charge_recharge_state = charge_recharge_state;
-        delay_ms(100);
+//        delay_ms(100);
     }
 }

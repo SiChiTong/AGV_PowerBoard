@@ -85,7 +85,7 @@ void battery_task(void *pdata)
     battery_protocol_init();
     while(1)
     {
-        delay_ms(1000);
+        delay_ms(5000);
         battery_period();
         battery_low_power_process();
     }

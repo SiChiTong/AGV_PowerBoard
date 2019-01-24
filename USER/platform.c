@@ -372,7 +372,7 @@ void led_mcu_ctrl_init_and_power_on(void)
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOE, &GPIO_InitStructure);
-//    led_mcu_rst_ctrl(MODULE_POWER_ON);
+    led_mcu_rst_ctrl(MODULE_POWER_ON);
     led_mcu_power_ctrl(MODULE_POWER_ON);
 }
 
