@@ -6,12 +6,12 @@
 #define serial_led_output_high(gpio)    platform_gpio_pins[gpio].GPIOx->BSRR = platform_gpio_pins[gpio].GPIO_Pin
 #define serial_led_output_low(gpio)     platform_gpio_pins[gpio].GPIOx->BRR = platform_gpio_pins[gpio].GPIO_Pin
 
-#define FRONT_LEFT_LED_NUM          50
-#define FRONT_RIGHT_LED_NUM         50
-#define BACK_RIGHT_LED_NUM          50
-#define BACK_LEFT_LED_NUM           50
+#define FRONT_LEFT_LED_NUM          25
+#define FRONT_RIGHT_LED_NUM         25
+#define BACK_RIGHT_LED_NUM          25
+#define BACK_LEFT_LED_NUM           25
 
-#define EYES_LED_NUM                20
+#define EYES_LED_NUM                5
 
 typedef enum
 {

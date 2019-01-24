@@ -23,8 +23,8 @@ extern OS_EVENT *rk_power_off_sem;
 //#define BOOTING_UP_TIME         45*1000
 //#define SHUTTING_DOWN_TIME      30*1000
 
-#define BOOTING_UP_TIME         15*1000
-#define SHUTTING_DOWN_TIME      10*1000
+#define BOOTING_UP_TIME         45*1000
+#define SHUTTING_DOWN_TIME      30*1000
 
 #define X86_POWER_ON_DELAY_TIME         3500
 #define X86_POWER_OFF_DELAY_TIME        1000

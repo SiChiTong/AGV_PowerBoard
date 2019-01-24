@@ -153,7 +153,8 @@ static inline void write_bit_0(platform_gpio_e gpio)
 
     serial_led_output_low(gpio);
     delay_200ns();
-    delay_500ns();
+//    delay_500ns();
+    delay_450ns();
 }
 
 static inline void write_bit_1(platform_gpio_e gpio)
