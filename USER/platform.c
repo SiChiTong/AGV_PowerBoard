@@ -882,7 +882,7 @@ void ir_led_pwm_ctrl(uint16_t duty)
 //    timer_1_ch1_pwm_init(720 , 1, 720 * 30 / 100);
 //}
 
-uint32_t test_my_id = 0;
+uint32_t test_hardware_version = 0;
 void hardware_init(void)
 {
     platform_gpio_init();
@@ -891,6 +891,6 @@ void hardware_init(void)
     can_init();
     ir_led_pwm_ctrl(20);
 //    ir_led_pwm_init();
-    test_my_id = get_my_id();
+    test_hardware_version = get_hardware_version();
 }
 

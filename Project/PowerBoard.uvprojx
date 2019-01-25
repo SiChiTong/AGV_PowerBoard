@@ -404,11 +404,6 @@
               <FileType>1</FileType>
               <FilePath>..\USER\platform.c</FilePath>
             </File>
-            <File>
-              <FileName>can_protocol.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\can_protocol.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>

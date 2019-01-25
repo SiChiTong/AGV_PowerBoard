@@ -24,7 +24,7 @@ uint8_t get_id_key_value(id_key_enum key)
 }
 
 
-uint8_t get_my_id(void)
+uint8_t get_hardware_version(void)
 {
 
 #define DEBOUNCE_TIME       1 * OS_TICKS_PER_SEC / 10
