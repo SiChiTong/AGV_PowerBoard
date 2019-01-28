@@ -11,7 +11,7 @@ extern OS_STK LED1_TASK_STK[LED1_STK_SIZE];
 
 
 #define INDICATOR_LED_STK_SIZE                   64
-extern OS_STK INDICATOR_LED_TASK_STK[INDICATOR_LED_STK_SIZE];
+extern OS_STK indicator_led_task_stk[INDICATOR_LED_STK_SIZE];
 
 
 #define FLASH_TEST_TASK_PRIO                  11

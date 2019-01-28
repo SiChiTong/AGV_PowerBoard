@@ -9,8 +9,8 @@ extern void falsh_test_task(void *pdata);
 
 static void task_create(void)
 {
-    OSTaskCreate(indicator_led_task,        (void *)0,  (OS_STK*)&INDICATOR_LED_TASK_STK[INDICATOR_LED_STK_SIZE-1],                         INDICATOR_LED_TASK_PRIO);
-    OSTaskCreate(battery_task,              (void *)0,  (OS_STK*)&BATTERY_TASK_STK[BATTERY_TASK_STK_SIZE - 1],                              BATTERY_TASK_PRIO);
+    OSTaskCreate(indicator_led_task,        (void *)0,  (OS_STK*)&indicator_led_task_stk[INDICATOR_LED_STK_SIZE - 1],                       INDICATOR_LED_TASK_PRIO);
+    OSTaskCreate(battery_task,              (void *)0,  (OS_STK*)&battery_task_stk[BATTERY_TASK_STK_SIZE - 1],                              BATTERY_TASK_PRIO);
     OSTaskCreate(can_protocol_task,         (void *)0,  (OS_STK*)&can_protocol_task_stk[CAN_PROTOCOL_TASK_STK_SIZE - 1],                    CAN_RPOTOCOL_TASK_PRIO);
     OSTaskCreate(power_on_off_task,         (void *)0,  (OS_STK*)&power_on_off_stk[POWER_ON_OFF_STK_SIZE - 1],                              POWER_ON_OFF_TASK_PRIO);
     OSTaskCreate(switch_task,               (void *)0,  (OS_STK*)&switch_task_stk[SWITCH_TASK_STK_SIZE - 1],                                SWITCH_TASK_PRIO);
@@ -41,7 +41,7 @@ static int mailbox_create(void)
          /*
         todo: err process
         */
-        return -1;
+//        return -1;
     }
     return 0;
 }
@@ -55,7 +55,7 @@ static int mem_create(void)
         /*
         todo: err process
         */
-        return -1;
+//        return -1;
     }
 
     can_rcv_buf_mem_handle = OSMemCreate((void *)&can_rcv_buf_mem[0][0], sizeof(can_rcv_buf_mem) / sizeof(can_rcv_buf_mem[0]), sizeof(can_pkg_t), &err);
@@ -64,7 +64,7 @@ static int mem_create(void)
         /*
         todo: err process
         */
-        return -1;
+//        return -1;
     }
 
     return 0;
@@ -78,7 +78,7 @@ static int queue_create(void)
         /*
         todo: err process
         */
-        return -1;
+//        return -1;
     }
 
     can_rcv_buf_queue_handle = OSQCreate(&can_rcv_buf_queue_p[0], CAN_RCV_BUF_QUEUE_NUM);
@@ -87,7 +87,7 @@ static int queue_create(void)
         /*
         todo: err process
         */
-        return -1;
+//        return -1;
     }
     return 0;
 }

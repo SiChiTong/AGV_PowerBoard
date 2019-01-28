@@ -11,7 +11,7 @@
 #include "serial_led.h"
 #include <stdio.h>
 
-OS_STK BATTERY_TASK_STK[BATTERY_TASK_STK_SIZE];
+OS_STK battery_task_stk[BATTERY_TASK_STK_SIZE] = {0};
 
 void set_sys_low_power_power_off(void)
 {

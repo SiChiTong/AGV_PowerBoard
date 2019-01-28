@@ -9,9 +9,9 @@
 #include "switch_task.h"
 
 
-OS_STK power_on_off_stk[POWER_ON_OFF_STK_SIZE];
-OS_STK x86_power_on_off_stk[X86_POWER_ON_OFF_STK_SIZE];
-OS_STK rk_power_on_off_stk[RK_POWER_ON_OFF_STK_SIZE];
+OS_STK power_on_off_stk[POWER_ON_OFF_STK_SIZE] = {0};
+OS_STK x86_power_on_off_stk[X86_POWER_ON_OFF_STK_SIZE] = {0};
+OS_STK rk_power_on_off_stk[RK_POWER_ON_OFF_STK_SIZE] = {0};
 
 OS_EVENT *x86_power_on_sem;
 OS_EVENT *x86_power_off_sem;

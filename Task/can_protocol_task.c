@@ -25,18 +25,18 @@ CanTxMsg TxMessage;
 uint8_t CanTxdataBuff[CAN_LONG_FRAME_LENTH_MAX] = {0};
 
 
-can_buf_t can_send_buf_mem[CAN_SEND_BUF_SIZE][1];
+can_buf_t can_send_buf_mem[CAN_SEND_BUF_SIZE][1] = {{0}};
 OS_MEM *can_send_buf_mem_handle;
 
 OS_EVENT *can_send_buf_queue_handle;
-void* can_send_buf_queue_p[CAN_SEND_BUF_QUEUE_NUM];
+void* can_send_buf_queue_p[CAN_SEND_BUF_QUEUE_NUM] = {0};
 
 
-can_pkg_t can_rcv_buf_mem[CAN_RCV_BUF_SIZE][1];
+can_pkg_t can_rcv_buf_mem[CAN_RCV_BUF_SIZE][1] = {{0}};
 OS_MEM *can_rcv_buf_mem_handle;
 
 OS_EVENT *can_rcv_buf_queue_handle;
-void* can_rcv_buf_queue_p[CAN_RCV_BUF_QUEUE_NUM];
+void* can_rcv_buf_queue_p[CAN_RCV_BUF_QUEUE_NUM] = {0};
 
 
 #define ONLYONCE       0x00
@@ -207,9 +207,9 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
                     }
                     else if(data_in[0] == 3)//hardware version
                     {
-                        memcpy(&data_out[2], HW_VERSION_V0_3, strlen(HW_VERSION_V0_3));
-                        data_out[1] = strlen(HW_VERSION_V0_3);
-                        return strlen(HW_VERSION_V0_3) + 2;
+                        memcpy(&data_out[2], HW_VERSION, strlen(HW_VERSION));
+                        data_out[1] = strlen(HW_VERSION);
+                        return strlen(HW_VERSION) + 2;
                     }
                     return CMD_NOT_FOUND;
 
@@ -545,7 +545,7 @@ int send_can_msg(can_buf_t *can_msg)
 }
 
 
-OS_STK can_send_task_stk[CAN_SEND_TASK_STK_SIZE];
+OS_STK can_send_task_stk[CAN_SEND_TASK_STK_SIZE]  = {0};
 void can_send_task(void *pdata)
 {
     can_buf_t *can_send_buf;

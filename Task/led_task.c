@@ -9,8 +9,8 @@
 #include "usart.h"
 #include "led.h"
 
-OS_STK LED1_TASK_STK[LED1_STK_SIZE];
-OS_STK INDICATOR_LED_TASK_STK[INDICATOR_LED_STK_SIZE];
+OS_STK LED1_TASK_STK[LED1_STK_SIZE] = {0};
+OS_STK indicator_led_task_stk[INDICATOR_LED_STK_SIZE];
 
 void led1_task(void *pdata)
 {

@@ -8,7 +8,7 @@
 #include "serial_led.h"
 #include "delay.h"
 
-OS_STK serial_led_task_stk[SERIAL_LED_TASK_STK_SIZE];
+OS_STK serial_led_task_stk[SERIAL_LED_TASK_STK_SIZE] = {0};
 
 void serial_led_task(void *pdata)
 {

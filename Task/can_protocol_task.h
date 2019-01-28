@@ -20,9 +20,9 @@ void can_send_task(void *pdata);
 
 
 
-#define HW_VERSION_V0_2                  "NOAH_PM_V0.2"
-#define HW_VERSION_V0_3                  "NOAH_PM_V0.3"
-#define SW_VERSION                      "NOAHC001M08B109"
+
+#define HW_VERSION                      "M30_MAINBOARD_V0.2"
+#define SW_VERSION                      "M30C001M08B001"
 #define PROTOCOL_VERSION                "20170619P0001"
 
 #define CMD_NOT_FOUND   0

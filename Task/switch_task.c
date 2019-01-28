@@ -6,7 +6,7 @@
 #include "platform.h"
 #include "delay.h"
 
-OS_STK switch_task_stk[SWITCH_TASK_STK_SIZE];
+OS_STK switch_task_stk[SWITCH_TASK_STK_SIZE] = {0};
 
 OS_EVENT *powerkey_long_press_sem;
 

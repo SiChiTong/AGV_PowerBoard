@@ -8,7 +8,7 @@
 #include "platform.h"
 
 
-OS_STK charge_task_stk[CHARGE_TASK_STK_SIZE];
+OS_STK charge_task_stk[CHARGE_TASK_STK_SIZE] = {0};
 OS_EVENT * charge_state_mailbox;
 
 

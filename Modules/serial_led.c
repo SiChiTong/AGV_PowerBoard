@@ -24,7 +24,7 @@ color_t charge_color[] =
 
 };
 
-#define LED_LIGHTNESS_PERCENT   60
+#define LED_LIGHTNESS_PERCENT   50
 color_t led_color[] =
 {
     [SERIAL_LED_COLOR_RED_C]       = {255 * LED_LIGHTNESS_PERCENT / 100,     0 * LED_LIGHTNESS_PERCENT / 100  ,     0 * LED_LIGHTNESS_PERCENT / 100},
@@ -438,9 +438,9 @@ void serial_leds_tick(void)
         {
             write_color((one_wire_led_t)i, &(one_wire_led[i].color[one_wire_led[i].tick % one_wire_led[i].color_number]));
 #if 1
-//            DISABLE_INTERRUPTS();
+//            __disable_irq();
             send_rgb_data((one_wire_led_t)i);
-//            ENABLE_INTERRUPTS();
+//            __enable_irq();
 #endif
         }
     }
