@@ -253,8 +253,6 @@ typedef struct
     uint8_t power_state;
     uint8_t is_booting_up_finished;
     uint8_t is_shutting_down_finished;
-    uint8_t charge_state;
-    uint8_t recharge_state;
     uint8_t ir_led_pwm_duty;
     uint8_t remote_device_power_ctrl;
 }sys_status_t;
@@ -266,6 +264,7 @@ uint32_t get_tick(void);
 void mcu_restart(void);
 
 void hardware_init(void);
+void user_param_init(void);
 void hold_on_power(void);
 void release_power(void);
 void main_power_module_5v_ctrl(uint8_t on_off);

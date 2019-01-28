@@ -22,6 +22,7 @@ int main(void)
     NVIC_Configuration();
     __disable_irq();
     hardware_init();
+    user_param_init();
     user_init();
     __enable_irq();
     OSStart();

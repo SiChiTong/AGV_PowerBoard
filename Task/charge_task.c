@@ -16,33 +16,60 @@ void charge_task(void *pdata)
 {
     uint8_t err;
     uint32_t charge_recharge_state = 0;
-//    uint16_t pre_charge_recharge_state = 0;
+    uint8_t charge_state = 0;
+    uint8_t recharge_state = 0;
+//    uint32_t charge_recharge_state_tmp = 0;
+    uint8_t cnt = 0;
+    uint32_t pre_charge_recharge_state = 0x1234;
     while(1)
     {
-        charge_recharge_state = (uint32_t)OSMboxPend(charge_state_mailbox, 0, &err);
-//        if(charge_recharge_state == pre_charge_recharge_state)
+        charge_recharge_state = (uint32_t)OSMboxPend(charge_state_mailbox, 0, &err);// 此处的邮箱可以更改为信号量
+        recharge_state = get_recharge_gpio_value();
+        pre_charge_recharge_state &= 0xffffff00;
+        pre_charge_recharge_state += recharge_state;
+
+        charge_state = get_charge_gpio_value();
+        pre_charge_recharge_state &= 0xffff00ff;
+        pre_charge_recharge_state += charge_state << 8;
+        while(cnt <= 2)
         {
-            sys_status->charge_state = charge_recharge_state & 0xff;
-            sys_status->recharge_state = (charge_recharge_state >> 8) & 0xff;
-            if(sys_status->charge_state)
+            delay_ms(10);
+            recharge_state = get_recharge_gpio_value();
+            charge_recharge_state &= 0xffffff00;
+            charge_recharge_state += recharge_state;
+
+            charge_state = get_charge_gpio_value();
+            charge_recharge_state &= 0xffff00ff;
+            charge_recharge_state += charge_state << 8;
+            if(pre_charge_recharge_state == charge_recharge_state)
             {
-                sys_status->sys_status |= STATE_IS_CHARGER_IN;
+                cnt++;
             }
             else
             {
-                sys_status->sys_status &= ~STATE_IS_CHARGER_IN;
+                cnt = 0;
             }
-            if(sys_status->recharge_state)
-            {
-                sys_status->sys_status |= STATE_IS_RECHARGE_IN;
-            }
-            else
-            {
-                sys_status->sys_status &= ~STATE_IS_RECHARGE_IN;
-            }
-            upload_sys_state();
+            pre_charge_recharge_state = charge_recharge_state;
         }
-//        pre_charge_recharge_state = charge_recharge_state;
-//        delay_ms(100);
+        cnt = 0;
+
+        if(charge_state)
+        {
+            sys_status->sys_status |= STATE_IS_CHARGER_IN;
+        }
+        else
+        {
+            sys_status->sys_status &= ~STATE_IS_CHARGER_IN;
+        }
+        if(recharge_state)
+        {
+            sys_status->sys_status |= STATE_IS_RECHARGE_IN;
+        }
+        else
+        {
+            sys_status->sys_status &= ~STATE_IS_RECHARGE_IN;
+        }
+        upload_sys_state();
+        delay_ms(20);
     }
 }

@@ -4,6 +4,7 @@
  */
 
 #include "platform.h"
+#include "delay.h"
 #include "stdio.h"
 #include "battery.h"
 #include "led.h"
@@ -867,6 +868,60 @@ uint32_t get_module_power_state(uint32_t power_en)
     return pin_state;
 }
 
+uint16_t get_charge_recharge_init_state(void)
+{
+    uint8_t cnt = 0;
+    uint16_t pre_state = 0;
+    uint16_t state = 0;
+    uint8_t charge_state = 0;
+    uint8_t recharge_state = 0;
+    uint16_t value = 0;
+    recharge_state = get_recharge_gpio_value();
+    pre_state &= 0xff00;
+    pre_state += recharge_state;
+
+    charge_state = get_charge_gpio_value();
+    pre_state &= 0x00ff;
+    pre_state += charge_state << 8;
+    while(cnt <= 2)
+    {
+        delay_ms(5);
+        recharge_state = get_recharge_gpio_value();
+        state &= 0xffffff00;
+        state += recharge_state;
+
+        charge_state = get_charge_gpio_value();
+        state &= 0xffff00ff;
+        state += charge_state << 8;
+        if(pre_state == state)
+        {
+            cnt++;
+        }
+        else
+        {
+            cnt = 0;
+        }
+        pre_state = state;
+    }
+
+    if(charge_state)
+    {
+        value |= STATE_IS_CHARGER_IN;
+    }
+    else
+    {
+        value &= ~STATE_IS_CHARGER_IN;
+    }
+    if(recharge_state)
+    {
+        value |= STATE_IS_RECHARGE_IN;
+    }
+    else
+    {
+        value &= ~STATE_IS_RECHARGE_IN;
+    }
+    return value;
+}
 
 void ir_led_pwm_ctrl(uint16_t duty)
 {
@@ -892,5 +947,10 @@ void hardware_init(void)
     ir_led_pwm_ctrl(20);
 //    ir_led_pwm_init();
     test_hardware_version = get_hardware_version();
+}
+
+void user_param_init(void)
+{
+    sys_status->sys_status = get_charge_recharge_init_state();
 }
 

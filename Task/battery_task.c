@@ -39,7 +39,7 @@ void battery_low_power_process(void)
         percentage = battery_pack.percentage;
         if((sys_status->is_booting_up_finished == 1) && (sys_status->sys_status & STATE_POWER_ON))
         {
-            if(((sys_status->charge_state & STATE_IS_CHARGER_IN) == 0) && ((sys_status->charge_state & STATE_IS_RECHARGE_IN) == 0))
+            if(((sys_status->sys_status & STATE_IS_CHARGER_IN) == 0) && ((sys_status->sys_status & STATE_IS_RECHARGE_IN) == 0))
             {
                 if(percentage <= BATTERY_LOW_POWER_SHUTDOWN_PERCENTAGE)
                 {

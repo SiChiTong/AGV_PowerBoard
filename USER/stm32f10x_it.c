@@ -242,7 +242,7 @@ void EXTI9_5_IRQHandler(void)
         charge_state_tmp &= 0xffff00ff;
         charge_state_tmp += value << 8;
     }
-    OSMboxPost(charge_state_mailbox, (void*)charge_state_tmp);
+    OSMboxPost(charge_state_mailbox, (void*)charge_state_tmp);// 此处的邮箱可以更改为信号量
     OSIntExit();
 }
 

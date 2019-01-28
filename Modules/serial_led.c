@@ -23,17 +23,19 @@ color_t charge_color[] =
     [4]     = {0  , 255, 255},  //CYAN_C
 
 };
+
+#define LED_LIGHTNESS_PERCENT   60
 color_t led_color[] =
 {
-    [SERIAL_LED_COLOR_RED_C]       = {255, 0  , 0  },
-    [SERIAL_LED_COLOR_GREEN_C]     = {0  , 255, 0  },
-    [SERIAL_LED_COLOR_BLUE_C]      = {0  , 0  , 255},
-    [SERIAL_LED_COLOR_ORANGE_C]    = {0xc8, 0x32, 0x00 },
-    [SERIAL_LED_COLOR_WHITE_C]     = {255, 255, 255},
-    [SERIAL_LED_COLOR_CYAN_C]      = {0  , 255, 255},
-    [SERIAL_LED_COLOR_GOLD_C]      = {255, 215, 0  },
-    [SERIAL_LED_COLOR_SETTING_C]   = {0  , 0  , 0  },
-    [SERIAL_LED_COLOR_NONE_C]      = {0  , 0  , 0  },
+    [SERIAL_LED_COLOR_RED_C]       = {255 * LED_LIGHTNESS_PERCENT / 100,     0 * LED_LIGHTNESS_PERCENT / 100  ,     0 * LED_LIGHTNESS_PERCENT / 100},
+    [SERIAL_LED_COLOR_GREEN_C]     = {0 * LED_LIGHTNESS_PERCENT / 100  ,    255 * LED_LIGHTNESS_PERCENT / 100,      0 * LED_LIGHTNESS_PERCENT / 100},
+    [SERIAL_LED_COLOR_BLUE_C]      = {0 * LED_LIGHTNESS_PERCENT / 100  ,    0 * LED_LIGHTNESS_PERCENT / 100  ,      255 * LED_LIGHTNESS_PERCENT / 100},
+    [SERIAL_LED_COLOR_ORANGE_C]    = {0xc8 * LED_LIGHTNESS_PERCENT / 100,   0x32 * LED_LIGHTNESS_PERCENT / 100,     0x00 * LED_LIGHTNESS_PERCENT / 100},
+    [SERIAL_LED_COLOR_WHITE_C]     = {255 * LED_LIGHTNESS_PERCENT / 100,    255 * LED_LIGHTNESS_PERCENT / 100,      255 * LED_LIGHTNESS_PERCENT / 100},
+    [SERIAL_LED_COLOR_CYAN_C]      = {0 * LED_LIGHTNESS_PERCENT / 100  ,    255 * LED_LIGHTNESS_PERCENT / 100,      255 * LED_LIGHTNESS_PERCENT / 100},
+    [SERIAL_LED_COLOR_GOLD_C]      = {255 * LED_LIGHTNESS_PERCENT / 100,    215 * LED_LIGHTNESS_PERCENT / 100,      0 * LED_LIGHTNESS_PERCENT / 100},
+    [SERIAL_LED_COLOR_SETTING_C]   = {0 * LED_LIGHTNESS_PERCENT / 100  ,    0 * LED_LIGHTNESS_PERCENT / 100  ,      0 * LED_LIGHTNESS_PERCENT / 100  },
+    [SERIAL_LED_COLOR_NONE_C]      = {0 * LED_LIGHTNESS_PERCENT / 100  ,    0 * LED_LIGHTNESS_PERCENT / 100  ,      0 * LED_LIGHTNESS_PERCENT / 100  },
 };
 
 light_mode_para_t light_mode_para[] =
@@ -218,7 +220,8 @@ static void write_color(one_wire_led_t led, color_t *color)
 {
 
     //uint32_t word = ((color->r/LIGHTNESS)<<16) | ((color->g/LIGHTNESS)<<8) | color->b/LIGHTNESS;
-    uint32_t word = (((color->r/5) * 4 )<<16) | (((color->g/5) * 4 )<<8) | ((color->b/5) * 4) ;
+//    uint32_t word = (((color->r/6) * 1 )<<16) | (((color->g/6) * 1 )<<8) | ((color->b/6) * 1) ;
+    uint32_t word = (color->r << 16) | (color->g << 8) | (color->b);
     uint8_t i = one_wire_led[led].led_num;
 
 
@@ -228,7 +231,7 @@ static void write_color(one_wire_led_t led, color_t *color)
     }
 }
 
-void open_eyss(void)
+void open_eyes(void)
 {
     one_wire_led[EYES_LED].color[0] = led_color[SERIAL_LED_COLOR_WHITE_C];
 
@@ -283,7 +286,7 @@ void set_serial_leds_effect(const light_mode_t light_mode, color_t  *cur_color, 
                 one_wire_led[(one_wire_led_t)i].period = SHINE_MEDIUM_SPEED_PERIOD;
                 one_wire_led[(one_wire_led_t)i].tick = 0;
             }
-            open_eyss();
+            open_eyes();
             break;
         case LIGHTS_MODE_ERROR:
             for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
@@ -343,7 +346,6 @@ void set_serial_leds_effect(const light_mode_t light_mode, color_t  *cur_color, 
                 one_wire_led[(one_wire_led_t)i].tick = 0;
             }
 
-
             close_eyes();
             break;
         case LIGHTS_MODE_CHARGING_FULL:
@@ -374,7 +376,7 @@ void set_serial_leds_effect(const light_mode_t light_mode, color_t  *cur_color, 
                 one_wire_led[(one_wire_led_t)i].period = SHINE_MEDIUM_SPEED_PERIOD;
                 one_wire_led[(one_wire_led_t)i].tick = 0;
             }
-            open_eyss();
+            open_eyes();
             break;
         case LIGHTS_MODE_TURN_RIGHT:
             for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
@@ -393,7 +395,7 @@ void set_serial_leds_effect(const light_mode_t light_mode, color_t  *cur_color, 
                 one_wire_led[(one_wire_led_t)i].period = SHINE_MEDIUM_SPEED_PERIOD;
                 one_wire_led[(one_wire_led_t)i].tick = 0;
             }
-            open_eyss();
+            open_eyes();
             break;
         case LIGHTS_MODE_EMERGENCY_STOP:
             for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
@@ -414,7 +416,7 @@ void set_serial_leds_effect(const light_mode_t light_mode, color_t  *cur_color, 
                 one_wire_led[(one_wire_led_t)i].period = period * 10;
                 one_wire_led[(one_wire_led_t)i].tick = 0;
             }
-            open_eyss();
+            open_eyes();
             break;
         default :
             break;
