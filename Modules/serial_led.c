@@ -14,15 +14,6 @@ __IO uint32_t back_right_buff[BACK_RIGHT_LED_NUM] = {0};
 __IO uint32_t back_left_buff[BACK_LEFT_LED_NUM] = {0};
 __IO uint32_t eyes_buff[EYES_LED_NUM] = {0};
 
-color_t charge_color[] =
-{
-    [0]     = {255, 0  , 0  },  //RED_C
-    [1]     = {255, 165, 0  },  //ORANGE_C
-    [2]     = {0  , 255, 0  },  //GREEN_C
-    [3]     = {255, 255, 255},  //WHITE_C
-    [4]     = {0  , 255, 255},  //CYAN_C
-
-};
 
 #define LED_LIGHTNESS_PERCENT   50
 color_t led_color[] =
@@ -81,16 +72,16 @@ color_t  back_right_color[3] =
     [2]     = {255, 165, 0  },  //ORANGE_C
 
 };
-color_t  left_eye_color[2] =
-{
-    [0]     = {255, 255, 255},  //WHITE_C
-    [1]     = {0  , 0  , 0  },  //NONE_C
-};
-color_t  right_eye_color[2] =
-{
-    [0]     = {255, 255, 255},  //WHITE_C
-    [1]     = {0  , 0  , 0  },  //NONE_C
-};
+//color_t  left_eye_color[2] =
+//{
+//    [0]     = {255, 255, 255},  //WHITE_C
+//    [1]     = {0  , 0  , 0  },  //NONE_C
+//};
+//color_t  right_eye_color[2] =
+//{
+//    [0]     = {255, 255, 255},  //WHITE_C
+//    [1]     = {0  , 0  , 0  },  //NONE_C
+//};
 
 one_wire_led_para_t one_wire_led[] =
 {
@@ -135,16 +126,16 @@ one_wire_led_para_t one_wire_led[] =
         .start_time         = 0,
     },
 
-    [EYES_LED] =
-    {
-        .gpio               = PLATFORM_GPIO_SERIAL_LED_EYES,
-        .color              = right_eye_color,
-        .color_number       = 1,
-        .period             = 5 * OS_TICKS_PER_SEC / 10,
-        .data_buf           = eyes_buff,
-        .led_num            = EYES_LED_NUM,
-        .start_time         = 0,
-    },
+//    [EYES_LED] =
+//    {
+//        .gpio               = PLATFORM_GPIO_SERIAL_LED_EYES,
+//        .color              = right_eye_color,
+//        .color_number       = 1,
+//        .period             = 5 * OS_TICKS_PER_SEC / 10,
+//        .data_buf           = eyes_buff,
+//        .led_num            = EYES_LED_NUM,
+//        .start_time         = 0,
+//    },
 };
 
 
@@ -233,17 +224,17 @@ static void write_color(one_wire_led_t led, color_t *color)
 
 void open_eyes(void)
 {
-    one_wire_led[EYES_LED].color[0] = led_color[SERIAL_LED_COLOR_WHITE_C];
+//    one_wire_led[EYES_LED].color[0] = led_color[SERIAL_LED_COLOR_WHITE_C];
 
-    one_wire_led[EYES_LED].color_number = 1;
+//    one_wire_led[EYES_LED].color_number = 1;
 
 }
 
 void close_eyes(void)
 {
-    one_wire_led[EYES_LED].color[0] = led_color[SERIAL_LED_COLOR_NONE_C];
+//    one_wire_led[EYES_LED].color[0] = led_color[SERIAL_LED_COLOR_NONE_C];
 
-    one_wire_led[EYES_LED].color_number = 1;
+//    one_wire_led[EYES_LED].color_number = 1;
 
 }
 
@@ -432,16 +423,15 @@ void serial_leds_tick(void)
         {
             one_wire_led[i].tick++;
             one_wire_led[i].start_time = get_tick();
-        }
 
-        if(one_wire_led[i].color_number <= sizeof(charge_color) / sizeof(charge_color[0]))
-        {
-            write_color((one_wire_led_t)i, &(one_wire_led[i].color[one_wire_led[i].tick % one_wire_led[i].color_number]));
-#if 1
-//            __disable_irq();
-            send_rgb_data((one_wire_led_t)i);
-//            __enable_irq();
-#endif
+//            if(one_wire_led[i].color_number <= sizeof(one_wire_led[i].color) / sizeof(color_t))
+            if(one_wire_led[i].color_number <= 2)
+            {
+                write_color((one_wire_led_t)i, &(one_wire_led[i].color[one_wire_led[i].tick % one_wire_led[i].color_number]));
+//                __disable_irq();
+                send_rgb_data((one_wire_led_t)i);
+//                __enable_irq();
+            }
         }
     }
 }

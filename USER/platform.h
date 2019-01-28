@@ -285,4 +285,5 @@ uint32_t get_module_power_state(uint32_t power_en);
 void led_mcu_ctrl_init_and_power_on(void);
 void led_mcu_ctrl_deinit_and_power_off(void);
 
+
 #endif

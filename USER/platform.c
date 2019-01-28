@@ -128,10 +128,9 @@ const platform_gpio_t platform_gpio_pins[] =
     [PLATFORM_GPIO_FAN_12V_DC_CTRL]     = { GPIOA, GPIO_Pin_15},
     [PLATFORM_GPIO_BEEPER_CTRL]         = { GPIOB, GPIO_Pin_0 },
 
-    [PLATFORM_GPIO_SERIAL_LED_FRONT_LEFT] = {GPIOA, GPIO_Pin_0},
-    [PLATFORM_GPIO_SERIAL_LED_FRONT_RIGHT] = {GPIOA, GPIO_Pin_1},
-//    [PLATFORM_GPIO_SERIAL_LED_FRONT_LEFT] = {GPIOA, GPIO_Pin_1},
-//    [PLATFORM_GPIO_SERIAL_LED_FRONT_RIGHT] = {GPIOA, GPIO_Pin_0},
+    [PLATFORM_GPIO_SERIAL_LED_FRONT_LEFT] = {GPIOA, GPIO_Pin_1},
+    [PLATFORM_GPIO_SERIAL_LED_FRONT_RIGHT] = {GPIOA, GPIO_Pin_0},
+
     [PLATFORM_GPIO_SERIAL_LED_BACK_RIGHT] = {GPIOA, GPIO_Pin_6},
     [PLATFORM_GPIO_SERIAL_LED_BACK_LEFT] = {GPIOA, GPIO_Pin_7},
     [PLATFORM_GPIO_SERIAL_LED_EYES]     = {GPIOA, GPIO_Pin_5},
@@ -943,7 +942,7 @@ void hardware_init(void)
     platform_gpio_init();
     bat_uart_init();
     led_init();
-    can_init();
+    init_can1();
     ir_led_pwm_ctrl(20);
 //    ir_led_pwm_init();
     test_hardware_version = get_hardware_version();

@@ -39,5 +39,6 @@ typedef union
 }can_data_union;
 
 extern void can_long_buf_init(void);
-extern uint8_t can_init(void);
+extern uint8_t init_can1(void);
+void deinit_can1(void);
 #endif

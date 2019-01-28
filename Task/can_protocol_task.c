@@ -413,7 +413,7 @@ void can_protocol_task(void *pdata)
         uint16_t tx_len = 0;
         uint8_t rx_len = 0;
 
-        can_rcv_buf = (can_pkg_t *)OSQPend(can_rcv_buf_queue_handle, 0, &err);
+        can_rcv_buf = (can_pkg_t *)OSQPend(can_rcv_buf_queue_handle, 5 * OS_TICKS_PER_SEC, &err);
         if(err == OS_ERR_NONE)
         {
             memcpy(rx_buf.can_data,  can_rcv_buf->data.can_data, can_rcv_buf->len);
@@ -514,6 +514,11 @@ void can_protocol_task(void *pdata)
                     }
                 }
             }
+        }
+        else
+        {
+            deinit_can1();
+            init_can1();
         }
     }
 

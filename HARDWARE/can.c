@@ -10,7 +10,12 @@
 
 #include "can.h"
 
-uint8_t can_init(void)
+void deinit_can1(void)
+{
+    CAN_DeInit(CAN1);
+}
+
+uint8_t init_can1(void)
 {
     //////-- CAN GPIO Init --//////
     GPIO_InitTypeDef GPIO_InitStructure;
