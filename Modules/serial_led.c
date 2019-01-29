@@ -19,7 +19,7 @@ __IO uint32_t eyes_buff[EYES_LED_NUM] = {0};
 color_t led_color[] =
 {
     [SERIAL_LED_COLOR_RED_C]       = {255 * LED_LIGHTNESS_PERCENT / 100,     0 * LED_LIGHTNESS_PERCENT / 100  ,     0 * LED_LIGHTNESS_PERCENT / 100},
-    [SERIAL_LED_COLOR_GREEN_C]     = {0 * LED_LIGHTNESS_PERCENT / 100  ,    255 * LED_LIGHTNESS_PERCENT / 100,      0 * LED_LIGHTNESS_PERCENT / 100},
+    [SERIAL_LED_COLOR_GREEN_C]     = {0 * LED_LIGHTNESS_PERCENT / 100  ,    200 * LED_LIGHTNESS_PERCENT / 100,      0 * LED_LIGHTNESS_PERCENT / 100},
     [SERIAL_LED_COLOR_BLUE_C]      = {0 * LED_LIGHTNESS_PERCENT / 100  ,    0 * LED_LIGHTNESS_PERCENT / 100  ,      255 * LED_LIGHTNESS_PERCENT / 100},
     [SERIAL_LED_COLOR_ORANGE_C]    = {0xc8 * LED_LIGHTNESS_PERCENT / 100,   0x32 * LED_LIGHTNESS_PERCENT / 100,     0x00 * LED_LIGHTNESS_PERCENT / 100},
     [SERIAL_LED_COLOR_WHITE_C]     = {255 * LED_LIGHTNESS_PERCENT / 100,    255 * LED_LIGHTNESS_PERCENT / 100,      255 * LED_LIGHTNESS_PERCENT / 100},
@@ -241,6 +241,7 @@ void close_eyes(void)
 #define SHINE_HIGH_SPEED_PERIOD         3 * OS_TICKS_PER_SEC / 10
 #define SHINE_MEDIUM_SPEED_PERIOD       6 * OS_TICKS_PER_SEC / 10
 #define SHINE_LOW_SPEED_PERIOD          1 * OS_TICKS_PER_SEC
+#define UPDATE_PERIOD                   1 * OS_TICKS_PER_SEC
 void set_serial_leds_effect(const light_mode_t light_mode, color_t  *cur_color, const uint8_t period)
 {
     static  light_mode_t pre_mode = LIGHTS_MODE_NONE;
@@ -345,6 +346,7 @@ void set_serial_leds_effect(const light_mode_t light_mode, color_t  *cur_color, 
             {
                 one_wire_led[(one_wire_led_t)i].color[0] = led_color[SERIAL_LED_COLOR_GREEN_C];
                 one_wire_led[(one_wire_led_t)i].color_number = 1;
+                one_wire_led[(one_wire_led_t)i].period = UPDATE_PERIOD;
                 one_wire_led[(one_wire_led_t)i].tick = 0;
             }
 
@@ -393,6 +395,7 @@ void set_serial_leds_effect(const light_mode_t light_mode, color_t  *cur_color, 
             {
                 one_wire_led[(one_wire_led_t)i].color[0] = led_color[SERIAL_LED_COLOR_RED_C];//led_color[WHITE_C];
                 one_wire_led[(one_wire_led_t)i].color_number = 1;
+                one_wire_led[(one_wire_led_t)i].period = UPDATE_PERIOD;
                 one_wire_led[(one_wire_led_t)i].tick = 0;
             }
             close_eyes();
@@ -412,7 +415,6 @@ void set_serial_leds_effect(const light_mode_t light_mode, color_t  *cur_color, 
         default :
             break;
     }
-
 }
 
 void serial_leds_tick(void)
@@ -424,7 +426,6 @@ void serial_leds_tick(void)
             one_wire_led[i].tick++;
             one_wire_led[i].start_time = get_tick();
 
-//            if(one_wire_led[i].color_number <= sizeof(one_wire_led[i].color) / sizeof(color_t))
             if(one_wire_led[i].color_number <= 2)
             {
                 write_color((one_wire_led_t)i, &(one_wire_led[i].color[one_wire_led[i].tick % one_wire_led[i].color_number]));

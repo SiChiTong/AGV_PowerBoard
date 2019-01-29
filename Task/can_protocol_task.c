@@ -392,7 +392,7 @@ void can_long_buf_init(void)
 uint32_t can_comm_start_time;
 
 #define CAN_COM_TIME_OUT    5 * OS_TICKS_PER_SEC
-static uint32_t can_com_start_time = 0;
+
 
 
 OS_STK can_protocol_task_stk[CAN_PROTOCOL_TASK_STK_SIZE];
@@ -424,7 +424,6 @@ void can_protocol_task(void *pdata)
             OSMemPut(can_rcv_buf_mem_handle, can_rcv_buf);
             if(id.can_id_t.dest_mac_id == POWERBOARD_CAN_MAC_SRC_ID)
             {
-                can_com_start_time = get_tick();
                 if(rx_buf.can_data_t.seg_polo == ONLYONCE)
                 {
                     //if((id.canx_id_t.source_id < SOURCE_ID_PREPARE_UPDATE) && (id.canx_id_t.source_id > SOURCE_ID_CHECK_TRANSMIT))
