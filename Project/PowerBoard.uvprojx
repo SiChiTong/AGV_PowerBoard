@@ -444,6 +444,11 @@
               <FileType>1</FileType>
               <FilePath>..\Task\serial_led_task.c</FilePath>
             </File>
+            <File>
+              <FileName>conveyor_belt_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Task\conveyor_belt_task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -473,6 +478,16 @@
               <FileName>serial_led.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Modules\serial_led.c</FilePath>
+            </File>
+            <File>
+              <FileName>conveyor_belt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Modules\conveyor_belt.c</FilePath>
+            </File>
+            <File>
+              <FileName>photoelectric_switch.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Modules\photoelectric_switch.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -430,7 +430,9 @@ void serial_leds_tick(void)
             {
                 write_color((one_wire_led_t)i, &(one_wire_led[i].color[one_wire_led[i].tick % one_wire_led[i].color_number]));
 //                __disable_irq();
+                OS_ENTER_CRITICAL();
                 send_rgb_data((one_wire_led_t)i);
+                OS_EXIT_CRITICAL();
 //                __enable_irq();
             }
         }

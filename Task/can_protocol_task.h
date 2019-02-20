@@ -65,6 +65,8 @@ void can_send_task(void *pdata);
 #define CAN_SOURCE_ID_REMOTE_POWRER_CTRL            0x8b
 #define CAN_SOURCE_ID_GET_SERIALS_LEDS_VERSION      0x8c
 
+#define CAN_SOURCE_ID_SET_CONVEYOR_BELT_DIRCTION    0xa0
+
 
 #define CAN_ONE_FRAME_DATA_LENTH    7
 #define CAN_SEG_NUM_MAX             64
