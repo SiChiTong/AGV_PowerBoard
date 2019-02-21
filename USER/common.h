@@ -10,12 +10,14 @@
 #include "switch_task.h"
 #include "charge_task.h"
 #include "serial_led_task.h"
+#include "conveyor_belt_task.h"
 
 typedef enum
 {
     CAN_SEND_TASK_PRIO = 5,
     CAN_RPOTOCOL_TASK_PRIO,
     CHARGE_TASK_PRIO,
+    CONVEYOR_BELT_PRIO,
     BATTERY_TASK_PRIO,
     SERIAL_LED_TASK_PRIO,
     SWITCH_TASK_PRIO,
@@ -27,7 +29,6 @@ typedef enum
 
 void os_user_config(void);
 void user_init_depend_on_os_config(void);
-extern OS_MEM *fp_rcv_mem_handle;
 
 
 uint32_t get_tick(void);

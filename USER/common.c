@@ -5,8 +5,6 @@
 
 #include "common.h"
 
-extern void falsh_test_task(void *pdata);
-
 static void task_create(void)
 {
     OSTaskCreate(indicator_led_task,        (void *)0,  (OS_STK*)&indicator_led_task_stk[INDICATOR_LED_STK_SIZE - 1],                       INDICATOR_LED_TASK_PRIO);
@@ -19,6 +17,7 @@ static void task_create(void)
     OSTaskCreate(charge_task,               (void *)0,  (OS_STK*)&charge_task_stk[CHARGE_TASK_STK_SIZE - 1],                                CHARGE_TASK_PRIO);
     OSTaskCreate(can_send_task,             (void *)0,  (OS_STK*)&can_send_task_stk[CAN_SEND_TASK_STK_SIZE - 1],                            CAN_SEND_TASK_PRIO);
     OSTaskCreate(serial_led_task,           (void *)0,  (OS_STK*)&serial_led_task_stk[SERIAL_LED_TASK_STK_SIZE - 1],                        SERIAL_LED_TASK_PRIO);
+    OSTaskCreate(conveyor_belt_task,        (void *)0,  (OS_STK*)&conveyor_belt_task_stk[CONVEYOR_BELT_TASK_STK_SIZE - 1],                  CONVEYOR_BELT_PRIO);
 
 }
 

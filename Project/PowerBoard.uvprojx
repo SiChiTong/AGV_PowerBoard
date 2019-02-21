@@ -489,6 +489,11 @@
               <FileType>1</FileType>
               <FilePath>..\Modules\photoelectric_switch.c</FilePath>
             </File>
+            <File>
+              <FileName>motor_driver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Modules\motor_driver.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

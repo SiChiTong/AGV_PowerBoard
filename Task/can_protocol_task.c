@@ -17,6 +17,7 @@
 #include "battery.h"
 #include "serial_led.h"
 #include "power_on_off_task.h"
+#include "conveyor_belt.h"
 
 //#define CanProtocolLog(format, ...)  custom_log("can protocol", format, ##__VA_ARGS__)
 
@@ -154,6 +155,21 @@ void upload_sys_state(void)
     send_can_msg(&can_buf);
 }
 
+void upload_conveyor_belt_status(uint8_t status)
+{
+    can_id_union id;
+    can_buf_t can_buf;
+    id.can_id_t.ack = 0;
+    id.can_id_t.dest_mac_id = 0;////
+    id.can_id_t.func_id = CAN_FUN_ID_TRIGGER;
+    id.can_id_t.source_id = CAN_SOURCE_ID_SET_CONVEYOR_BELT_DIRCTION;
+    id.can_id_t.src_mac_id = POWERBOARD_CAN_MAC_SRC_ID;////
+    can_buf.id = id.canx_id;
+    can_buf.data_len = 1;
+    can_buf.data[0] = status;
+    send_can_msg(&can_buf);
+}
+
 uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, uint8_t *data_out)
 {
     id->can_id_t.ack = 1;
@@ -274,7 +290,6 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
 
                 case CAN_SOURCE_ID_SET_IR_LED_LIGHTNESS:
                     {
-#if 1
                         uint8_t duty = data_in[0];
                         if(duty > 100)
                         {
@@ -285,8 +300,6 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
                         data_out[0] = data_in[0];
                         data_out[1] = duty;
                         return 2;
-#endif
-
                     }
 
                 case CAN_SOURCE_ID_SET_LED_EFFECT:
@@ -336,6 +349,56 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
                 case CAN_SOURCE_ID_GET_SERIALS_LEDS_VERSION:
 //                    get_serials_leds_version();
                     break;
+                case CAN_SOURCE_ID_SET_CONVEYOR_BELT_DIRCTION:
+                {
+                    if(data_len == 1)
+                    {
+                        if(data_in[0] <= CONVEYOR_BELT_STATUS_UNLOAD)
+                        {
+                            if(data_in[0] == CONVEYOR_BELT_STATUS_STOP)
+                            {
+                                if(set_conveyor_belt_stop())
+                                {
+                                    data_out[0] = 0x01; //successful
+                                    data_out[1] = CONVEYOR_BELT_STATUS_STOP;
+                                    data_out[2] = 0;
+                                }
+                            }
+                            else if(data_in[0] == CONVEYOR_BELT_STATUS_LOAD)
+                            {
+                                if(set_conveyor_belt_load())
+                                {
+                                    data_out[0] = 0x01; //successful
+                                    data_out[1] = CONVEYOR_BELT_STATUS_LOAD;
+                                    data_out[2] = 0;
+                                }
+                                else
+                                {
+                                    data_out[0] = 0x00; //failed
+                                    data_out[1] = CONVEYOR_BELT_STATUS_LOAD;
+                                    data_out[2] = CONVEYOR_BELT_STATUS_ERROR;
+                                }
+                            }
+                            else if(data_in[0] == CONVEYOR_BELT_STATUS_UNLOAD)
+                            {
+                                if(set_conveyor_belt_unload())
+                                {
+                                    data_out[0] = 0x01; //successful
+                                    data_out[1] = CONVEYOR_BELT_STATUS_UNLOAD;
+                                    data_out[2] = 0;
+                                }
+                                else
+                                {
+                                    data_out[0] = 0x00; //failed
+                                    data_out[1] = CONVEYOR_BELT_STATUS_UNLOAD;
+                                    data_out[2] = CONVEYOR_BELT_STATUS_ERROR;
+                                }
+                            }
+                            return 3;
+                        }   
+                    }
+                    return 0;
+                }
                 default :
                     break;
             }

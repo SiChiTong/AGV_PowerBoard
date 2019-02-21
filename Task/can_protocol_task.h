@@ -128,5 +128,6 @@ void can_long_buf_init(void);
 int send_can_msg(can_buf_t *can_msg);
 
 void upload_sys_state(void);
+void upload_conveyor_belt_status(uint8_t status);
 
 #endif

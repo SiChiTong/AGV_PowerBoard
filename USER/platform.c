@@ -135,6 +135,10 @@ const platform_gpio_t platform_gpio_pins[] =
     [PLATFORM_GPIO_SERIAL_LED_BACK_LEFT] = {GPIOA, GPIO_Pin_7},
     [PLATFORM_GPIO_SERIAL_LED_EYES]     = {GPIOA, GPIO_Pin_5},
 
+
+    [PLATFORM_GPIO_PHO_SWITCH_1]        = {GPIOA, GPIO_Pin_1},
+    [PLATFORM_GPIO_PHO_SWITCH_2]        = {GPIOA, GPIO_Pin_2},
+    [PLATFORM_GPIO_PHO_SWITCH_3]        = {GPIOA, GPIO_Pin_3},
 };
 
 
@@ -280,6 +284,18 @@ static void init_set_gpio(void)
     GPIO_SetBits(GPIOD, GPIO_Pin_10 | GPIO_Pin_13 | GPIO_Pin_14);
     GPIO_SetBits(GPIOE, GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9 /*| GPIO_Pin_11 | GPIO_Pin_10*/);
     GPIO_SetBits(GPIOG, GPIO_Pin_2 | GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_8);
+}
+
+static void pho_switch_init(void)
+{
+    GPIO_InitTypeDef  GPIO_InitStructure;
+    /*GPIO_A*/
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+
 }
 
 static void platform_gpio_init(void)
