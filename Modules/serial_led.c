@@ -142,24 +142,19 @@ one_wire_led_para_t one_wire_led[] =
 static inline void write_bit_0(platform_gpio_e gpio)
 {
     serial_led_output_high(gpio);
-    delay_40ns();
+    delay_high_0();
 
     serial_led_output_low(gpio);
-    delay_200ns();
-//    delay_500ns();
-    delay_450ns();
+    delay_low_0();
 }
 
 static inline void write_bit_1(platform_gpio_e gpio)
 {
     serial_led_output_high(gpio);
-//    delay_500ns();
-    delay_300ns();
+    delay_high_1();
 
     serial_led_output_low(gpio);
-//    delay_500ns();
-//    delay_300ns();
-    delay_450ns();
+    delay_low_1();
 }
 
 

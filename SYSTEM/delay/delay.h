@@ -7,17 +7,7 @@ void delay_ms(u16 nms);
 void delay_us(u32 nus);
 
 
-
-
-
-
 #define asm            __asm
-//#define delay_300ns()     do {asm("nop");asm("nop");asm("nop");asm("nop");\
-//                              asm("nop");asm("nop");asm("nop");asm("nop");\
-//                              asm("nop");asm("nop");asm("nop");asm("nop");\
-//                              asm("nop");asm("nop");asm("nop");asm("nop");\
-//                              asm("nop");asm("nop");asm("nop");asm("nop");\
-//                              asm("nop");asm("nop");} while(1==0)
 
 #define delay_300ns()     do {asm("nop");asm("nop");asm("nop");asm("nop");\
                               asm("nop");asm("nop");asm("nop");asm("nop");\
@@ -39,45 +29,30 @@ void delay_us(u32 nus);
                                asm("nop");asm("nop");asm("nop");asm("nop");\
                                asm("nop");asm("nop");} while(1==0)
 
-#define delay_200ns()     do {asm("nop");asm("nop");asm("nop");asm("nop");\
-                              asm("nop");asm("nop");asm("nop");asm("nop");\
-                              asm("nop");asm("nop");asm("nop");asm("nop");\
-                              asm("nop");asm("nop");\
+#define delay_high_0()      do {\
+                                asm("nop");asm("nop");asm("nop");\
+                                } while(1==0)
+
+#define delay_low_0()       do {\
+                                asm("nop");asm("nop");asm("nop");asm("nop");\
+                                asm("nop");asm("nop");asm("nop");asm("nop");\
+                                asm("nop");asm("nop");asm("nop");asm("nop");\
+                                asm("nop");asm("nop");asm("nop");asm("nop");\
                               } while(1==0)
 
-#define delay_40ns()     do {\
-                              asm("nop");asm("nop");asm("nop");\
-                              } while(1==0)
+#define delay_high_1()        do {\
+                                asm("nop");asm("nop");asm("nop");asm("nop");\
+                                asm("nop");asm("nop");asm("nop");asm("nop");\
+                                asm("nop");asm("nop");asm("nop");asm("nop");\
+                                asm("nop");asm("nop");asm("nop");asm("nop");\
+                                asm("nop");asm("nop");asm("nop");asm("nop");\
+                                asm("nop");asm("nop");asm("nop");asm("nop");\
+                                asm("nop");asm("nop");asm("nop");asm("nop");\
+                                asm("nop");asm("nop");asm("nop");\
+                                } while(1==0)
 
-#define delay_500ns()     do { asm("nop");asm("nop");asm("nop");asm("nop");\
-                               asm("nop");asm("nop");asm("nop");asm("nop");\
-                               asm("nop");asm("nop");asm("nop");asm("nop");\
-                               asm("nop");asm("nop");asm("nop");asm("nop");\
-                               asm("nop");asm("nop");asm("nop");asm("nop");\
-                               asm("nop");asm("nop");asm("nop");asm("nop");\
-                               asm("nop");asm("nop");asm("nop");asm("nop");\
-                               asm("nop");asm("nop");asm("nop");asm("nop");\
-                               asm("nop");asm("nop");asm("nop");asm("nop");\
-                            } while(1==0)
-
-//#define delay_450ns()     do { asm("nop");asm("nop");asm("nop");asm("nop");\
-//                               asm("nop");asm("nop");asm("nop");asm("nop");\
-//                               asm("nop");asm("nop");asm("nop");asm("nop");\
-//                               asm("nop");asm("nop");asm("nop");asm("nop");\
-//                               asm("nop");asm("nop");asm("nop");asm("nop");\
-//                               asm("nop");asm("nop");asm("nop");asm("nop");\
-//                               asm("nop");asm("nop");asm("nop");asm("nop");\
-//                               asm("nop");asm("nop");asm("nop");asm("nop");\
-//                            } while(1==0)
-
-#define delay_450ns()     do { asm("nop");asm("nop");asm("nop");asm("nop");\
+#define delay_low_1()       do {\
                             asm("nop");asm("nop");asm("nop");asm("nop");\
-                            asm("nop");asm("nop");asm("nop");asm("nop");\
-                            asm("nop");asm("nop");asm("nop");asm("nop");\
-                            asm("nop");asm("nop");asm("nop");asm("nop");\
-                            asm("nop");asm("nop");asm("nop");asm("nop");\
-                            asm("nop");asm("nop");asm("nop");asm("nop");\
-                            asm("nop");asm("nop");\
                             } while(1==0)
 
 #define delay_us_ex(n)       do {\
