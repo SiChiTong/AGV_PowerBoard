@@ -4,8 +4,8 @@
 #include "ucos_ii.h"
 
 #define POWER_ON_OFF_STK_SIZE           128
-#define X86_POWER_ON_OFF_STK_SIZE       64
-#define RK_POWER_ON_OFF_STK_SIZE        64
+#define X86_POWER_ON_OFF_STK_SIZE       128
+#define RK_POWER_ON_OFF_STK_SIZE        128
 
 extern OS_STK power_on_off_stk[POWER_ON_OFF_STK_SIZE];
 extern OS_STK x86_power_on_off_stk[X86_POWER_ON_OFF_STK_SIZE];

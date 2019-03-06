@@ -12,7 +12,7 @@
 #include "ucos_ii.h"
 #include "can_fifo.h"
 #define CAN_PROTOCOL_TASK_STK_SIZE  1024
-#define CAN_SEND_TASK_STK_SIZE      256
+#define CAN_SEND_TASK_STK_SIZE      512
 extern OS_STK can_protocol_task_stk[CAN_PROTOCOL_TASK_STK_SIZE];
 extern OS_STK can_send_task_stk[CAN_SEND_TASK_STK_SIZE];
 void can_protocol_task(void *pdata);
@@ -65,7 +65,6 @@ void can_send_task(void *pdata);
 #define CAN_SOURCE_ID_REMOTE_POWRER_CTRL            0x8b
 #define CAN_SOURCE_ID_GET_SERIALS_LEDS_VERSION      0x8c
 
-#define CAN_SOURCE_ID_SET_CONVEYOR_BELT_DIRCTION    0xa0
 
 
 #define CAN_ONE_FRAME_DATA_LENTH    7

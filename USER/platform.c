@@ -135,10 +135,6 @@ const platform_gpio_t platform_gpio_pins[] =
     [PLATFORM_GPIO_SERIAL_LED_BACK_LEFT] = {GPIOA, GPIO_Pin_7},
     [PLATFORM_GPIO_SERIAL_LED_EYES]     = {GPIOA, GPIO_Pin_5},
 
-
-    [PLATFORM_GPIO_PHO_SWITCH_1]        = {GPIOA, GPIO_Pin_1},
-    [PLATFORM_GPIO_PHO_SWITCH_2]        = {GPIOA, GPIO_Pin_2},
-    [PLATFORM_GPIO_PHO_SWITCH_3]        = {GPIOA, GPIO_Pin_3},
 };
 
 
@@ -286,17 +282,6 @@ static void init_set_gpio(void)
     GPIO_SetBits(GPIOG, GPIO_Pin_2 | GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_8);
 }
 
-static void pho_switch_init(void)
-{
-    GPIO_InitTypeDef  GPIO_InitStructure;
-    /*GPIO_A*/
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-}
 
 static void platform_gpio_init(void)
 {
@@ -308,10 +293,6 @@ static void platform_gpio_init(void)
     charge_gpio_init();
 }
 
-//static void switch_init(void)
-//{
-
-//}
 
 uint8_t get_switch_state(void)
 {
@@ -364,7 +345,6 @@ void led_mcu_power_ctrl(uint8_t on_off)
         GPIO_SetBits(GPIOE, GPIO_Pin_10);
     }
 }
-
 
 void led_mcu_rst_ctrl(uint8_t on_off)
 {
@@ -426,6 +406,7 @@ void main_power_module_5v_ctrl(uint8_t on_off)
         GPIO_SetBits(GPIOE, GPIO_Pin_7);
     }
 }
+
 void main_power_module_12v_ctrl(uint8_t on_off)
 {
     if(on_off == MODULE_POWER_ON)

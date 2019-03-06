@@ -81,7 +81,7 @@ void delay_ms(u16 nms)
     }
     if(nms > 0)
     {
-        delay_us((u32)(nms * 1000));    //普通方式延时,此时ucos无法启动调度.
+        delay_us_ex((u32)(nms * 1000));    //普通方式延时,此时ucos无法启动调度.
     }
 }
 #else//不用ucos时

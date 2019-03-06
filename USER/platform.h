@@ -136,11 +136,6 @@ typedef enum
     PLATFORM_GPIO_SERIAL_LED_BACK_RIGHT,
     PLATFORM_GPIO_SERIAL_LED_EYES,
 
-
-    PLATFORM_GPIO_PHO_SWITCH_1,
-    PLATFORM_GPIO_PHO_SWITCH_2,
-    PLATFORM_GPIO_PHO_SWITCH_3,
-
     PLATFORM_GPIO_MAX, /* Denotes the total number of GPIO port aliases. Not a valid GPIO alias */
     PLATFORM_GPIO_NONE,
 } platform_gpio_e;
