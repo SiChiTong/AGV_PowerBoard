@@ -37,32 +37,18 @@ const platform_gpio_t platform_gpio_pins[] =
 #endif
 
     [PLATFORM_GPIO_SYS_LED]             = { GPIOC,  GPIO_Pin_9 },
-//    [PLATFORM_GPIO_CHARGE_IN]           = { GPIOB,  GPIO_Pin_7 },
-//    [PLATFORM_GPIO_RECHARGE_IN]         = { GPIOB,  GPIO_Pin_6 },
-//    [PLATFORM_GPIO_RECHARGE_LED]        = { GPIOC,  GPIO_Pin_8 },
+
     [PLATFORM_GPIO_PWRKEY]              = { GPIOD,  GPIO_Pin_4 },
-#if 0
-    [PLATFORM_GPIO_SWITCH_EN]           = { GPIOD,  GPIO_Pin_7 },
-    [PLATFORM_GPIO_SWITCH_SEL0]         = { GPIOG,  GPIO_Pin_9 },
-    [PLATFORM_GPIO_SWITCH_SEL1]         = { GPIOG, GPIO_Pin_10 },
-    [PLATFORM_GPIO_SWITCH_SEL2]         = { GPIOG, GPIO_Pin_11 },
-    [PLATFORM_GPIO_SWITCH_SEL3]         = { GPIOG, GPIO_Pin_12 },
-#endif
 
 
 
-//    [PLATFORM_GPIO_5V_MOTOR_EN]         = { GPIOE, GPIO_Pin_2 },
-//    [PLATFORM_GPIO_5V_RECHARGE_EN]      = { GPIOE, GPIO_Pin_3 },
-//    [PLATFORM_GPIO_5V_SENSOR_BOARD_EN]  = { GPIOE, GPIO_Pin_5 },
-//    [PLATFORM_GPIO_5V_SWITCH_EN]        = { GPIOE, GPIO_Pin_14},
-//    [PLATFORM_GPIO_12V_2_1_PA_EN]       = { GPIOF, GPIO_Pin_2 },
     [PLATFORM_GPIO_12V_EXTEND_EN]       = { GPIOF, GPIO_Pin_3 },
     [PLATFORM_GPIO_12V_X86_EN]          = { GPIOF, GPIO_Pin_4 },
     [PLATFORM_GPIO_12V_NV_EN]           = { GPIOF, GPIO_Pin_5 },
     [PLATFORM_GPIO_5V_EN]               = { GPIOE,  GPIO_Pin_7 },
     [PLATFORM_GPIO_12V_EN]              = { GPIOE,  GPIO_Pin_8 },
     [PLATFORM_GPIO_24V_EN]              = { GPIOE,  GPIO_Pin_9 },
-//    [PLATFORM_GPIO_485_EN]              = { GPIOD,  GPIO_Pin_0 },
+
 
     [PLATFORM_GPIO_12V_PAD_EN]          = { GPIOF, GPIO_Pin_0 },
     [PLATFORM_GPIO_PWR_NV]              = { GPIOF, GPIO_Pin_13 },
@@ -70,47 +56,15 @@ const platform_gpio_t platform_gpio_pins[] =
     [PLATFORM_GPIO_PWR_X86]             = { GPIOG,  GPIO_Pin_0 },
     [PLATFORM_GPIO_PWR_RESERVE]         = { GPIOG,  GPIO_Pin_1 },
 
-//    [PLATFORM_GPIO_5V_ROUTER_EN]        = { GPIOG,  GPIO_Pin_7 },
+
     [PLATFORM_GPIO_VSYS_24V_NV_EN]      = { GPIOG,  GPIO_Pin_6 },
-//    [PLATFORM_GPIO_SLAM_EN]             = { GPIOG, GPIO_Pin_5 },
-//    [PLATFORM_GPIO_24V_PRINTER_EN]      = { GPIOG, GPIO_Pin_4 },
-//    [PLATFORM_GPIO_24V_EXTEND_EN]       = { GPIOG, GPIO_Pin_2 },
+
 
     [PLATFORM_GPIO_IRLED_PWM]           = { GPIOA,  GPIO_Pin_8 },
-#if 0
-    [PLATFORM_GPIO_CHARGE_ADC]          = { GPIOF, GPIO_Pin_6 },
-    [PLATFORM_GPIO_BATIN_ADC]           = { GPIOF, GPIO_Pin_7 },
-    [PLATFORM_GPIO_VBUS_ADC]            = { GPIOF, GPIO_Pin_8 },
-    [PLATFORM_GPIO_BAT_MOTOR_ADC]       = { GPIOF, GPIO_Pin_9 },
-    [PLATFORM_GPIO_MULTI_CHANNEL_ADC]   = { GPIOF, GPIO_Pin_10},
-    [PLATFORM_GPIO_12V_2_1_PA_ADC]      = { GPIOC, GPIO_Pin_0 },
-    [PLATFORM_GPIO_12V_PAD_ADC]         = { GPIOC, GPIO_Pin_1 },
-    [PLATFORM_GPIO_24V_PRINTER_ADC]     = { GPIOC, GPIO_Pin_2 },
-    [PLATFORM_GPIO_12V_X86_ADC]         = { GPIOC, GPIO_Pin_3 },
-    [PLATFORM_GPIO_5V_RES1_ADC]         = { GPIOA, GPIO_Pin_0 },
-    [PLATFORM_GPIO_VSYS_24V_NV_ADC]     = { GPIOA, GPIO_Pin_2 },
-    [PLATFORM_GPIO_12V_NV_ADC]          = { GPIOA, GPIO_Pin_3 },
-//    [PLATFORM_GPIO_48V_EXTEND_ADC]      = { GPIOA, GPIO_Pin_4 },
-    [PLATFORM_GPIO_12V_EXTEND_ADC]      = { GPIOA, GPIO_Pin_5 },
-    [PLATFORM_GPIO_RECHARGE_ADC]        = { GPIOA, GPIO_Pin_6 },
-    [PLATFORM_GPIO_24V_EXTEND_ADC]      = { GPIOA, GPIO_Pin_7 },
-    [PLATFORM_GPIO_IRLED_ADC]           = { GPIOC, GPIO_Pin_4 },
-    [PLATFORM_GPIO_5V_LEDS_ADC]         = { GPIOC, GPIO_Pin_5 },
-//    [PLATFORM_GPIO_5V_MOTOR_ADC]        = { GPIOB, GPIO_Pin_0 },
-    [PLATFORM_GPIO_24V_SLAM_ADC]        = { GPIOB, GPIO_Pin_1 },
 
-    [PLATFORM_GPIO_5V_POLE_MOTOR_ADC]   = { GPIOA, GPIO_Pin_1 },
-#endif
     [PLATFORM_GPIO_LED_MCU_POWER_EN]    = { GPIOE, GPIO_Pin_10},
     [PLATFORM_GPIO_LED_MCU_RESET]       = { GPIOE, GPIO_Pin_11},
 
-//    [PLATFORM_GPIO_CHARGE_FAN_CTRL]     = { GPIOD, GPIO_Pin_1},
-//    [PLATFORM_GPIO_FAN_1_CTRL]          = { GPIOB, GPIO_Pin_9},
-//    [PLATFORM_GPIO_FAN_2_CTRL]          = { GPIOB, GPIO_Pin_8},
-//    [PLATFORM_GPIO_FAN_3_CTRL]          = { GPIOB, GPIO_Pin_15},
-
-
-//    [PLATFORM_GPIO_5V_KEYPAD_EN]        = { GPIOE, GPIO_Pin_15},
     [PLATFORM_GPIO_CAMERA_FRONT_LED_EN] = { GPIOG, GPIO_Pin_13},
     [PLATFORM_GPIO_CAMERA_BACK_LED_EN]  = { GPIOG, GPIO_Pin_14},
     [PLATFORM_GPIO_PWR_CTRL_OUT]        = { GPIOD, GPIO_Pin_10},
@@ -134,6 +88,8 @@ const platform_gpio_t platform_gpio_pins[] =
     [PLATFORM_GPIO_SERIAL_LED_BACK_RIGHT] = {GPIOA, GPIO_Pin_6},
     [PLATFORM_GPIO_SERIAL_LED_BACK_LEFT] = {GPIOA, GPIO_Pin_7},
     [PLATFORM_GPIO_SERIAL_LED_EYES]     = {GPIOA, GPIO_Pin_5},
+
+    [PLATFORM_GPIO_EVENT_BUTTON]        = {GPIOD, GPIO_Pin_6},
 
 };
 
@@ -282,6 +238,17 @@ static void init_set_gpio(void)
     GPIO_SetBits(GPIOG, GPIO_Pin_2 | GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_8);
 }
 
+static void event_button_init(void)
+{
+    GPIO_InitTypeDef  GPIO_InitStructure;
+
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+    GPIO_Init(GPIOD, &GPIO_InitStructure);
+}
+
+
 
 static void platform_gpio_init(void)
 {
@@ -291,12 +258,18 @@ static void platform_gpio_init(void)
 
     input_gpio_init();
     charge_gpio_init();
+    event_button_init();
 }
 
 
 uint8_t get_switch_state(void)
 {
     return GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_11);
+}
+
+uint8_t get_event_buttton_state(void)
+{
+    return GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_6);
 }
 
 void hold_on_power(void)

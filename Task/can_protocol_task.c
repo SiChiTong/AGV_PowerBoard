@@ -38,6 +38,12 @@ OS_MEM *can_rcv_buf_mem_handle;
 OS_EVENT *can_rcv_buf_queue_handle;
 void* can_rcv_buf_queue_p[CAN_RCV_BUF_QUEUE_NUM] = {0};
 
+can_upload_ack_t can_upload_ack_mem[CAN_UPLOAD_ACK_SIZE][1] = {{0}};
+OS_MEM *can_upload_ack_mem_handle;
+
+OS_EVENT *can_upload_ack_queue_handle;
+void* can_upload_ack_queue_p[CAN_UPLOAD_ACK_QUEUE_NUM] = {0};
+
 
 #define ONLYONCE       0x00
 #define BEGIN         0x01
@@ -154,6 +160,21 @@ void upload_sys_state(void)
     send_can_msg(&can_buf);
 }
 
+
+void upload_event_button_state(void)
+{
+    can_id_union id;
+    can_buf_t can_buf;
+    id.can_id_t.ack = 0;
+    id.can_id_t.dest_mac_id = 0;////
+    id.can_id_t.func_id = CAN_FUN_ID_TRIGGER;
+    id.can_id_t.source_id = CAN_SOURCE_ID_EVENT_BUTTON;
+    id.can_id_t.src_mac_id = POWERBOARD_CAN_MAC_SRC_ID;////
+    can_buf.id = id.canx_id;
+    can_buf.data[0] = sys_status->event_button_state;
+    can_buf.data_len = 1;
+    send_can_msg(&can_buf);
+}
 
 uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, uint8_t *data_out)
 {
@@ -402,6 +423,7 @@ void can_protocol_task(void *pdata)
     can_data_union rx_buf = {0};
     can_buf_t can_buf;
     can_pkg_t *can_rcv_buf;
+    can_upload_ack_t *can_upload_ack;
     uint8_t err = 0;
     delay_ms(500);
     while(1)
@@ -423,94 +445,112 @@ void can_protocol_task(void *pdata)
             OSMemPut(can_rcv_buf_mem_handle, can_rcv_buf);
             if(id.can_id_t.dest_mac_id == POWERBOARD_CAN_MAC_SRC_ID)
             {
-                if(rx_buf.can_data_t.seg_polo == ONLYONCE)
+                if(id.can_id_t.ack == 1)
                 {
-                    //if((id.canx_id_t.source_id < SOURCE_ID_PREPARE_UPDATE) && (id.canx_id_t.source_id > SOURCE_ID_CHECK_TRANSMIT))
+                    can_upload_ack = (can_upload_ack_t *)OSMemGet(can_upload_ack_mem_handle, &err);
+                    if(err == OS_ERR_NONE)
                     {
-                        //process the data here//
-                        tx_len = CmdProcessing(&id, rx_buf.can_data_t.data, rx_len - 1, CanTxdataBuff);
-                        //process the data here//
-                        if(tx_len > 0)
+                        can_upload_ack->id.canx_id = id.canx_id;
+                        if(rx_len >= 2)
                         {
-                            Can1_TX(id.canx_id, CanTxdataBuff, tx_len);
-                            can_buf.data_len = tx_len;
-                            can_buf.id = id.canx_id;
-                            memcpy(can_buf.data, CanTxdataBuff, tx_len);
-                            send_can_msg(&can_buf);
+                            can_upload_ack->serial_num = rx_buf.can_data_t.data[rx_len - 2];
+                            OSQPost(can_upload_ack_queue_handle, (void *)can_upload_ack);
+                        }
+                    }
+
+                }
+                else
+                {
+                    if(rx_buf.can_data_t.seg_polo == ONLYONCE)
+                    {
+                        //if((id.canx_id_t.source_id < SOURCE_ID_PREPARE_UPDATE) && (id.canx_id_t.source_id > SOURCE_ID_CHECK_TRANSMIT))
+                        {
+                            //process the data here//
+                            tx_len = CmdProcessing(&id, rx_buf.can_data_t.data, rx_len - 1, CanTxdataBuff);
+                            //process the data here//
+                            if(tx_len > 0)
+                            {
+                                Can1_TX(id.canx_id, CanTxdataBuff, tx_len);
+                                can_buf.data_len = tx_len;
+                                can_buf.id = id.canx_id;
+                                memcpy(can_buf.data, CanTxdataBuff, tx_len);
+                                send_can_msg(&can_buf);
+                            }
+
+                            //CanTX(MICO_CAN1, id.canx_id, test_data, sizeof(test_data));
+                        }
+                    }
+                    else //long frame
+                    {
+                        for(uint8_t i = 0; i < CAN_LONG_BUF_NUM; i++)
+                        {
+                            if(can_long_frame_buf->can_rcv_buf[i].used_len > 0)
+                            {
+                                if(get_tick() - can_long_frame_buf->can_rcv_buf[i].start_time > CAN_LONG_FRAME_TIME_OUT)
+                                {
+                                    can_long_frame_buf->free_buf(i);
+                                    printf("LONG FRAME RCV TIMEOUT! ! ! !\r\n");
+                                }
+                            }
                         }
 
-                        //CanTX(MICO_CAN1, id.canx_id, test_data, sizeof(test_data));
-                    }
-                }
-                else //long frame
-                {
-                    for(uint8_t i = 0; i < CAN_LONG_BUF_NUM; i++)
-                    {
-                        if(can_long_frame_buf->can_rcv_buf[i].used_len > 0)
+                        if(seg_polo == BEGIN)
                         {
-                            if(get_tick() - can_long_frame_buf->can_rcv_buf[i].start_time > CAN_LONG_FRAME_TIME_OUT)
+                            buf_index = can_long_frame_buf->get_the_buf_by_id(id.canx_id);
+                            if(buf_index == CAN_BUF_NO_THIS_ID)
                             {
-                                can_long_frame_buf->free_buf(i);
-                                printf("LONG FRAME RCV TIMEOUT! ! ! !\r\n");
+                                buf_index = can_long_frame_buf->get_one_free_buf();
+                            }
+                            else
+                            {
+                                //
+                            }
+
+                            if((buf_index == CAN_LONG_BUF_FULL) || (buf_index >= CAN_LONG_BUF_NUM))
+                            {
+                                printf("LONG FRAME RCV BUF IS FULL! ! ! !\r\n");
+                                goto exit;
+                            }
+                            memcpy(&can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf[0], rx_buf.can_data_t.data, CAN_ONE_FRAME_DATA_LENTH);
+                            can_long_frame_buf->can_rcv_buf[buf_index].used_len = CAN_ONE_FRAME_DATA_LENTH;
+                            can_long_frame_buf->can_rcv_buf[buf_index].can_id = id.canx_id;
+                            can_long_frame_buf->can_rcv_buf[buf_index].start_time = get_tick();
+                        }
+                        else if((seg_polo == TRANSING) || (seg_polo == END))
+                        {
+                            buf_index = can_long_frame_buf->get_the_buf_by_id(id.canx_id);
+                            if((buf_index == CAN_BUF_NO_THIS_ID) || (buf_index >= CAN_LONG_BUF_NUM))
+                            {
+                                printf("ERROR ! !\r\n");
+                                goto exit;
+                            }
+                            can_long_frame_buf->can_rcv_buf[buf_index].start_time = get_tick();
+                            if(seg_polo == TRANSING)
+                            {
+                                memcpy(&can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf[seg_num * CAN_ONE_FRAME_DATA_LENTH], rx_buf.can_data_t.data, CAN_ONE_FRAME_DATA_LENTH);
+                                can_long_frame_buf->can_rcv_buf[buf_index].used_len += CAN_ONE_FRAME_DATA_LENTH;
+                            }
+                            if(seg_polo == END)
+                            {
+                                memcpy(&can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf[seg_num * CAN_ONE_FRAME_DATA_LENTH], rx_buf.can_data_t.data, rx_len - 1);
+                                can_long_frame_buf->can_rcv_buf[buf_index].used_len += rx_len - 1;
+
+                                printf("long frame receive complete\r\n");
+                                for(uint8_t j = 0; j < can_long_frame_buf->can_rcv_buf[buf_index].used_len; j++)
+                                {
+                                    printf("data[%d]: %d\r\n", j, can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf[j]);
+                                }
+                                //process the data here//
+                                /**********************/
+                                //process the data here//
+
+                                Can1_TX(id.canx_id, can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf, can_long_frame_buf->can_rcv_buf[buf_index].used_len);  // test :send the data back;
+                                can_long_frame_buf->free_buf(buf_index);
                             }
                         }
                     }
-
-                    if(seg_polo == BEGIN)
-                    {
-                        buf_index = can_long_frame_buf->get_the_buf_by_id(id.canx_id);
-                        if(buf_index == CAN_BUF_NO_THIS_ID)
-                        {
-                            buf_index = can_long_frame_buf->get_one_free_buf();
-                        }
-                        else
-                        {
-                            //
-                        }
-
-                        if((buf_index == CAN_LONG_BUF_FULL) || (buf_index >= CAN_LONG_BUF_NUM))
-                        {
-                            printf("LONG FRAME RCV BUF IS FULL! ! ! !\r\n");
-                            goto exit;
-                        }
-                        memcpy(&can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf[0], rx_buf.can_data_t.data, CAN_ONE_FRAME_DATA_LENTH);
-                        can_long_frame_buf->can_rcv_buf[buf_index].used_len = CAN_ONE_FRAME_DATA_LENTH;
-                        can_long_frame_buf->can_rcv_buf[buf_index].can_id = id.canx_id;
-                        can_long_frame_buf->can_rcv_buf[buf_index].start_time = get_tick();
-                    }
-                    else if((seg_polo == TRANSING) || (seg_polo == END))
-                    {
-                        buf_index = can_long_frame_buf->get_the_buf_by_id(id.canx_id);
-                        if((buf_index == CAN_BUF_NO_THIS_ID) || (buf_index >= CAN_LONG_BUF_NUM))
-                        {
-                            printf("ERROR ! !\r\n");
-                            goto exit;
-                        }
-                        can_long_frame_buf->can_rcv_buf[buf_index].start_time = get_tick();
-                        if(seg_polo == TRANSING)
-                        {
-                            memcpy(&can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf[seg_num * CAN_ONE_FRAME_DATA_LENTH], rx_buf.can_data_t.data, CAN_ONE_FRAME_DATA_LENTH);
-                            can_long_frame_buf->can_rcv_buf[buf_index].used_len += CAN_ONE_FRAME_DATA_LENTH;
-                        }
-                        if(seg_polo == END)
-                        {
-                            memcpy(&can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf[seg_num * CAN_ONE_FRAME_DATA_LENTH], rx_buf.can_data_t.data, rx_len - 1);
-                            can_long_frame_buf->can_rcv_buf[buf_index].used_len += rx_len - 1;
-
-                            printf("long frame receive complete\r\n");
-                            for(uint8_t j = 0; j < can_long_frame_buf->can_rcv_buf[buf_index].used_len; j++)
-                            {
-                                printf("data[%d]: %d\r\n", j, can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf[j]);
-                            }
-                            //process the data here//
-                            /**********************/
-                            //process the data here//
-
-                            Can1_TX(id.canx_id, can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf, can_long_frame_buf->can_rcv_buf[buf_index].used_len);  // test :send the data back;
-                            can_long_frame_buf->free_buf(buf_index);
-                        }
-                    }
                 }
+
             }
         }
         else
@@ -549,18 +589,58 @@ int send_can_msg(can_buf_t *can_msg)
 
 
 OS_STK can_send_task_stk[CAN_SEND_TASK_STK_SIZE]  = {0};
+#define UPLOAD_CAN_MSG_RESEND_CNT               3
+#define UPLOAD_CAN_MSG_WAIT_TICK                (5 * OS_TICKS_PER_SEC / 10)
 void can_send_task(void *pdata)
 {
     can_buf_t *can_send_buf;
+    can_upload_ack_t *can_upload_ack;
+    can_id_union id = {0};
     uint8_t err = 0;
+    uint8_t serial_num = 0;
+    uint8_t resend_cnt = 0;
     while(1)
     {
         can_send_buf = (can_buf_t *)OSQPend(can_send_buf_queue_handle, 0, &err);
         if(err == OS_ERR_NONE)
         {
-            Can1_TX(can_send_buf->id, can_send_buf->data, can_send_buf->data_len);
+            id.canx_id = can_send_buf->id;
+            if(id.can_id_t.ack == 1)
+            {
+                Can1_TX(can_send_buf->id, can_send_buf->data, can_send_buf->data_len);
+            }
+            else if(id.can_id_t.ack == 0)
+            {
+                serial_num++;
+                can_send_buf->data_len++;
+                if(can_send_buf->data_len <= CAN_BUF_INSIDE_DATA_SIZE)
+                {
+                    can_send_buf->data[can_send_buf->data_len - 1] = serial_num;
+                }
+                resend_cnt = UPLOAD_CAN_MSG_RESEND_CNT;
+                while(resend_cnt--)
+                {
+                    can_upload_ack = (can_upload_ack_t *)OSQPend(can_upload_ack_queue_handle, UPLOAD_CAN_MSG_WAIT_TICK, &err);
+
+                    if(err == OS_ERR_NONE)
+                    {
+                        uint8_t get_right_ack_flag = 0;
+                        if((can_upload_ack->serial_num == serial_num) && (can_upload_ack->id.can_id_t.source_id == id.can_id_t.source_id))
+                        {
+                            get_right_ack_flag = 1;
+                        }
+                        OSMemPut(can_upload_ack_mem_handle, can_upload_ack);
+                        if(get_right_ack_flag == 1)
+                        {
+                            break;
+                        }
+                    }
+                    Can1_TX(can_send_buf->id, can_send_buf->data, can_send_buf->data_len);
+                }
+            }
+
             OSMemPut(can_send_buf_mem_handle, can_send_buf);
-//            delay_ms(10);
+
         }
         else if(err == OS_ERR_TIMEOUT)
         {

@@ -65,6 +65,15 @@ static int mem_create(void)
 //        return -1;
     }
 
+    can_upload_ack_mem_handle = OSMemCreate((void *)&can_upload_ack_mem[0][0], sizeof(can_upload_ack_mem) / sizeof(can_upload_ack_mem[0]), sizeof(can_upload_ack_t), &err);
+    if(can_upload_ack_mem_handle == 0)
+    {
+        /*
+        todo: err process
+        */
+//        return -1;
+    }
+
     return 0;
 }
 
@@ -80,6 +89,15 @@ static int queue_create(void)
     }
 
     can_rcv_buf_queue_handle = OSQCreate(&can_rcv_buf_queue_p[0], CAN_RCV_BUF_QUEUE_NUM);
+    if(can_rcv_buf_queue_handle == 0)
+    {
+        /*
+        todo: err process
+        */
+//        return -1;
+    }
+
+    can_upload_ack_queue_handle = OSQCreate(&can_upload_ack_queue_p[0], CAN_UPLOAD_ACK_QUEUE_NUM);
     if(can_rcv_buf_queue_handle == 0)
     {
         /*

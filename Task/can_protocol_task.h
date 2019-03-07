@@ -64,7 +64,7 @@ void can_send_task(void *pdata);
 #define CAN_SOURCE_ID_POWER_OFF_SIGNAL              0x8a
 #define CAN_SOURCE_ID_REMOTE_POWRER_CTRL            0x8b
 #define CAN_SOURCE_ID_GET_SERIALS_LEDS_VERSION      0x8c
-
+#define CAN_SOURCE_ID_EVENT_BUTTON                  0x8d
 
 
 #define CAN_ONE_FRAME_DATA_LENTH    7
@@ -98,13 +98,23 @@ typedef struct
 #define CAN_RCV_BUF_SIZE           10
 #define CAN_RCV_BUF_QUEUE_NUM      CAN_RCV_BUF_SIZE
 
+#define CAN_UPLOAD_ACK_SIZE         10
+#define CAN_UPLOAD_ACK_QUEUE_NUM    CAN_UPLOAD_ACK_SIZE
+
+#define CAN_BUF_INSIDE_DATA_SIZE    64
 typedef struct
 {
     uint32_t id;
     uint8_t data_len;
-    uint8_t data[64];
+    uint8_t data[CAN_BUF_INSIDE_DATA_SIZE];
 }__attribute__ ((__packed__)) can_buf_t;
 
+
+typedef struct
+{
+    uint8_t serial_num;
+    can_id_union id;
+}can_upload_ack_t;
 
 extern can_buf_t can_send_buf_mem[10][1];
 extern OS_MEM *can_send_buf_mem_handle;
@@ -121,6 +131,12 @@ extern OS_EVENT *can_rcv_buf_queue_handle;
 extern void* can_rcv_buf_queue_p[CAN_RCV_BUF_QUEUE_NUM];
 
 
+extern can_upload_ack_t can_upload_ack_mem[CAN_UPLOAD_ACK_SIZE][1];
+extern OS_MEM *can_upload_ack_mem_handle;
+
+extern OS_EVENT *can_upload_ack_queue_handle;
+extern void* can_upload_ack_queue_p[CAN_UPLOAD_ACK_QUEUE_NUM];
+
 void can_protocol_period( void );
 
 void can_long_buf_init(void);
@@ -128,5 +144,6 @@ int send_can_msg(can_buf_t *can_msg);
 
 void upload_sys_state(void);
 void upload_conveyor_belt_status(uint8_t status);
+void upload_event_button_state(void);
 
 #endif
