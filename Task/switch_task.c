@@ -87,9 +87,9 @@ void switch_task(void *pdata)
                 }
 
             case 2:
-                //beeper_on();
-                //delay_ms(100);
-                //beeper_off();
+                beeper_on();
+                delay_ms(80);
+                beeper_off();
                 state = 3;
                 break;
 

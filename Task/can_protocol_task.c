@@ -157,6 +157,7 @@ void upload_sys_state(void)
     can_buf.id = id.canx_id;
     can_buf.data[0] = 0;
     *(uint16_t*)&can_buf.data[1] = sys_status->sys_status;
+    can_buf.data_len = 3;
     send_can_msg(&can_buf);
 }
 
@@ -453,7 +454,7 @@ void can_protocol_task(void *pdata)
                         can_upload_ack->id.canx_id = id.canx_id;
                         if(rx_len >= 2)
                         {
-                            can_upload_ack->serial_num = rx_buf.can_data_t.data[rx_len - 2];
+                            can_upload_ack->serial_num = rx_buf.can_data[rx_len - 1];
                             OSQPost(can_upload_ack_queue_handle, (void *)can_upload_ack);
                         }
                     }
@@ -617,7 +618,8 @@ void can_send_task(void *pdata)
                 {
                     can_send_buf->data[can_send_buf->data_len - 1] = serial_num;
                 }
-                resend_cnt = UPLOAD_CAN_MSG_RESEND_CNT;
+                Can1_TX(can_send_buf->id, can_send_buf->data, can_send_buf->data_len);
+                resend_cnt = UPLOAD_CAN_MSG_RESEND_CNT - 1;
                 while(resend_cnt--)
                 {
                     can_upload_ack = (can_upload_ack_t *)OSQPend(can_upload_ack_queue_handle, UPLOAD_CAN_MSG_WAIT_TICK, &err);
