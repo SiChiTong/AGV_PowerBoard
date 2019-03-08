@@ -471,7 +471,7 @@ void can_protocol_task(void *pdata)
                             //process the data here//
                             if(tx_len > 0)
                             {
-                                Can1_TX(id.canx_id, CanTxdataBuff, tx_len);
+                                //Can1_TX(id.canx_id, CanTxdataBuff, tx_len);
                                 can_buf.data_len = tx_len;
                                 can_buf.id = id.canx_id;
                                 memcpy(can_buf.data, CanTxdataBuff, tx_len);
