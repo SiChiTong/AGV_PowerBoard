@@ -4,7 +4,7 @@
 #include "ucos_ii.h"
 #include "sys.h"
 
-#define BATTERY_TASK_STK_SIZE   512
+#define BATTERY_TASK_STK_SIZE   1024
 
 
 #define BATTERY_LOW_POWER_SHUTDOWN_PERCENTAGE       10

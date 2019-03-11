@@ -12,7 +12,7 @@
 #include "ucos_ii.h"
 #include "can_fifo.h"
 #define CAN_PROTOCOL_TASK_STK_SIZE  1024
-#define CAN_SEND_TASK_STK_SIZE      512
+#define CAN_SEND_TASK_STK_SIZE      1024
 extern OS_STK can_protocol_task_stk[CAN_PROTOCOL_TASK_STK_SIZE];
 extern OS_STK can_send_task_stk[CAN_SEND_TASK_STK_SIZE];
 void can_protocol_task(void *pdata);
@@ -22,7 +22,7 @@ void can_send_task(void *pdata);
 
 
 #define HW_VERSION                      "M30_MAINBOARD_V0.2"
-#define SW_VERSION                      "M30C001M08B002"
+#define SW_VERSION                      "M30C001M08B003"
 #define PROTOCOL_VERSION                "20170619P0001"
 
 #define CMD_NOT_FOUND   0

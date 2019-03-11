@@ -3,7 +3,7 @@
 #include "stm32f10x.h"
 #include "ucos_ii.h"
 
-#define POWER_ON_OFF_STK_SIZE           128
+#define POWER_ON_OFF_STK_SIZE           256
 #define X86_POWER_ON_OFF_STK_SIZE       128
 #define RK_POWER_ON_OFF_STK_SIZE        128
 
