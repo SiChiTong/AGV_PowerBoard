@@ -12,9 +12,17 @@ static u16 fac_ms=0;//ms延时倍乘数
 //systick中断服务函数,使用ucos时用到
 void SysTick_Handler(void)
 {
-    OSIntEnter();       //进入中断
-    OSTimeTick();       //调用ucos的时钟服务程序
-    OSIntExit();        //触发任务切换软中断
+//    OSIntEnter();       //进入中断
+//    OSTimeTick();       //调用ucos的时钟服务程序
+//    OSIntExit();        //触发任务切换软中断
+
+
+    OS_CPU_SR  cpu_sr;
+    OS_ENTER_CRITICAL();    //Tell uC/OS-II that we are starting an ISR
+    OSIntEnter();
+    OS_EXIT_CRITICAL();
+    OSTimeTick();           //Call uC/OS-II's OSTimeTick()
+    OSIntExit();
 }
 #endif
 

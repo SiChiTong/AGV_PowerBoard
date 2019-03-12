@@ -317,7 +317,9 @@ void battery_data_recieved(uint8_t data)
         }
         else
         {
-            pBatteryData->pRxData--;
+//            pBatteryData->pRxData--;
+            pBatteryData->pRxData = (uint8_t *)pBatteryData->rx_data_buff;
+            return;
         }
     }
     if(pBatteryData->isDetectedSOI && !pBatteryData->isDetectedEOI)
@@ -328,10 +330,10 @@ void battery_data_recieved(uint8_t data)
         }
     }
 
-    if(pBatteryData->pRxData > pBatteryData->rx_data_buff + RX_MAX_DATA_LENGTH - 1)
+    if(pBatteryData->pRxData >= pBatteryData->rx_data_buff + RX_MAX_DATA_LENGTH - 1)
     {
         pBatteryData->isDetectedSOI = 0;
-        //pBatteryData->pRxData = (uint8_t *)pBatteryData->rx_data_buff;
+        pBatteryData->pRxData = (uint8_t *)pBatteryData->rx_data_buff;
     }
 }
 
@@ -446,7 +448,7 @@ void print_bat_info(void)
 
 #define BAT_SOI     0x7E
 #define BAT_EOI     0x0D
-#define BATTERY_COM_ERR_DEBOUNCE_CNT    3
+#define BATTERY_COM_ERR_DEBOUNCE_CNT    20
 static uint8_t battery_com_err_cnt = 0;
 extern void upload_bat_info(void);
 void battery_period(void)

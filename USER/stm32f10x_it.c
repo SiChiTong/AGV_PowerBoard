@@ -139,9 +139,9 @@ void USART1_IRQHandler(void)
 #else
 void USART1_IRQHandler(void)
 {
+    OSIntEnter();
     volatile unsigned char temper=0;
 
-    OSIntEnter();
     if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
     {
         temper = USART1->SR;
@@ -196,25 +196,18 @@ void DMA1_Channel6_IRQHandler(void)     //USART2-TX
     OSIntExit();
 }
 
-uint32_t rcv_dma_test_cnt = 0;
-
 /*    USART2 IDLE interrupt    */
 void USART2_IRQHandler(void)
 {
+    OSIntEnter();
     volatile unsigned char temper=0;
 
-    OSIntEnter();
     if (USART_GetITStatus(USART2, USART_IT_IDLE) != RESET)
     {
-        rcv_dma_test_cnt++;
         temper = USART2->SR;
         temper = USART2->DR;    //ÇåUSART_IT_IDLE
 
         DMA_Cmd(DMA1_Channel6, DISABLE);
-//        rcv_len = FP_RCV_SIZE - DMA_GetCurrDataCounter(DMA1_Channel6);
-//        DMA_SetCurrDataCounter(DMA1_Channel6, FP_RCV_SIZE);
-//        put_fp_rcv_buf(fp_uart_rcv_buf, rcv_len);
-//        OSSemPost(fp_uart_data_come_sem);
         DMA_Cmd(DMA1_Channel6,ENABLE);
     }
     OSIntExit();
@@ -226,8 +219,8 @@ void USART2_IRQHandler(void)
 uint32_t charge_state_tmp = 0;
 void EXTI9_5_IRQHandler(void)
 {
-    uint8_t value = 0;
     OSIntEnter();
+    uint8_t value = 0;
     if(EXTI_GetITStatus(EXTI_Line6) != RESET)
     {
         EXTI_ClearITPendingBit(EXTI_Line6);
@@ -252,13 +245,16 @@ extern CanRxMsg RxMessage;
 void USB_LP_CAN1_RX0_IRQHandler(void)
 {
 #if 0
+    OSIntEnter();
     can_pkg_t can_pkg_tmp;
     CAN_Receive(CAN1, CAN_FIFO0, &RxMessage);
     can_pkg_tmp.id.canx_id = RxMessage.ExtId;
     can_pkg_tmp.len = RxMessage.DLC;
     memcpy(can_pkg_tmp.data.can_data, RxMessage.Data, can_pkg_tmp.len);
     put_can_pkg_to_fifo(can_fifo, can_pkg_tmp);
+    OSIntExit();
 #else
+    OSIntEnter();
     can_pkg_t *can_buf;
     uint8_t err = 0;
     CAN_Receive(CAN1, CAN_FIFO0, &RxMessage);
@@ -271,6 +267,7 @@ void USB_LP_CAN1_RX0_IRQHandler(void)
         memcpy(can_buf->data.can_data, RxMessage.Data, can_buf->len);
         OSQPost(can_rcv_buf_queue_handle, (void *)can_buf);
     }
+    OSIntExit();
 #endif
 }
 
