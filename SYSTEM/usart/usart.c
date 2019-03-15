@@ -58,8 +58,8 @@ void uart_4_init(u32 bound)
     //UART4 NVIC 配置
 
     NVIC_InitStructure.NVIC_IRQChannel = UART4_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3 ;//抢占优先级3
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 5;		//子优先级3
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1 ;//抢占优先级1
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;		//子优先级2
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			//IRQ通道使能
     NVIC_Init(&NVIC_InitStructure);	//根据指定的参数初始化VIC寄存器
 

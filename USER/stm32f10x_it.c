@@ -167,6 +167,12 @@ void UART4_IRQHandler(void)
         battery_data_recieved(temper);
         uart1_rcv_test_cnt++;
     }
+//    else
+//    {
+//        USART_ClearITPendingBit(UART4, USART_IT_TC);
+////        USART_ClearITPendingBit(UART4, USART_IT_RXNE);
+////        USART_ClearITPendingBit(UART4, USART_IT_ERR);
+//    }
     OSIntExit();
 }
 
@@ -267,6 +273,16 @@ void USB_LP_CAN1_RX0_IRQHandler(void)
         memcpy(can_buf->data.can_data, RxMessage.Data, can_buf->len);
         OSQPost(can_rcv_buf_queue_handle, (void *)can_buf);
     }
+//    else
+//    {
+//        can_rcv_buf_mem_handle = OSMemCreate((void *)&can_rcv_buf_mem[0][0], sizeof(can_rcv_buf_mem) / sizeof(can_rcv_buf_mem[0]), sizeof(can_pkg_t), &err);
+//        if(can_rcv_buf_mem_handle == 0)
+//        {
+//            /*
+//            todo: err process
+//            */
+//        }
+//    }
     OSIntExit();
 #endif
 }
