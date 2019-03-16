@@ -15,7 +15,7 @@ __IO uint32_t back_left_buff[BACK_LEFT_LED_NUM] = {0};
 __IO uint32_t eyes_buff[EYES_LED_NUM] = {0};
 
 
-#define LED_LIGHTNESS_PERCENT   50
+#define LED_LIGHTNESS_PERCENT   30
 color_t led_color[] =
 {
     [SERIAL_LED_COLOR_RED_C]       = {255 * LED_LIGHTNESS_PERCENT / 100,     0 * LED_LIGHTNESS_PERCENT / 100  ,     0 * LED_LIGHTNESS_PERCENT / 100},
