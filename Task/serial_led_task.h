@@ -4,7 +4,7 @@
 #include "stm32f10x.h"
 #include "ucos_ii.h"
 
-#define SERIAL_LED_TASK_STK_SIZE    128
+#define SERIAL_LED_TASK_STK_SIZE    256
 
 extern OS_STK serial_led_task_stk[SERIAL_LED_TASK_STK_SIZE];
 

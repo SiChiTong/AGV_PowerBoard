@@ -79,6 +79,7 @@ void Can1_TX(uint32_t canx_id,uint8_t* pdata,uint16_t len)
         if((CAN_USED->TSR&0x1C000000))
         {
             CAN_Transmit(CAN1, &TxMessage);//
+            delay_ms(10);
         }
         else
         {
@@ -114,6 +115,7 @@ void Can1_TX(uint32_t canx_id,uint8_t* pdata,uint16_t len)
                 if((CAN_USED->TSR&0x1C000000))
                 {
                     CAN_Transmit(CAN1, &TxMessage);//
+                    delay_ms(10);
                 }
                 else
                 {
@@ -132,6 +134,7 @@ void Can1_TX(uint32_t canx_id,uint8_t* pdata,uint16_t len)
                     if((CAN_USED->TSR&0x1C000000))
                     {
                         CAN_Transmit(CAN1, &TxMessage);//
+                        delay_ms(10);
                     }
                     else
                     {

@@ -20,9 +20,8 @@ void can_send_task(void *pdata);
 
 
 
-
 #define HW_VERSION                      "M30_MAINBOARD_V0.2"
-#define SW_VERSION                      "M30C001M08B004"
+#define SW_VERSION                      "M30C001M08B004_tmpxx"
 #define PROTOCOL_VERSION                "20170619P0001"
 
 #define CMD_NOT_FOUND   0
@@ -108,6 +107,7 @@ typedef struct
     uint8_t data_len;
     uint8_t data[CAN_BUF_INSIDE_DATA_SIZE];
 }__attribute__ ((__packed__)) can_buf_t;
+
 
 
 typedef struct
