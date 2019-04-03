@@ -89,7 +89,7 @@ void DMA1_Channel4_IRQHandler(void)     //USART1-TX
         DMA_Cmd(DMA1_Channel4, DISABLE);
         DMA_ClearFlag(DMA1_FLAG_TC4);
         DMA_ClearITPendingBit(DMA1_IT_TC4); // 清除中断标志位
-        while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);    //等待一包数据发送完成
+//        while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);    //等待一包数据发送完成
     }
     OSIntExit();
 }
@@ -102,7 +102,7 @@ void DMA1_Channel5_IRQHandler(void)     //USART1-TX
         DMA_Cmd(DMA1_Channel5, DISABLE);
         DMA_ClearFlag(DMA1_FLAG_TC5);
         DMA_ClearITPendingBit(DMA1_IT_TC5); // 清除中断标志位
-        while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);    //等待一包数据发送完成
+//        while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);    //等待一包数据发送完成
     }
     OSIntExit();
 }
@@ -110,33 +110,7 @@ void DMA1_Channel5_IRQHandler(void)     //USART1-TX
 
 uint32_t uart1_rcv_test_cnt = 0;
 
-#if 0
-/*    USART1 IDLE interrupt    */
-void USART1_IRQHandler(void)
-{
-    volatile unsigned char temper=0;
 
-
-    OSIntEnter();
-    if (USART_GetITStatus(USART1, USART_IT_IDLE) != RESET)
-    {
-        temper = USART1->SR;
-        temper = USART1->DR;    //清USART_IT_IDLE
-
-        uart1_rcv_test_cnt++;
-        DMA_Cmd(DMA1_Channel5, DISABLE);
-//        rcv_len = LC12S_RCV_SIZE - DMA_GetCurrDataCounter(DMA1_Channel5);
-//        for(i = 0; i < rcv_len; i++)
-//        {
-//            put_data_to_fifo(wireless_uart_fifo, *((fifo_data_struct *)(&lc12s_uart_rcv_buf[i])));
-//        }
-//        OSSemPost(wireless_com_data_come_sem);
-        DMA_SetCurrDataCounter(DMA1_Channel5, LC12S_RCV_SIZE);
-        DMA_Cmd(DMA1_Channel5,ENABLE);
-    }
-    OSIntExit();
-}
-#else
 void USART1_IRQHandler(void)
 {
     OSIntEnter();
@@ -150,7 +124,6 @@ void USART1_IRQHandler(void)
     }
     OSIntExit();
 }
-#endif
 
 
 #include "battery.h"
@@ -184,7 +157,7 @@ void DMA1_Channel7_IRQHandler(void)     //USART2-TX
         DMA_Cmd(DMA1_Channel7, DISABLE);
         DMA_ClearFlag(DMA1_FLAG_TC7);
         DMA_ClearITPendingBit(DMA1_IT_TC7); // 清除中断标志位
-        while (USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET);    //等待一包数据发送完成
+//        while (USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET);    //等待一包数据发送完成
     }
     OSIntExit();
 }
@@ -197,7 +170,7 @@ void DMA1_Channel6_IRQHandler(void)     //USART2-TX
         DMA_Cmd(DMA1_Channel6, DISABLE);
         DMA_ClearFlag(DMA1_FLAG_TC6);
         DMA_ClearITPendingBit(DMA1_IT_TC6); // 清除中断标志位
-        while (USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET);    //等待一包数据发送完成
+//        while (USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET);    //等待一包数据发送完成
     }
     OSIntExit();
 }
@@ -263,26 +236,31 @@ void USB_LP_CAN1_RX0_IRQHandler(void)
     OSIntEnter();
     can_pkg_t *can_buf;
     uint8_t err = 0;
-    CAN_Receive(CAN1, CAN_FIFO0, &RxMessage);
-    can_buf = (can_pkg_t *)OSMemGet(can_rcv_buf_mem_handle, &err);
-
-    if((can_buf != 0) && (err == OS_ERR_NONE))
+    while((CAN1->RF0R & 0x03) > 0)
     {
-        can_buf->id.canx_id = RxMessage.ExtId;
-        can_buf->len = RxMessage.DLC;
-        memcpy(can_buf->data.can_data, RxMessage.Data, can_buf->len);
-        OSQPost(can_rcv_buf_queue_handle, (void *)can_buf);
-    }
-//    else
-//    {
-//        can_rcv_buf_mem_handle = OSMemCreate((void *)&can_rcv_buf_mem[0][0], sizeof(can_rcv_buf_mem) / sizeof(can_rcv_buf_mem[0]), sizeof(can_pkg_t), &err);
-//        if(can_rcv_buf_mem_handle == 0)
+        CAN_Receive(CAN1, CAN_FIFO0, &RxMessage);
+        can_buf = (can_pkg_t *)OSMemGet(can_rcv_buf_mem_handle, &err);
+        CAN_ClearITPendingBit(CAN1, CAN_IT_FMP0 | CAN_IT_FOV0);   //清除中断
+
+        if((can_buf != 0) && (err == OS_ERR_NONE))
+        {
+            can_buf->id.canx_id = RxMessage.ExtId;
+            can_buf->len = RxMessage.DLC;
+            memcpy(can_buf->data.can_data, RxMessage.Data, can_buf->len);
+            OSQPost(can_rcv_buf_queue_handle, (void *)can_buf);
+        }
+//        else
 //        {
-//            /*
-//            todo: err process
-//            */
+//            can_rcv_buf_mem_handle = OSMemCreate((void *)&can_rcv_buf_mem[0][0], sizeof(can_rcv_buf_mem) / sizeof(can_rcv_buf_mem[0]), sizeof(can_pkg_t), &err);
+//            if(can_rcv_buf_mem_handle == 0)
+//            {
+//                /*
+//                todo: err process
+//                */
+//            }
 //        }
-//    }
+    }
+
     OSIntExit();
 #endif
 }

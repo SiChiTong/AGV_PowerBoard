@@ -6,9 +6,9 @@
 #define serial_led_output_high(gpio)    platform_gpio_pins[gpio].GPIOx->BSRR = platform_gpio_pins[gpio].GPIO_Pin
 #define serial_led_output_low(gpio)     platform_gpio_pins[gpio].GPIOx->BRR = platform_gpio_pins[gpio].GPIO_Pin
 
-#define FRONT_LEFT_LED_NUM          45  //
+#define FRONT_LEFT_LED_NUM          45
 #define FRONT_RIGHT_LED_NUM         20
-#define BACK_RIGHT_LED_NUM          45  //
+#define BACK_RIGHT_LED_NUM          45
 #define BACK_LEFT_LED_NUM           20
 
 #define EYES_LED_NUM                5
@@ -67,6 +67,7 @@ typedef enum
     SERIAL_LED_COLOR_NONE_C,
 
 }led_color_t;
+
 typedef enum
 {
     FRONT_LEFT_LED = 0,
@@ -81,14 +82,14 @@ typedef enum
 
 typedef struct
 {
-    platform_gpio_e     gpio;
-    color_t         *color;
-    uint8_t         color_number;
-    uint16_t        period;
-    __IO uint32_t   *data_buf;
-    uint8_t         led_num;
-    uint32_t        start_time;
-    uint32_t        tick;
+    const platform_gpio_e   gpio;
+    color_t                 color[5];
+    uint8_t                 color_number;
+    uint16_t                period;
+    volatile uint32_t       *data_buf;
+    uint8_t                 led_num;
+    volatile uint32_t       start_time;
+    volatile uint32_t       tick;
 }one_wire_led_para_t;
 
 void serial_leds_tick(void);

@@ -88,7 +88,7 @@ one_wire_led_para_t one_wire_led[] =
     [FRONT_LEFT_LED] =
     {
         .gpio               = PLATFORM_GPIO_SERIAL_LED_FRONT_LEFT,
-        .color              = front_left_color,
+//        .color              = front_left_color,
         .color_number       = 1,
         .period             = 5 * OS_TICKS_PER_SEC / 10,
         .data_buf           = front_left_buff,
@@ -98,7 +98,7 @@ one_wire_led_para_t one_wire_led[] =
     [FRONT_RIGHT_LED] =
     {
         .gpio               = PLATFORM_GPIO_SERIAL_LED_FRONT_RIGHT,
-        .color              = front_right_color,
+//        .color              = front_right_color,
         .color_number       = 1,
         .period             = 5 * OS_TICKS_PER_SEC / 10,
         .data_buf           = front_right_buff,
@@ -108,7 +108,7 @@ one_wire_led_para_t one_wire_led[] =
     [BACK_RIGHT_LED] =
     {
         .gpio               = PLATFORM_GPIO_SERIAL_LED_BACK_RIGHT,
-        .color              = back_right_color,
+//        .color              = back_right_color,
         .color_number       = 1,
         .period             = 5 * OS_TICKS_PER_SEC / 10,
         .data_buf           = back_right_buff,
@@ -118,7 +118,7 @@ one_wire_led_para_t one_wire_led[] =
     [BACK_LEFT_LED] =
     {
         .gpio               = PLATFORM_GPIO_SERIAL_LED_BACK_LEFT,
-        .color              = back_left_color,
+//        .color              = back_left_color,
         .color_number       = 1,
         .period             = 5 * OS_TICKS_PER_SEC / 10,
         .data_buf           = back_left_buff,

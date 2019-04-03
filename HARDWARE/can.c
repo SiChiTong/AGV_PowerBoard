@@ -80,7 +80,7 @@ uint8_t init_can1(void)
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
 
-    CAN_ITConfig(CAN1, CAN_IT_FMP0, ENABLE);
+    CAN_ITConfig(CAN1, CAN_IT_FMP0 | CAN_IT_FOV0, ENABLE);
 
     can_long_buf_init();
     return 0;

@@ -30,7 +30,7 @@ void delay_us(u32 nus);
                                asm("nop");asm("nop");} while(1==0)
 
 #define delay_high_0()      do {\
-                                asm("nop");asm("nop");\
+                                asm("nop");\
                                 } while(1==0)
 
 #define delay_low_0()       do {\

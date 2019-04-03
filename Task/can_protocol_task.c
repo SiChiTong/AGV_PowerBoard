@@ -415,7 +415,7 @@ void can_long_buf_init(void)
 #define CAN_COMM_TIME_OUT           5 * OS_TICKS_PER_SEC
 uint32_t can_comm_start_time;
 
-#define CAN_COM_TIME_OUT    5 * OS_TICKS_PER_SEC
+#define CAN_COM_TIME_OUT    (5 * OS_TICKS_PER_SEC)
 
 
 
@@ -438,8 +438,8 @@ void can_protocol_task(void *pdata)
         uint16_t tx_len = 0;
         uint8_t rx_len = 0;
 
-        can_rcv_buf = (can_pkg_t *)OSQPend(can_rcv_buf_queue_handle, 5 * OS_TICKS_PER_SEC, &err);
-        if(err == OS_ERR_NONE)
+        can_rcv_buf = (can_pkg_t *)OSQPend(can_rcv_buf_queue_handle, CAN_COM_TIME_OUT, &err);
+        if((err == OS_ERR_NONE) && (can_rcv_buf != 0))
         {
             memcpy(rx_buf.can_data,  can_rcv_buf->data.can_data, can_rcv_buf->len);
             id.canx_id = can_rcv_buf->id.canx_id;
@@ -573,7 +573,7 @@ int send_can_msg(can_buf_t *can_msg)
     can_buf_t *can_buf;
     uint8_t err = 0;
     can_buf = (can_buf_t *)OSMemGet(can_send_buf_mem_handle, &err);
-    if(can_buf)
+    if((err == OS_ERR_NONE) && (can_buf != 0))
     {
         can_buf->id = can_msg->id;
         can_buf->data_len = can_msg->data_len;

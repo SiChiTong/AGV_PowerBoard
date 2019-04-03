@@ -111,27 +111,16 @@ void mcu_restart(void)
 static void input_gpio_init(void)
 {
     GPIO_InitTypeDef  GPIO_InitStructure;
-    /*GPIO_B*/
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-
-    /*GPIO_D*/
-//    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
-//    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
-//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-//    GPIO_Init(GPIOD, &GPIO_InitStructure);
 
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
     GPIO_Init(GPIOD, &GPIO_InitStructure);
-
 
     /*GPIO_E*/
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
     GPIO_Init(GPIOE, &GPIO_InitStructure);
 
 }
