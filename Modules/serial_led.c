@@ -267,7 +267,7 @@ void set_serial_leds_effect(const light_mode_t light_mode, color_t  *cur_color, 
         case LIGHTS_MODE_NORMAL:
             for(uint8_t i = FRONT_LEFT_LED; i <= BACK_RIGHT_LED; i++)
             {
-                one_wire_led[(one_wire_led_t)i].color[0] = led_color[SERIAL_LED_COLOR_BLUE_C];
+                one_wire_led[(one_wire_led_t)i].color[0] = led_color[SERIAL_LED_COLOR_ORANGE_C];
                 one_wire_led[(one_wire_led_t)i].color[1] = led_color[SERIAL_LED_COLOR_NONE_C];
                 one_wire_led[(one_wire_led_t)i].color_number = 2;
                 one_wire_led[(one_wire_led_t)i].period = SHINE_MEDIUM_SPEED_PERIOD;
