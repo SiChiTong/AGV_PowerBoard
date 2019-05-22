@@ -17,6 +17,7 @@
 #include "battery.h"
 #include "serial_led.h"
 #include "power_on_off_task.h"
+#include "rgb_leds.h"
 
 //#define CanProtocolLog(format, ...)  custom_log("can protocol", format, ##__VA_ARGS__)
 
@@ -321,6 +322,7 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
                         mode =  (light_mode_t)data_in[1];
                         color = (color_t*)&data_in[2];
                         set_serial_leds_effect(mode, color, period);
+                        set_rgb_leds_effect(mode, color, period);
                         data_out[0] = 0;
                         data_out[1] = 0;
                         data_out[2] = mode;

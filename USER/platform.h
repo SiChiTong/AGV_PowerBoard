@@ -236,4 +236,8 @@ void led_mcu_ctrl_init_and_power_on(void);
 void led_mcu_ctrl_deinit_and_power_off(void);
 
 
+void set_rgb_leds_r(uint8_t r);
+void set_rgb_leds_g(uint8_t g);
+void set_rgb_leds_b(uint8_t b);
+
 #endif

@@ -881,19 +881,49 @@ uint16_t get_charge_recharge_init_state(void)
     return value;
 }
 
+
+#define RGB_LEDS_PWM_FREQUENCY     (1*1000)
+#define RGB_LEDS_PWM_ARR            719
+#define RGB_LEDS_PWM_PSC            (72*1000*1000) / (RGB_LEDS_PWM_FREQUENCY * (RGB_LEDS_PWM_ARR + 1))
+
 void ir_led_pwm_ctrl(uint16_t duty)
 {
     if(duty <= 100)
     {
-        timer_1_ch1_pwm_init(720, 1, 720 * (100 - duty) / 100 );
+        timer_1_ch1_pwm_init(719, 1, 719 * (100 - duty) / 100 );
     }
-
 }
 
-//static void ir_led_pwm_init(void)
-//{
-//    timer_1_ch1_pwm_init(720 , 1, 720 * 30 / 100);
-//}
+void rgb_leds_pwm_init(void)
+{
+    tim2_ch1_pwm_init(RGB_LEDS_PWM_ARR, RGB_LEDS_PWM_PSC, RGB_LEDS_PWM_ARR + 1);
+    tim2_ch2_pwm_init(RGB_LEDS_PWM_ARR, RGB_LEDS_PWM_PSC, RGB_LEDS_PWM_ARR + 1);
+    tim3_ch1_pwm_init(RGB_LEDS_PWM_ARR, RGB_LEDS_PWM_PSC, RGB_LEDS_PWM_ARR + 1);
+}
+
+void set_rgb_leds_r(uint8_t r)
+{
+    uint16_t rr = r * 10;
+    rr = 100 * rr / 255;
+    rr = (rr + 5) / 10;
+    change_tim2_ch1_pwm_duty(RGB_LEDS_PWM_ARR * (100 - rr) / 100 + 1);
+}
+
+void set_rgb_leds_g(uint8_t g)
+{
+    uint16_t gg = g * 10;
+    gg = 100 * gg / 255;
+    gg = (gg + 5) / 10;
+    change_tim2_ch2_pwm_duty(RGB_LEDS_PWM_ARR * (100 - gg) / 100 + 1);
+}
+
+void set_rgb_leds_b(uint8_t b)
+{
+    uint16_t bb = b * 10;
+    bb = 100 * bb / 255;
+    bb = (bb + 5) / 10;
+    change_tim3_ch1_pwm_duty(RGB_LEDS_PWM_ARR * (100 - bb) / 100 + 1);
+}
 
 uint32_t test_hardware_version = 0;
 void hardware_init(void)
@@ -903,7 +933,7 @@ void hardware_init(void)
     led_init();
     init_can1();
     ir_led_pwm_ctrl(20);
-//    ir_led_pwm_init();
+    rgb_leds_pwm_init();
     test_hardware_version = get_hardware_version();
 }
 

@@ -474,6 +474,11 @@
               <FileType>1</FileType>
               <FilePath>..\Modules\serial_led.c</FilePath>
             </File>
+            <File>
+              <FileName>rgb_leds.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Modules\rgb_leds.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
