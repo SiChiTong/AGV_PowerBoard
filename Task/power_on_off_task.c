@@ -118,6 +118,7 @@ void power_on_off_task(void *pdata)
             {
                 delay_ms(7000);
                 post_power_on_off_signal();
+                sys_status->remote_device_power_ctrl = 0;
                 /*
                 TODO_MARK: post power on signal, clear reboot signal
                 */
