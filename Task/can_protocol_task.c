@@ -256,7 +256,7 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
                             }
                             on_off = data_in[6];
                             module &= 0xffffffff;
-                            power_ctrl(module, on_off);
+                            power_ctrl(module, on_off, 1);
                             uint32_t tmp = get_module_power_state(POWER_ALL);
                             data_out[1] = data_in[1];
                             *(uint32_t*)&data_out[2] = module;
@@ -357,6 +357,34 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
                         }
                         return 2;
                     }
+
+                case CAN_SOURCE_ID_SET_LED_STATUS:
+                    {
+                        uint8_t led = data_in[0];
+                        uint8_t status = data_in[1];
+                        if((led < LED_MAX) && (led > LED_MIN) && (status > LED_STATUS_MIN) && (status < LED_STATUS_MAX))
+                        {
+                            data_out[0] = data_in[0];
+                            data_out[1] = data_in[1];
+                            switch(led)
+                            {
+                                case LED_WIFI:
+                                    led_ctrl_wifi_status(status);
+                                    return 2;
+
+                                case LED_TRANS:
+                                    led_ctrl_trans_status(status);
+                                    return 2;
+
+                                case LED_BATTERY:
+                                    led_ctrl_battery_status(status);
+                                    return 2;
+                            }
+                        }
+                        return 0;
+
+                    }
+
 
                 case CAN_SOURCE_ID_GET_SERIALS_LEDS_VERSION:
 //                    get_serials_leds_version();

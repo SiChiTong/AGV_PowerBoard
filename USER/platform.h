@@ -84,12 +84,21 @@ typedef enum
 
     PLATFORM_GPIO_EVENT_BUTTON,
 
+    PLATFORM_GPIO_LED_CTRL_1,
+    PLATFORM_GPIO_LED_CTRL_2,
+    PLATFORM_GPIO_LED_CTRL_3,
+    PLATFORM_GPIO_LED_CTRL_4,
+    PLATFORM_GPIO_LED_CTRL_5,
+    PLATFORM_GPIO_LED_CTRL_6,
+
     PLATFORM_GPIO_MAX, /* Denotes the total number of GPIO port aliases. Not a valid GPIO alias */
     PLATFORM_GPIO_NONE,
 } platform_gpio_e;
 
 
 
+
+/*********** power control group 1 *************/
 //#define POWER_5V_MOTOR             0x00000001
 #define POWER_5V_RECHARGE          0x00000002
 #define POWER_5V_SENSOR_BOARD      0x00000004
@@ -134,6 +143,19 @@ typedef enum
 #define POWER_ALL                  0xFFFFFFFF
 
 
+
+
+
+/*********** power control group 2 *************/
+#define POWER_LED_1                 0x00000001
+#define POWER_LED_2                 0x00000002
+#define POWER_LED_3                 0x00000004
+#define POWER_LED_4                 0x00000008
+#define POWER_LED_5                 0x00000010
+#define POWER_LED_6                 0x00000020
+#define POWER_LED_7                 0x00000040
+#define POWER_LED_8                 0x00000080
+
 //#define MODULE_POWER_ON     1
 //#define MODULE_POWER_OFF    0
 
@@ -142,6 +164,28 @@ typedef enum
     MODULE_POWER_OFF = 0,
     MODULE_POWER_ON
 }module_power_state_e;
+
+
+typedef enum
+{
+    LED_MIN = 0,
+    LED_WIFI = 1,
+    LED_TRANS,
+    LED_BATTERY,
+    LED_MAX,
+}status_led_e;
+
+typedef enum
+{
+    LED_STATUS_MIN = 0,
+    LED_STATUS_OFF = 1,
+    LED_STATUS_OK ,
+    LED_STATUS_ERR,
+    LED_STATUS_MAX,
+}led_ctrl_status_e;
+
+
+
 
 typedef enum
 {
@@ -230,7 +274,7 @@ void ir_led_pwm_ctrl(uint16_t duty);
 void beeper_on(void);
 void beeper_off(void);
 
-void power_ctrl(uint32_t power_en, uint8_t on_off);
+void power_ctrl(uint32_t power_en, uint8_t on_off, uint8_t group);
 uint32_t get_module_power_state(uint32_t power_en);
 void led_mcu_ctrl_init_and_power_on(void);
 void led_mcu_ctrl_deinit_and_power_off(void);
@@ -239,5 +283,9 @@ void led_mcu_ctrl_deinit_and_power_off(void);
 void set_rgb_leds_r(uint8_t r);
 void set_rgb_leds_g(uint8_t g);
 void set_rgb_leds_b(uint8_t b);
+
+void led_ctrl_wifi_status(uint8_t status);
+void led_ctrl_battery_status(uint8_t status);
+void led_ctrl_trans_status(uint8_t status);
 
 #endif

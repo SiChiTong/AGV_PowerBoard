@@ -64,6 +64,7 @@ void can_send_task(void *pdata);
 #define CAN_SOURCE_ID_REMOTE_POWRER_CTRL            0x8b
 #define CAN_SOURCE_ID_GET_SERIALS_LEDS_VERSION      0x8c
 #define CAN_SOURCE_ID_EVENT_BUTTON                  0x8d
+#define CAN_SOURCE_ID_SET_LED_STATUS                0x8e
 
 
 #define CAN_ONE_FRAME_DATA_LENTH    7

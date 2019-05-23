@@ -91,6 +91,13 @@ const platform_gpio_t platform_gpio_pins[] =
 
     [PLATFORM_GPIO_EVENT_BUTTON]        = {GPIOD, GPIO_Pin_6},
 
+    [PLATFORM_GPIO_LED_CTRL_1]          = {GPIOG, GPIO_Pin_8},
+    [PLATFORM_GPIO_LED_CTRL_2]          = {GPIOG, GPIO_Pin_7},
+    [PLATFORM_GPIO_LED_CTRL_3]          = {GPIOG, GPIO_Pin_5},
+    [PLATFORM_GPIO_LED_CTRL_4]          = {GPIOG, GPIO_Pin_4},
+    [PLATFORM_GPIO_LED_CTRL_5]          = {GPIOD, GPIO_Pin_15},
+    [PLATFORM_GPIO_LED_CTRL_6]          = {GPIOD, GPIO_Pin_14},
+
 };
 
 
@@ -180,6 +187,15 @@ static void output_gpio_init(void)
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOG, &GPIO_InitStructure);
+
+    /*GPIO_D*/
+    GPIO_SetBits(GPIOD, GPIO_Pin_10);//must hold on power
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOD, &GPIO_InitStructure);
+    GPIO_ResetBits(GPIOD, GPIO_Pin_8);
 }
 
 static void charge_gpio_init(void)
@@ -237,7 +253,27 @@ static void event_button_init(void)
     GPIO_Init(GPIOD, &GPIO_InitStructure);
 }
 
+static void led_ctrl_init(void)
+{
+    GPIO_InitTypeDef  GPIO_InitStructure;
 
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_8 | GPIO_Pin_7;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOG, &GPIO_InitStructure);
+
+    GPIO_ResetBits(GPIOG, GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_8 | GPIO_Pin_7);
+
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14 | GPIO_Pin_15;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOD, &GPIO_InitStructure);
+
+    GPIO_ResetBits(GPIOD, GPIO_Pin_14 | GPIO_Pin_15);
+
+}
 
 static void platform_gpio_init(void)
 {
@@ -248,6 +284,7 @@ static void platform_gpio_init(void)
     input_gpio_init();
     charge_gpio_init();
     event_button_init();
+    led_ctrl_init();
 }
 
 
@@ -505,6 +542,120 @@ void door_ctrl(uint32_t door_id, uint8_t on_off)
 }
 
 
+void led_ctrl(uint32_t leds, uint8_t on_off)
+{
+    if(on_off == MODULE_POWER_ON)
+    {
+        if(leds & POWER_LED_1)
+        {
+            GPIO_SetBits(platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_1].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_1].GPIO_Pin);
+        }
+        if(leds & POWER_LED_2)
+        {
+            GPIO_SetBits(platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_2].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_2].GPIO_Pin);
+        }
+        if(leds & POWER_LED_3)
+        {
+            GPIO_SetBits(platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_3].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_3].GPIO_Pin);
+        }
+        if(leds & POWER_LED_4)
+        {
+            GPIO_SetBits(platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_4].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_4].GPIO_Pin);
+        }
+        if(leds & POWER_LED_5)
+        {
+            GPIO_SetBits(platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_5].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_5].GPIO_Pin);
+        }
+        if(leds & POWER_LED_6)
+        {
+            GPIO_SetBits(platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_6].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_6].GPIO_Pin);
+        }
+    }
+    if(on_off == MODULE_POWER_OFF)
+    {
+        if(leds & POWER_LED_1)
+        {
+            GPIO_ResetBits(platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_1].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_1].GPIO_Pin);
+        }
+        if(leds & POWER_LED_2)
+        {
+            GPIO_ResetBits(platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_2].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_2].GPIO_Pin);
+        }
+        if(leds & POWER_LED_3)
+        {
+            GPIO_ResetBits(platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_3].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_3].GPIO_Pin);
+        }
+        if(leds & POWER_LED_4)
+        {
+            GPIO_ResetBits(platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_4].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_4].GPIO_Pin);
+        }
+        if(leds & POWER_LED_5)
+        {
+            GPIO_ResetBits(platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_5].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_5].GPIO_Pin);
+        }
+        if(leds & POWER_LED_6)
+        {
+            GPIO_ResetBits(platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_6].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_6].GPIO_Pin);
+        }
+    }
+}
+
+void led_ctrl_wifi_status(uint8_t status)
+{
+    if(status == LED_STATUS_OFF)
+    {
+        led_ctrl(POWER_LED_1 | POWER_LED_2, MODULE_POWER_OFF);
+    }
+    else if(status == LED_STATUS_OK)
+    {
+        led_ctrl(POWER_LED_2, MODULE_POWER_OFF);
+        led_ctrl(POWER_LED_1, MODULE_POWER_ON);
+    }
+    else if(status == LED_STATUS_ERR)
+    {
+        led_ctrl(POWER_LED_1, MODULE_POWER_OFF);
+        led_ctrl(POWER_LED_2, MODULE_POWER_ON);
+    }
+}
+
+void led_ctrl_battery_status(uint8_t status)
+{
+    if(status == LED_STATUS_OFF)
+    {
+        led_ctrl(POWER_LED_3 | POWER_LED_4, MODULE_POWER_OFF);
+    }
+    else if(status == LED_STATUS_OK)
+    {
+        led_ctrl(POWER_LED_4, MODULE_POWER_OFF);
+        led_ctrl(POWER_LED_3, MODULE_POWER_ON);
+    }
+    else if(status == LED_STATUS_ERR)
+    {
+        led_ctrl(POWER_LED_3, MODULE_POWER_OFF);
+        led_ctrl(POWER_LED_4, MODULE_POWER_ON);
+    }
+}
+
+
+void led_ctrl_trans_status(uint8_t status)
+{
+    if(status == LED_STATUS_OFF)
+    {
+        led_ctrl(POWER_LED_5 | POWER_LED_6, MODULE_POWER_OFF);
+    }
+    else if(status == LED_STATUS_OK)
+    {
+        led_ctrl(POWER_LED_6, MODULE_POWER_OFF);
+        led_ctrl(POWER_LED_5, MODULE_POWER_ON);
+    }
+    else if(status == LED_STATUS_ERR)
+    {
+        led_ctrl(POWER_LED_5, MODULE_POWER_OFF);
+        led_ctrl(POWER_LED_6, MODULE_POWER_ON);
+    }
+}
+
+
 uint8_t get_camera_led_status(uint8_t led)
 {
     if(led == LED_CAMERA_FRONT)
@@ -547,157 +698,165 @@ uint8_t get_door_status(uint32_t door_id)
     return 0;
 }
 
-void power_ctrl(uint32_t power_en, uint8_t on_off)
+void power_ctrl(uint32_t power_en, uint8_t on_off, uint8_t group)
 {
-    if(MODULE_POWER_ON == on_off)
+    if(group == 1)
     {
-        if(power_en & POWER_5V_EN)
+        if(MODULE_POWER_ON == on_off)
         {
-            main_power_module_5v_ctrl(MODULE_POWER_ON);
-        }
+            if(power_en & POWER_5V_EN)
+            {
+                main_power_module_5v_ctrl(MODULE_POWER_ON);
+            }
 
 
-        if(power_en & POWER_12V_EN)
-        {
-            main_power_module_12v_ctrl(MODULE_POWER_ON);
-        }
-        if(power_en & POWER_24V_EN)
-        {
-            main_power_module_24v_ctrl(MODULE_POWER_ON);
-        }
+            if(power_en & POWER_12V_EN)
+            {
+                main_power_module_12v_ctrl(MODULE_POWER_ON);
+            }
+            if(power_en & POWER_24V_EN)
+            {
+                main_power_module_24v_ctrl(MODULE_POWER_ON);
+            }
 
 
-//        if(power_en & POWER_LED_MCU)
-//        {
-//            MicoGpioOutputLow(MICO_GPIO_LED_MCU_POWER_EN);
-//        }
-        if(power_en & POWER_LED_MCU)
-        {
-            led_mcu_power_ctrl(MODULE_POWER_ON);
-        }
-        if(power_en & LED_MCU_RST)
-        {
-            led_mcu_rst_ctrl(MODULE_POWER_ON);
-        }
+        //        if(power_en & POWER_LED_MCU)
+        //        {
+        //            MicoGpioOutputLow(MICO_GPIO_LED_MCU_POWER_EN);
+        //        }
+            if(power_en & POWER_LED_MCU)
+            {
+                led_mcu_power_ctrl(MODULE_POWER_ON);
+            }
+            if(power_en & LED_MCU_RST)
+            {
+                led_mcu_rst_ctrl(MODULE_POWER_ON);
+            }
 
 
-        if(power_en & POWER_CAMERA_FRONT_LED)
-        {
-            camera_led_ctrl(LED_CAMERA_FRONT, MODULE_POWER_ON);
-        }
-        if(power_en & POWER_CAMERA_BACK_LED)
-        {
-            camera_led_ctrl(LED_CAMERA_BACK, MODULE_POWER_ON);
-        }
+            if(power_en & POWER_CAMERA_FRONT_LED)
+            {
+                camera_led_ctrl(LED_CAMERA_FRONT, MODULE_POWER_ON);
+            }
+            if(power_en & POWER_CAMERA_BACK_LED)
+            {
+                camera_led_ctrl(LED_CAMERA_BACK, MODULE_POWER_ON);
+            }
 
-//        if(power_en & POWER_CTRL_OUT)
-//        {
-//            MicoGpioOutputHigh(MICO_GPIO_PWR_CTRL_OUT);
-//        }
+        //        if(power_en & POWER_CTRL_OUT)
+        //        {
+        //            MicoGpioOutputHigh(MICO_GPIO_PWR_CTRL_OUT);
+        //        }
 
-        if(power_en & POWER_VSYS_24V_NV)
-        {
-            door_ctrl(DOOR_NO_ID_1, MODULE_POWER_ON);
-        }
-        if(power_en & POWER_DOOR_CTRL)
-        {
-            door_ctrl(DOOR_NO_ID_2, MODULE_POWER_ON);
-        }
+            if(power_en & POWER_VSYS_24V_NV)
+            {
+                door_ctrl(DOOR_NO_ID_1, MODULE_POWER_ON);
+            }
+            if(power_en & POWER_DOOR_CTRL)
+            {
+                door_ctrl(DOOR_NO_ID_2, MODULE_POWER_ON);
+            }
 
-        if(power_en & POWER_3V3_CARD_EN_1)
-        {
-            door_ctrl(DOOR_ID_1, MODULE_POWER_ON);
-        }
+            if(power_en & POWER_3V3_CARD_EN_1)
+            {
+                door_ctrl(DOOR_ID_1, MODULE_POWER_ON);
+            }
 
-        if(power_en & POWER_3V3_CARD_EN_2)
-        {
-            door_ctrl(DOOR_ID_2, MODULE_POWER_ON);
-        }
+            if(power_en & POWER_3V3_CARD_EN_2)
+            {
+                door_ctrl(DOOR_ID_2, MODULE_POWER_ON);
+            }
 
-        if(power_en & POWER_3V3_CARD_EN_3)
-        {
-            door_ctrl(DOOR_ID_3, MODULE_POWER_ON);
-        }
+            if(power_en & POWER_3V3_CARD_EN_3)
+            {
+                door_ctrl(DOOR_ID_3, MODULE_POWER_ON);
+            }
 
-        if(power_en & POWER_3V3_CARD_EN_4)
+            if(power_en & POWER_3V3_CARD_EN_4)
+            {
+                door_ctrl(DOOR_ID_4, MODULE_POWER_ON);
+            }
+        }
+        else if(MODULE_POWER_OFF == on_off)
         {
-            door_ctrl(DOOR_ID_4, MODULE_POWER_ON);
+
+            if(power_en & POWER_5V_EN)
+            {
+                main_power_module_5v_ctrl(MODULE_POWER_OFF);
+            }
+
+            if(power_en & POWER_12V_EN)
+            {
+                main_power_module_12v_ctrl(MODULE_POWER_OFF);
+            }
+            if(power_en & POWER_24V_EN)
+            {
+                main_power_module_24v_ctrl(MODULE_POWER_OFF);
+            }
+
+
+        //        if(power_en & POWER_LED_MCU)
+        //        {
+        //            MicoGpioOutputHigh(MICO_GPIO_LED_MCU_POWER_EN);
+        //        }
+
+
+        //        if(power_en & POWER_CTRL_OUT)
+        //        {
+        //            MicoGpioOutputLow(MICO_GPIO_PWR_CTRL_OUT);
+        //        }
+
+            if(power_en & POWER_LED_MCU)
+            {
+                led_mcu_power_ctrl(MODULE_POWER_OFF);
+            }
+            if(power_en & LED_MCU_RST)
+            {
+                led_mcu_rst_ctrl(MODULE_POWER_OFF);
+            }
+            if(power_en & POWER_CAMERA_FRONT_LED)
+            {
+                camera_led_ctrl(LED_CAMERA_FRONT, MODULE_POWER_OFF);
+            }
+            if(power_en & POWER_CAMERA_BACK_LED)
+            {
+                camera_led_ctrl(LED_CAMERA_BACK, MODULE_POWER_OFF);
+            }
+
+            if(power_en & POWER_VSYS_24V_NV)
+            {
+                door_ctrl(DOOR_NO_ID_1, MODULE_POWER_OFF);
+            }
+            if(power_en & POWER_DOOR_CTRL)
+            {
+                door_ctrl(DOOR_NO_ID_2, MODULE_POWER_OFF);
+            }
+
+            if(power_en & POWER_3V3_CARD_EN_1)
+            {
+                door_ctrl(DOOR_ID_1, MODULE_POWER_OFF);
+            }
+
+            if(power_en & POWER_3V3_CARD_EN_2)
+            {
+                door_ctrl(DOOR_ID_2, MODULE_POWER_OFF);
+            }
+
+            if(power_en & POWER_3V3_CARD_EN_3)
+            {
+                door_ctrl(DOOR_ID_3, MODULE_POWER_OFF);
+            }
+
+            if(power_en & POWER_3V3_CARD_EN_4)
+            {
+                door_ctrl(DOOR_ID_4, MODULE_POWER_OFF);
+            }
         }
     }
-    else if(MODULE_POWER_OFF == on_off)
+    else if(group == 2)
     {
-
-        if(power_en & POWER_5V_EN)
-        {
-            main_power_module_5v_ctrl(MODULE_POWER_OFF);
-        }
-
-        if(power_en & POWER_12V_EN)
-        {
-            main_power_module_12v_ctrl(MODULE_POWER_OFF);
-        }
-        if(power_en & POWER_24V_EN)
-        {
-            main_power_module_24v_ctrl(MODULE_POWER_OFF);
-        }
-
-
-//        if(power_en & POWER_LED_MCU)
-//        {
-//            MicoGpioOutputHigh(MICO_GPIO_LED_MCU_POWER_EN);
-//        }
-
-
-//        if(power_en & POWER_CTRL_OUT)
-//        {
-//            MicoGpioOutputLow(MICO_GPIO_PWR_CTRL_OUT);
-//        }
-
-        if(power_en & POWER_LED_MCU)
-        {
-            led_mcu_power_ctrl(MODULE_POWER_OFF);
-        }
-        if(power_en & LED_MCU_RST)
-        {
-            led_mcu_rst_ctrl(MODULE_POWER_OFF);
-        }
-        if(power_en & POWER_CAMERA_FRONT_LED)
-        {
-            camera_led_ctrl(LED_CAMERA_FRONT, MODULE_POWER_OFF);
-        }
-        if(power_en & POWER_CAMERA_BACK_LED)
-        {
-            camera_led_ctrl(LED_CAMERA_BACK, MODULE_POWER_OFF);
-        }
-
-        if(power_en & POWER_VSYS_24V_NV)
-        {
-            door_ctrl(DOOR_NO_ID_1, MODULE_POWER_OFF);
-        }
-        if(power_en & POWER_DOOR_CTRL)
-        {
-            door_ctrl(DOOR_NO_ID_2, MODULE_POWER_OFF);
-        }
-
-        if(power_en & POWER_3V3_CARD_EN_1)
-        {
-            door_ctrl(DOOR_ID_1, MODULE_POWER_OFF);
-        }
-
-        if(power_en & POWER_3V3_CARD_EN_2)
-        {
-            door_ctrl(DOOR_ID_2, MODULE_POWER_OFF);
-        }
-
-        if(power_en & POWER_3V3_CARD_EN_3)
-        {
-            door_ctrl(DOOR_ID_3, MODULE_POWER_OFF);
-        }
-
-        if(power_en & POWER_3V3_CARD_EN_4)
-        {
-            door_ctrl(DOOR_ID_4, MODULE_POWER_OFF);
-        }
+        /*
+        */
     }
 }
 
@@ -935,6 +1094,8 @@ void hardware_init(void)
     ir_led_pwm_ctrl(20);
     rgb_leds_pwm_init();
     test_hardware_version = get_hardware_version();
+
+    led_ctrl(POWER_LED_1 | POWER_LED_2 | POWER_LED_3 | POWER_LED_4 | POWER_LED_5 | POWER_LED_6, MODULE_POWER_ON);
 }
 
 void user_param_init(void)

@@ -142,10 +142,10 @@ void set_rgb_leds_effect(const light_mode_t light_mode, color_t  *cur_color, con
 
             break;
         case LIGHTS_MODE_SETTING:
-            cur_rgb_leds_effect.color[0] = rgb_color[SERIAL_LED_COLOR_SETTING_C];
+            cur_rgb_leds_effect.color[0] = *cur_color;
             cur_rgb_leds_effect.color[1] = rgb_color[SERIAL_LED_COLOR_NONE_C];
             cur_rgb_leds_effect.color_number = 2;
-            cur_rgb_leds_effect.period = period * 10;
+            cur_rgb_leds_effect.period = period * 10 * OS_TICKS_PER_SEC / 1000;
             cur_rgb_leds_effect.tick = 0;
 
             break;
