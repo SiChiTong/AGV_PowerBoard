@@ -1114,7 +1114,7 @@ void set_rgb_leds_b(uint8_t b)
 }
 
 uint32_t test_hardware_version = 0;
-uint16_t test_dev_id = 0;
+uint16_t device_id = 0;
 void hardware_init(void)
 {
     platform_gpio_init();
@@ -1123,7 +1123,7 @@ void hardware_init(void)
     ir_led_pwm_ctrl(20);
     rgb_leds_pwm_init();
     test_hardware_version = get_hardware_version();
-    test_dev_id = get_device_id();
+    device_id = get_device_id();
 }
 
 void user_param_init(void)

@@ -69,8 +69,9 @@ uint16_t get_device_id(void)
     uint16_t old_dev_id = 0;
     uint8_t filter_cnt = 0;
     uint8_t retry_cnt = 20;
-    while(retry_cnt--)
+    while(retry_cnt)
     {
+        retry_cnt -= 1;
         old_dev_id = new_dev_id;
         new_dev_id = get_device_gpio_status();
         if(old_dev_id != new_dev_id)
