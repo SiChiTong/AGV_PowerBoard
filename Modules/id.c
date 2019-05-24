@@ -62,3 +62,31 @@ uint8_t get_hardware_version(void)
 
 }
 
+
+uint16_t get_device_id(void)
+{
+    uint16_t new_dev_id = 0;
+    uint16_t old_dev_id = 0;
+    uint8_t filter_cnt = 0;
+    uint8_t retry_cnt = 20;
+    while(retry_cnt--)
+    {
+        old_dev_id = new_dev_id;
+        new_dev_id = get_device_gpio_status();
+        if(old_dev_id != new_dev_id)
+        {
+            filter_cnt = 0;
+        }
+        delay_us_ex(10 * 1000);
+        filter_cnt++;
+        if(filter_cnt >= 5)
+        {
+            break;
+        }
+    }
+    if(retry_cnt == 0)  //get dev id failed
+    {
+        return 0;
+    }
+    return new_dev_id;
+}

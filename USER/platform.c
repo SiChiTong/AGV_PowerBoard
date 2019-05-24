@@ -42,15 +42,15 @@ const platform_gpio_t platform_gpio_pins[] =
 
 
 
-    [PLATFORM_GPIO_12V_EXTEND_EN]       = { GPIOF, GPIO_Pin_3 },
-    [PLATFORM_GPIO_12V_X86_EN]          = { GPIOF, GPIO_Pin_4 },
-    [PLATFORM_GPIO_12V_NV_EN]           = { GPIOF, GPIO_Pin_5 },
+//    [PLATFORM_GPIO_12V_EXTEND_EN]       = { GPIOF, GPIO_Pin_3 },
+//    [PLATFORM_GPIO_12V_X86_EN]          = { GPIOF, GPIO_Pin_4 },
+//    [PLATFORM_GPIO_12V_NV_EN]           = { GPIOF, GPIO_Pin_5 },
     [PLATFORM_GPIO_5V_EN]               = { GPIOE,  GPIO_Pin_7 },
     [PLATFORM_GPIO_12V_EN]              = { GPIOE,  GPIO_Pin_8 },
     [PLATFORM_GPIO_24V_EN]              = { GPIOE,  GPIO_Pin_9 },
 
 
-    [PLATFORM_GPIO_12V_PAD_EN]          = { GPIOF, GPIO_Pin_0 },
+//    [PLATFORM_GPIO_12V_PAD_EN]          = { GPIOF, GPIO_Pin_0 },
     [PLATFORM_GPIO_PWR_NV]              = { GPIOF, GPIO_Pin_13 },
     [PLATFORM_GPIO_PWR_PAD]             = { GPIOF, GPIO_Pin_15 },
     [PLATFORM_GPIO_PWR_X86]             = { GPIOG,  GPIO_Pin_0 },
@@ -97,6 +97,16 @@ const platform_gpio_t platform_gpio_pins[] =
     [PLATFORM_GPIO_LED_CTRL_4]          = {GPIOG, GPIO_Pin_4},
     [PLATFORM_GPIO_LED_CTRL_5]          = {GPIOD, GPIO_Pin_15},
     [PLATFORM_GPIO_LED_CTRL_6]          = {GPIOD, GPIO_Pin_14},
+
+    [PLATFORM_GPIO_S_1]                 = {GPIOF, GPIO_Pin_0},
+    [PLATFORM_GPIO_S_2]                 = {GPIOF, GPIO_Pin_1},
+    [PLATFORM_GPIO_S_3]                 = {GPIOF, GPIO_Pin_2},
+    [PLATFORM_GPIO_S_4]                 = {GPIOF, GPIO_Pin_3},
+    [PLATFORM_GPIO_S_5]                 = {GPIOF, GPIO_Pin_4},
+    [PLATFORM_GPIO_S_6]                 = {GPIOF, GPIO_Pin_5},
+    [PLATFORM_GPIO_S_7]                 = {GPIOF, GPIO_Pin_6},
+    [PLATFORM_GPIO_S_8]                 = {GPIOF, GPIO_Pin_7},
+    [PLATFORM_GPIO_S_9]                 = {GPIOF, GPIO_Pin_8},
 
 };
 
@@ -253,7 +263,7 @@ static void event_button_init(void)
     GPIO_Init(GPIOD, &GPIO_InitStructure);
 }
 
-static void led_ctrl_init(void)
+static void status_led_init(void)
 {
     GPIO_InitTypeDef  GPIO_InitStructure;
 
@@ -275,16 +285,35 @@ static void led_ctrl_init(void)
 
 }
 
+
+static void device_id_gpio_init(void)
+{
+    GPIO_InitTypeDef  GPIO_InitStructure;
+
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_Init(GPIOF, &GPIO_InitStructure);
+}
+
+
+uint16_t get_device_gpio_status(void)
+{
+    return GPIO_ReadInputData(GPIOF) & 0x01ff;
+}
+
 static void platform_gpio_init(void)
 {
     output_gpio_init();
     init_set_gpio();
     init_reset_gpio();
 
+    led_init();
     input_gpio_init();
     charge_gpio_init();
     event_button_init();
-    led_ctrl_init();
+    status_led_init();
+    device_id_gpio_init();
 }
 
 
@@ -608,13 +637,13 @@ void led_ctrl_wifi_status(uint8_t status)
     }
     else if(status == LED_STATUS_OK)
     {
-        led_ctrl(POWER_LED_2, MODULE_POWER_OFF);
-        led_ctrl(POWER_LED_1, MODULE_POWER_ON);
+        led_ctrl(POWER_LED_1, MODULE_POWER_OFF);
+        led_ctrl(POWER_LED_2, MODULE_POWER_ON);
     }
     else if(status == LED_STATUS_ERR)
     {
-        led_ctrl(POWER_LED_1, MODULE_POWER_OFF);
-        led_ctrl(POWER_LED_2, MODULE_POWER_ON);
+        led_ctrl(POWER_LED_2, MODULE_POWER_OFF);
+        led_ctrl(POWER_LED_1, MODULE_POWER_ON);
     }
 }
 
@@ -626,13 +655,13 @@ void led_ctrl_battery_status(uint8_t status)
     }
     else if(status == LED_STATUS_OK)
     {
-        led_ctrl(POWER_LED_4, MODULE_POWER_OFF);
-        led_ctrl(POWER_LED_3, MODULE_POWER_ON);
+        led_ctrl(POWER_LED_3, MODULE_POWER_OFF);
+        led_ctrl(POWER_LED_4, MODULE_POWER_ON);
     }
     else if(status == LED_STATUS_ERR)
     {
-        led_ctrl(POWER_LED_3, MODULE_POWER_OFF);
-        led_ctrl(POWER_LED_4, MODULE_POWER_ON);
+        led_ctrl(POWER_LED_4, MODULE_POWER_OFF);
+        led_ctrl(POWER_LED_3, MODULE_POWER_ON);
     }
 }
 
@@ -645,13 +674,13 @@ void led_ctrl_trans_status(uint8_t status)
     }
     else if(status == LED_STATUS_OK)
     {
-        led_ctrl(POWER_LED_6, MODULE_POWER_OFF);
-        led_ctrl(POWER_LED_5, MODULE_POWER_ON);
+        led_ctrl(POWER_LED_5, MODULE_POWER_OFF);
+        led_ctrl(POWER_LED_6, MODULE_POWER_ON);
     }
     else if(status == LED_STATUS_ERR)
     {
-        led_ctrl(POWER_LED_5, MODULE_POWER_OFF);
-        led_ctrl(POWER_LED_6, MODULE_POWER_ON);
+        led_ctrl(POWER_LED_6, MODULE_POWER_OFF);
+        led_ctrl(POWER_LED_5, MODULE_POWER_ON);
     }
 }
 
@@ -1085,17 +1114,16 @@ void set_rgb_leds_b(uint8_t b)
 }
 
 uint32_t test_hardware_version = 0;
+uint16_t test_dev_id = 0;
 void hardware_init(void)
 {
     platform_gpio_init();
     bat_uart_init();
-    led_init();
     init_can1();
     ir_led_pwm_ctrl(20);
     rgb_leds_pwm_init();
     test_hardware_version = get_hardware_version();
-
-    led_ctrl(POWER_LED_1 | POWER_LED_2 | POWER_LED_3 | POWER_LED_4 | POWER_LED_5 | POWER_LED_6, MODULE_POWER_ON);
+    test_dev_id = get_device_id();
 }
 
 void user_param_init(void)

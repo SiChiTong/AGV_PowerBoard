@@ -35,11 +35,11 @@ typedef enum
     PLATFORM_GPIO_I2C_SDA,
 #endif
 
-    PLATFORM_GPIO_12V_PAD_EN,
+//    PLATFORM_GPIO_12V_PAD_EN,
 
-    PLATFORM_GPIO_12V_EXTEND_EN,
-    PLATFORM_GPIO_12V_X86_EN,
-    PLATFORM_GPIO_12V_NV_EN,
+//    PLATFORM_GPIO_12V_EXTEND_EN,
+//    PLATFORM_GPIO_12V_X86_EN,
+//    PLATFORM_GPIO_12V_NV_EN,
 
     PLATFORM_GPIO_PWR_NV,
     PLATFORM_GPIO_PWR_PAD,
@@ -90,6 +90,16 @@ typedef enum
     PLATFORM_GPIO_LED_CTRL_4,
     PLATFORM_GPIO_LED_CTRL_5,
     PLATFORM_GPIO_LED_CTRL_6,
+
+    PLATFORM_GPIO_S_1,
+    PLATFORM_GPIO_S_2,
+    PLATFORM_GPIO_S_3,
+    PLATFORM_GPIO_S_4,
+    PLATFORM_GPIO_S_5,
+    PLATFORM_GPIO_S_6,
+    PLATFORM_GPIO_S_7,
+    PLATFORM_GPIO_S_8,
+    PLATFORM_GPIO_S_9,
 
     PLATFORM_GPIO_MAX, /* Denotes the total number of GPIO port aliases. Not a valid GPIO alias */
     PLATFORM_GPIO_NONE,
@@ -287,5 +297,7 @@ void set_rgb_leds_b(uint8_t b);
 void led_ctrl_wifi_status(uint8_t status);
 void led_ctrl_battery_status(uint8_t status);
 void led_ctrl_trans_status(uint8_t status);
+
+uint16_t get_device_gpio_status(void);
 
 #endif

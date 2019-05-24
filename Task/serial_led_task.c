@@ -13,19 +13,14 @@ OS_STK serial_led_task_stk[SERIAL_LED_TASK_STK_SIZE] = {0};
 void set_rgb_color(const color_t color);
 void serial_led_task(void *pdata)
 {
-    color_t color = {0};
     delay_ms(1000);
-    set_serial_leds_effect(LIGHTS_MODE_NORMAL, NULL, 0);
+    //set_serial_leds_effect(LIGHTS_MODE_NORMAL, NULL, 0);
     set_rgb_leds_effect(LIGHTS_MODE_NORMAL, NULL, 0);
-    color.r = 25;
-    color.g = 26;
-    color.b = 26;
-    set_rgb_color(color);
     while(1)
     {
         //serial_leds_tick();
-        delay_ms(110);
         rgb_leds_tick();
+        delay_ms(110);
     }
 }
 

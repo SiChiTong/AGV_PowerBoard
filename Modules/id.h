@@ -15,5 +15,6 @@ typedef enum
 
 void id_key_init(void);
 uint8_t get_hardware_version(void);
+uint16_t get_device_id(void);
 
 #endif
