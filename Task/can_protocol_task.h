@@ -68,6 +68,8 @@ void can_send_task(void *pdata);
 #define CAN_SOURCE_ID_GET_DEV_ID                    0x8f
 
 
+
+
 #define CAN_ONE_FRAME_DATA_LENTH    7
 #define CAN_SEG_NUM_MAX             64
 #define CAN_LONG_FRAME_LENTH_MAX    (CAN_ONE_FRAME_DATA_LENTH*CAN_SEG_NUM_MAX)

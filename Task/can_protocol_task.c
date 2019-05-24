@@ -284,16 +284,20 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
                 case CAN_SOURCE_ID_GET_BAT_STATE:
                     if(battery_pack.com_status == FALSE)
                     {
-                        *(uint16_t*)&data_out[1] = 0;
-                        data_out[3] = 0;
+                        memset(data_out, 0, 13);
                     }
                     else
                     {
                         *(uint16_t*)&data_out[1] = battery_pack.pack_voltage;
                         data_out[3] = battery_pack.percentage;
+                        *(uint16_t*)&data_out[4] = battery_pack.pack_current;
+                        *(uint16_t*)&data_out[6] = battery_pack.pack_current_soc;
+                        *(uint16_t*)&data_out[8] = battery_pack.pack_totoal_soc;
+                        *(uint16_t*)&data_out[10] = battery_pack.pack_recharge_cycle;
+                        data_out[12] = battery_pack.com_status;
                     }
 
-                    return 4;
+                    return 13;
 
                 case CAN_SOURCE_ID_GET_SYS_STATE:
                     *(uint16_t*)&data_out[1] = sys_status->sys_status;

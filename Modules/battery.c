@@ -448,7 +448,7 @@ void print_bat_info(void)
 
 #define BAT_SOI     0x7E
 #define BAT_EOI     0x0D
-#define BATTERY_COM_ERR_DEBOUNCE_CNT    20
+#define BATTERY_COM_ERR_DEBOUNCE_CNT    10
 static uint8_t battery_com_err_cnt = 0;
 extern void upload_bat_info(void);
 void battery_period(void)
@@ -481,6 +481,7 @@ void battery_period(void)
         printf(" CAN NOT GET BATTERY INFO ! ! !\r\n");
         {
             battery_pack.com_status = FALSE;
+            memset((void *)(&battery_pack), 0, sizeof(battery_pack));
 //                upload_bat_info();
         }
         battery_com_err_cnt = 0;
