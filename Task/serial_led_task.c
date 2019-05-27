@@ -20,7 +20,7 @@ void serial_led_task(void *pdata)
     {
         //serial_leds_tick();
         rgb_leds_tick();
-        delay_ms(110);
+        delay_ms(50);
     }
 }
 

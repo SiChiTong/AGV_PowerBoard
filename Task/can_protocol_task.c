@@ -241,31 +241,30 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
                     return CMD_NOT_FOUND;
 
                 case CAN_SOURCE_ID_SET_MODULE_STATE:
-
-                    data_out[0] = data_in[0];
-
+                {
+                    uint8_t group_num = data_in[1];
+                    if((group_num ==1) || (group_num == 2))
                     {
-                        if(data_in[1] == 1)//group num = 1
+                        //uint32_t module = (data_in[5]) | (data_in[4]<<8) | (data_in[3] << 16) | (data_in[2] << 24);
+                        uint32_t module = *(uint32_t *)&data_in[2];
+                        uint8_t on_off;
+                        data_out[0] = data_in[0];
+                        if((data_in[6] != MODULE_POWER_OFF) && (data_in[6] != MODULE_POWER_ON))
                         {
-                            //uint32_t module = (data_in[5]) | (data_in[4]<<8) | (data_in[3] << 16) | (data_in[2] << 24);
-                            uint32_t module = *(uint32_t *)&data_in[2];
-                            uint8_t on_off;
-                            if((data_in[6] != MODULE_POWER_OFF) && (data_in[6] != MODULE_POWER_ON))
-                            {
-                                return 0;
-                            }
-                            on_off = data_in[6];
-                            module &= 0xffffffff;
-                            power_ctrl(module, on_off, 1);
-                            uint32_t tmp = get_module_power_state(POWER_ALL);
-                            data_out[1] = data_in[1];
-                            *(uint32_t*)&data_out[2] = module;
-                            *(uint32_t*)&data_out[6] = tmp;
-                            data_out[10] = on_off;
-                            return 11;
+                            return 0;
                         }
+                        on_off = data_in[6];
+                        module &= 0xffffffff;
+                        power_ctrl(module, on_off, group_num);
+                        uint32_t tmp = get_module_power_state(POWER_ALL);
+                        data_out[1] = data_in[1];
+                        *(uint32_t*)&data_out[2] = module;
+                        *(uint32_t*)&data_out[6] = tmp;
+                        data_out[10] = on_off;
+                        return 11;
                     }
-                    return CMD_NOT_FOUND;
+                }
+                return CMD_NOT_FOUND;
 
                 case CAN_SOURCE_ID_GET_MODULE_STATE:
 

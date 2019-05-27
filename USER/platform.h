@@ -101,6 +101,8 @@ typedef enum
     PLATFORM_GPIO_S_8,
     PLATFORM_GPIO_S_9,
 
+    PLATFORM_GPIO_HEAD_CAMERA_LED,
+
     PLATFORM_GPIO_MAX, /* Denotes the total number of GPIO port aliases. Not a valid GPIO alias */
     PLATFORM_GPIO_NONE,
 } platform_gpio_e;
@@ -165,6 +167,9 @@ typedef enum
 #define POWER_LED_6                 0x00000020
 #define POWER_LED_7                 0x00000040
 #define POWER_LED_8                 0x00000080
+
+#define POWER_MOTOR_MCU             0x00000100
+#define POWER_HEAD_CAMERA_LED       0x00000200
 
 //#define MODULE_POWER_ON     1
 //#define MODULE_POWER_OFF    0

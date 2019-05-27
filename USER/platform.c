@@ -107,6 +107,7 @@ const platform_gpio_t platform_gpio_pins[] =
     [PLATFORM_GPIO_S_7]                 = {GPIOF, GPIO_Pin_6},
     [PLATFORM_GPIO_S_8]                 = {GPIOF, GPIO_Pin_7},
     [PLATFORM_GPIO_S_9]                 = {GPIOF, GPIO_Pin_8},
+    [PLATFORM_GPIO_HEAD_CAMERA_LED]     = {GPIOG, GPIO_Pin_2},
 
 };
 
@@ -286,6 +287,31 @@ static void status_led_init(void)
 }
 
 
+static void motor_mcu_power_init(void)
+{
+    GPIO_InitTypeDef  GPIO_InitStructure;
+
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOG, &GPIO_InitStructure);
+    GPIO_SetBits(GPIOG, GPIO_Pin_3);
+}
+
+
+static void head_camera_led_init(void)
+{
+    GPIO_InitTypeDef  GPIO_InitStructure;
+
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOG, &GPIO_InitStructure);
+    GPIO_ResetBits(GPIOG, GPIO_Pin_2);
+}
+
 static void device_id_gpio_init(void)
 {
     GPIO_InitTypeDef  GPIO_InitStructure;
@@ -308,7 +334,9 @@ static void platform_gpio_init(void)
     init_set_gpio();
     init_reset_gpio();
 
+    motor_mcu_power_init();
     led_init();
+    head_camera_led_init();
     input_gpio_init();
     charge_gpio_init();
     event_button_init();
@@ -337,6 +365,17 @@ void release_power(void)
     GPIO_ResetBits(GPIOD, GPIO_Pin_10);
 }
 
+void motor_mcu_ctrl(uint8_t on_off)
+{
+    if(on_off == MODULE_POWER_ON)
+    {
+        GPIO_ResetBits(GPIOG, GPIO_Pin_3);
+    }
+    else if(on_off == MODULE_POWER_OFF)
+    {
+        GPIO_SetBits(GPIOG, GPIO_Pin_3);
+    }
+}
 
 void x86_power_signal_ctrl(uint8_t on_off)
 {
@@ -697,6 +736,19 @@ void led_ctrl_trans_status(uint8_t status)
 }
 
 
+
+void head_camera_led_ctrl(uint8_t on_off)
+{
+    if(on_off == MODULE_POWER_ON)
+    {
+        GPIO_SetBits(platform_gpio_pins[PLATFORM_GPIO_HEAD_CAMERA_LED].GPIOx, platform_gpio_pins[PLATFORM_GPIO_HEAD_CAMERA_LED].GPIO_Pin);
+    }
+    else if(on_off == MODULE_POWER_OFF)
+    {
+        GPIO_ResetBits(platform_gpio_pins[PLATFORM_GPIO_HEAD_CAMERA_LED].GPIOx, platform_gpio_pins[PLATFORM_GPIO_HEAD_CAMERA_LED].GPIO_Pin);
+    }
+}
+
 uint8_t get_camera_led_status(uint8_t led)
 {
     if(led == LED_CAMERA_FRONT)
@@ -896,8 +948,28 @@ void power_ctrl(uint32_t power_en, uint8_t on_off, uint8_t group)
     }
     else if(group == 2)
     {
-        /*
-        */
+        if(MODULE_POWER_ON == on_off)
+        {
+            if(power_en & POWER_MOTOR_MCU)
+            {
+                motor_mcu_ctrl(MODULE_POWER_ON);
+            }
+            if(power_en & POWER_HEAD_CAMERA_LED)
+            {
+                head_camera_led_ctrl(MODULE_POWER_ON);
+            }
+        }
+        else if(MODULE_POWER_OFF == on_off)
+        {
+            if(power_en & POWER_MOTOR_MCU)
+            {
+                motor_mcu_ctrl(MODULE_POWER_OFF);
+            }
+            if(power_en & POWER_HEAD_CAMERA_LED)
+            {
+                head_camera_led_ctrl(MODULE_POWER_OFF);
+            }
+        }
     }
 }
 
