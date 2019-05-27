@@ -10,7 +10,7 @@
 #include "delay.h"
 
 OS_STK serial_led_task_stk[SERIAL_LED_TASK_STK_SIZE] = {0};
-void set_rgb_color(const color_t color);
+
 void serial_led_task(void *pdata)
 {
     delay_ms(1000);

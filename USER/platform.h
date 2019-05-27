@@ -191,6 +191,7 @@ typedef enum
     LED_STATUS_OFF = 1,
     LED_STATUS_OK ,
     LED_STATUS_ERR,
+    LED_STATUS_WARN,
     LED_STATUS_MAX,
 }led_ctrl_status_e;
 

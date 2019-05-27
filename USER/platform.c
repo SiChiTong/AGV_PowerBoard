@@ -645,6 +645,10 @@ void led_ctrl_wifi_status(uint8_t status)
         led_ctrl(POWER_LED_2, MODULE_POWER_OFF);
         led_ctrl(POWER_LED_1, MODULE_POWER_ON);
     }
+    else if(status == LED_STATUS_WARN)
+    {
+        led_ctrl(POWER_LED_1 | POWER_LED_2, MODULE_POWER_ON);
+    }
 }
 
 void led_ctrl_battery_status(uint8_t status)
@@ -662,6 +666,10 @@ void led_ctrl_battery_status(uint8_t status)
     {
         led_ctrl(POWER_LED_4, MODULE_POWER_OFF);
         led_ctrl(POWER_LED_3, MODULE_POWER_ON);
+    }
+    else if(status == LED_STATUS_WARN)
+    {
+        led_ctrl(POWER_LED_3 | POWER_LED_4, MODULE_POWER_ON);
     }
 }
 
@@ -681,6 +689,10 @@ void led_ctrl_trans_status(uint8_t status)
     {
         led_ctrl(POWER_LED_6, MODULE_POWER_OFF);
         led_ctrl(POWER_LED_5, MODULE_POWER_ON);
+    }
+    else if(status == LED_STATUS_WARN)
+    {
+        led_ctrl(POWER_LED_5 | POWER_LED_6, MODULE_POWER_ON);
     }
 }
 
