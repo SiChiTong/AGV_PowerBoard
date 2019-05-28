@@ -9,6 +9,7 @@
 #include "platform.h"
 #include "power_on_off_task.h"
 #include "serial_led.h"
+#include "rgb_leds.h"
 #include <stdio.h>
 
 OS_STK battery_task_stk[BATTERY_TASK_STK_SIZE] = {0};
@@ -21,7 +22,12 @@ void set_sys_low_power_power_off(void)
 
 void set_sys_low_power(void)
 {
+
+#if SERIAL_LED_TYPE == SERIAL_LED_ONE_WIRE
     set_serial_leds_effect(LIGHTS_MODE_LOW_POWER, NULL, 0);
+#elif SERIAL_LED_TYPE == SERIAL_LED_RGB
+    set_rgb_leds_effect(LIGHTS_MODE_LOW_POWER, NULL, 0);
+#endif
 }
 
 void set_sys_normal_power(void)
