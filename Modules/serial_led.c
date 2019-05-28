@@ -8,6 +8,9 @@
 #include <string.h>
 
 
+
+#if SERIAL_LED_TYPE == SERIAL_LED_ONE_WIRE
+
 __IO uint32_t front_left_buff[FRONT_LEFT_LED_NUM] = {0};
 __IO uint32_t front_right_buff[FRONT_RIGHT_LED_NUM] = {0};
 __IO uint32_t back_right_buff[BACK_RIGHT_LED_NUM] = {0};
@@ -431,4 +434,6 @@ void serial_leds_tick(void)
         }
     }
 }
+
+#endif
 

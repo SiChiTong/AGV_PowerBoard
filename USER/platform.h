@@ -3,6 +3,9 @@
 #include "stm32f10x.h"
 #include "ucos_ii.h"
 
+#define SERIAL_LED_RGB          1
+#define SERIAL_LED_ONE_WIRE     2
+#define SERIAL_LED_TYPE         SERIAL_LED_ONE_WIRE
 
 typedef enum
 {

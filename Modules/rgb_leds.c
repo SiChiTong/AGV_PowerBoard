@@ -8,6 +8,7 @@
 #include "platform.h"
 #include <string.h>
 
+#if SERIAL_LED_TYPE == SERIAL_LED_RGB
 
 static rgb_leds_mode_param_t cur_rgb_leds_effect = {0};
 
@@ -169,3 +170,4 @@ void rgb_leds_tick(void)
     }
 }
 
+#endif

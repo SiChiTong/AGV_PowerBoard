@@ -1205,7 +1205,9 @@ void hardware_init(void)
     bat_uart_init();
     init_can1();
     ir_led_pwm_ctrl(20);
+#if SERIAL_LED_TYPE == SERIAL_LED_RGB
     rgb_leds_pwm_init();
+#endif
     test_hardware_version = get_hardware_version();
     device_id = get_device_id();
 }

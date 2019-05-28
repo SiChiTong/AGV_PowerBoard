@@ -324,8 +324,11 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
                         color_t *color;
                         mode =  (light_mode_t)data_in[1];
                         color = (color_t*)&data_in[2];
+#if SERIAL_LED_TYPE == SERIAL_LED_ONE_WIRE
                         set_serial_leds_effect(mode, color, period);
+#elif SERIAL_LED_TYPE == SERIAL_LED_RGB
                         set_rgb_leds_effect(mode, color, period);
+#endif
                         data_out[0] = 0;
                         data_out[1] = 0;
                         data_out[2] = mode;
