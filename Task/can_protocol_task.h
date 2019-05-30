@@ -20,7 +20,7 @@ void can_send_task(void *pdata);
 
 
 
-#define HW_VERSION                      "M30_MAINBOARD_V0.2"
+#define HW_VERSION                      "M30_MAINBOARD_V0.3"
 #define SW_VERSION                      "M30C001M08B101"
 #define PROTOCOL_VERSION                "20170619P0001"
 
