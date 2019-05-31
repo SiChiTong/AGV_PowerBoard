@@ -390,14 +390,14 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
                         return 0;
 
                     }
-
+#if HW_V == HW_V_0_3
                 case CAN_SOURCE_ID_GET_DEV_ID:
                     {
                         extern uint16_t device_id;
                         *(uint16_t *)(&data_out[0]) = device_id;
                         return 2;
                     }
-
+#endif
 
                 case CAN_SOURCE_ID_GET_SERIALS_LEDS_VERSION:
 //                    get_serials_leds_version();

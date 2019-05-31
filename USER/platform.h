@@ -3,6 +3,11 @@
 #include "stm32f10x.h"
 #include "ucos_ii.h"
 
+
+#define HW_V_0_2                2
+#define HW_V_0_3                3
+#define HW_V                    HW_V_0_2
+
 #define SERIAL_LED_RGB          1
 #define SERIAL_LED_ONE_WIRE     2
 #define SERIAL_LED_TYPE         SERIAL_LED_ONE_WIRE
@@ -86,13 +91,22 @@ typedef enum
     PLATFORM_GPIO_SERIAL_LED_EYES,
 
     PLATFORM_GPIO_EVENT_BUTTON,
-
+#if HW_V == HW_V_0_3
     PLATFORM_GPIO_LED_CTRL_1,
     PLATFORM_GPIO_LED_CTRL_2,
     PLATFORM_GPIO_LED_CTRL_3,
     PLATFORM_GPIO_LED_CTRL_4,
     PLATFORM_GPIO_LED_CTRL_5,
     PLATFORM_GPIO_LED_CTRL_6,
+
+#elif HW_V == HW_V_0_2
+    PLATFORM_GPIO_LED_WIFI_RED,
+    PLATFORM_GPIO_LED_WIFI_GREEN,
+    PLATFORM_GPIO_LED_TRANS_RED,
+    PLATFORM_GPIO_LED_TRANS_GREEN,
+    PLATFORM_GPIO_LED_BAT_RED,
+    PLATFORM_GPIO_LED_BAT_GREEN,
+#endif
 
     PLATFORM_GPIO_S_1,
     PLATFORM_GPIO_S_2,
@@ -162,15 +176,23 @@ typedef enum
 
 
 /*********** power control group 2 *************/
-#define POWER_LED_1                 0x00000001
-#define POWER_LED_2                 0x00000002
-#define POWER_LED_3                 0x00000004
-#define POWER_LED_4                 0x00000008
-#define POWER_LED_5                 0x00000010
-#define POWER_LED_6                 0x00000020
-#define POWER_LED_7                 0x00000040
-#define POWER_LED_8                 0x00000080
-
+#if HW_V == HW_V_0_3
+    #define POWER_LED_1                 0x00000001
+    #define POWER_LED_2                 0x00000002
+    #define POWER_LED_3                 0x00000004
+    #define POWER_LED_4                 0x00000008
+    #define POWER_LED_5                 0x00000010
+    #define POWER_LED_6                 0x00000020
+    #define POWER_LED_7                 0x00000040
+    #define POWER_LED_8                 0x00000080
+#elif HW_V == HW_V_0_2
+    #define POWER_LED_WIFI_RED          0x00000001
+    #define POWER_LED_WIFI_GREEN        0x00000002
+    #define POWER_LED_TRANS_RED         0x00000004
+    #define POWER_LED_TRANS_GREEN       0x00000008
+    #define POWER_LED_BAT_RED           0x00000010
+    #define POWER_LED_BAT_GREEN         0x00000020
+#endif
 #define POWER_MOTOR_MCU             0x00000100
 #define POWER_HEAD_CAMERA_LED       0x00000200
 

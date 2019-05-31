@@ -90,13 +90,22 @@ const platform_gpio_t platform_gpio_pins[] =
     [PLATFORM_GPIO_SERIAL_LED_EYES]     = {GPIOA, GPIO_Pin_5},
 
     [PLATFORM_GPIO_EVENT_BUTTON]        = {GPIOD, GPIO_Pin_6},
-
+#if HW_V == HW_V_0_3
     [PLATFORM_GPIO_LED_CTRL_1]          = {GPIOG, GPIO_Pin_8},
     [PLATFORM_GPIO_LED_CTRL_2]          = {GPIOG, GPIO_Pin_7},
     [PLATFORM_GPIO_LED_CTRL_3]          = {GPIOG, GPIO_Pin_5},
     [PLATFORM_GPIO_LED_CTRL_4]          = {GPIOG, GPIO_Pin_4},
     [PLATFORM_GPIO_LED_CTRL_5]          = {GPIOD, GPIO_Pin_15},
     [PLATFORM_GPIO_LED_CTRL_6]          = {GPIOD, GPIO_Pin_14},
+
+#elif HW_V == HW_V_0_2
+    [PLATFORM_GPIO_LED_WIFI_RED]        = {GPIOD, GPIO_Pin_13},
+    [PLATFORM_GPIO_LED_WIFI_GREEN]      = {GPIOD, GPIO_Pin_12},
+    [PLATFORM_GPIO_LED_TRANS_RED]       = {GPIOG, GPIO_Pin_8},
+    [PLATFORM_GPIO_LED_TRANS_GREEN]     = {GPIOG, GPIO_Pin_7},
+    [PLATFORM_GPIO_LED_BAT_RED]         = {GPIOD, GPIO_Pin_15},
+    [PLATFORM_GPIO_LED_BAT_GREEN]       = {GPIOD, GPIO_Pin_14},
+#endif
 
     [PLATFORM_GPIO_S_1]                 = {GPIOF, GPIO_Pin_0},
     [PLATFORM_GPIO_S_2]                 = {GPIOF, GPIO_Pin_1},
@@ -266,6 +275,7 @@ static void event_button_init(void)
 
 static void status_led_init(void)
 {
+#if HW_V == HW_V_0_3
     GPIO_InitTypeDef  GPIO_InitStructure;
 
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);
@@ -283,7 +293,25 @@ static void status_led_init(void)
     GPIO_Init(GPIOD, &GPIO_InitStructure);
 
     GPIO_ResetBits(GPIOD, GPIO_Pin_14 | GPIO_Pin_15);
+#elif HW_V == HW_V_0_2
+    GPIO_InitTypeDef  GPIO_InitStructure;
 
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_7;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOG, &GPIO_InitStructure);
+
+    GPIO_ResetBits(GPIOG, GPIO_Pin_8 | GPIO_Pin_7);
+
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14 | GPIO_Pin_15 | GPIO_Pin_13 | GPIO_Pin_12;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOD, &GPIO_InitStructure);
+
+    GPIO_ResetBits(GPIOD, GPIO_Pin_14 | GPIO_Pin_15 | GPIO_Pin_13 | GPIO_Pin_12);
+#endif
 }
 
 
@@ -612,6 +640,7 @@ void door_ctrl(uint32_t door_id, uint8_t on_off)
 
 void led_ctrl(uint32_t leds, uint8_t on_off)
 {
+#if HW_V == HW_V_0_3
     if(on_off == MODULE_POWER_ON)
     {
         if(leds & POWER_LED_1)
@@ -666,10 +695,67 @@ void led_ctrl(uint32_t leds, uint8_t on_off)
             GPIO_ResetBits(platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_6].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_CTRL_6].GPIO_Pin);
         }
     }
+#elif HW_V == HW_V_0_2
+    if(on_off == MODULE_POWER_ON)
+    {
+        if(leds & POWER_LED_WIFI_RED)
+        {
+            GPIO_SetBits(platform_gpio_pins[PLATFORM_GPIO_LED_WIFI_RED].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_WIFI_RED].GPIO_Pin);
+        }
+        if(leds & POWER_LED_WIFI_GREEN)
+        {
+            GPIO_SetBits(platform_gpio_pins[PLATFORM_GPIO_LED_WIFI_GREEN].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_WIFI_GREEN].GPIO_Pin);
+        }
+        if(leds & POWER_LED_TRANS_RED)
+        {
+            GPIO_SetBits(platform_gpio_pins[PLATFORM_GPIO_LED_TRANS_RED].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_TRANS_RED].GPIO_Pin);
+        }
+        if(leds & POWER_LED_TRANS_GREEN)
+        {
+            GPIO_SetBits(platform_gpio_pins[PLATFORM_GPIO_LED_TRANS_GREEN].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_TRANS_GREEN].GPIO_Pin);
+        }
+        if(leds & POWER_LED_BAT_RED)
+        {
+            GPIO_SetBits(platform_gpio_pins[PLATFORM_GPIO_LED_BAT_RED].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_BAT_RED].GPIO_Pin);
+        }
+        if(leds & POWER_LED_BAT_GREEN)
+        {
+            GPIO_SetBits(platform_gpio_pins[PLATFORM_GPIO_LED_BAT_GREEN].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_BAT_GREEN].GPIO_Pin);
+        }
+    }
+    if(on_off == MODULE_POWER_OFF)
+    {
+        if(leds & POWER_LED_WIFI_RED)
+        {
+            GPIO_ResetBits(platform_gpio_pins[PLATFORM_GPIO_LED_WIFI_RED].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_WIFI_RED].GPIO_Pin);
+        }
+        if(leds & POWER_LED_WIFI_GREEN)
+        {
+            GPIO_ResetBits(platform_gpio_pins[PLATFORM_GPIO_LED_WIFI_GREEN].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_WIFI_GREEN].GPIO_Pin);
+        }
+        if(leds & POWER_LED_TRANS_RED)
+        {
+            GPIO_ResetBits(platform_gpio_pins[PLATFORM_GPIO_LED_TRANS_RED].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_TRANS_RED].GPIO_Pin);
+        }
+        if(leds & POWER_LED_TRANS_GREEN)
+        {
+            GPIO_ResetBits(platform_gpio_pins[PLATFORM_GPIO_LED_TRANS_GREEN].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_TRANS_GREEN].GPIO_Pin);
+        }
+        if(leds & POWER_LED_BAT_RED)
+        {
+            GPIO_ResetBits(platform_gpio_pins[PLATFORM_GPIO_LED_BAT_RED].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_BAT_RED].GPIO_Pin);
+        }
+        if(leds & POWER_LED_BAT_GREEN)
+        {
+            GPIO_ResetBits(platform_gpio_pins[PLATFORM_GPIO_LED_BAT_GREEN].GPIOx, platform_gpio_pins[PLATFORM_GPIO_LED_BAT_GREEN].GPIO_Pin);
+        }
+    }
+#endif
 }
 
 void led_ctrl_wifi_status(uint8_t status)
 {
+#if HW_V == HW_V_0_3
     if(status == LED_STATUS_OFF)
     {
         led_ctrl(POWER_LED_1 | POWER_LED_2, MODULE_POWER_OFF);
@@ -688,10 +774,31 @@ void led_ctrl_wifi_status(uint8_t status)
     {
         led_ctrl(POWER_LED_1 | POWER_LED_2, MODULE_POWER_ON);
     }
+#elif HW_V == HW_V_0_2
+    if(status == LED_STATUS_OFF)
+    {
+        led_ctrl(POWER_LED_WIFI_RED | POWER_LED_WIFI_GREEN, MODULE_POWER_OFF);
+    }
+    else if(status == LED_STATUS_OK)
+    {
+        led_ctrl(POWER_LED_WIFI_RED, MODULE_POWER_OFF);
+        led_ctrl(POWER_LED_WIFI_GREEN, MODULE_POWER_ON);
+    }
+    else if(status == LED_STATUS_ERR)
+    {
+        led_ctrl(POWER_LED_WIFI_GREEN, MODULE_POWER_OFF);
+        led_ctrl(POWER_LED_WIFI_RED, MODULE_POWER_ON);
+    }
+    else if(status == LED_STATUS_WARN)
+    {
+        led_ctrl(POWER_LED_WIFI_RED | POWER_LED_WIFI_GREEN, MODULE_POWER_ON);
+    }
+#endif
 }
 
 void led_ctrl_battery_status(uint8_t status)
 {
+#if HW_V == HW_V_0_3
     if(status == LED_STATUS_OFF)
     {
         led_ctrl(POWER_LED_3 | POWER_LED_4, MODULE_POWER_OFF);
@@ -710,11 +817,32 @@ void led_ctrl_battery_status(uint8_t status)
     {
         led_ctrl(POWER_LED_3 | POWER_LED_4, MODULE_POWER_ON);
     }
+#elif HW_V == HW_V_0_2
+    if(status == LED_STATUS_OFF)
+    {
+        led_ctrl(POWER_LED_BAT_RED | POWER_LED_BAT_GREEN, MODULE_POWER_OFF);
+    }
+    else if(status == LED_STATUS_OK)
+    {
+        led_ctrl(POWER_LED_BAT_RED, MODULE_POWER_OFF);
+        led_ctrl(POWER_LED_BAT_GREEN, MODULE_POWER_ON);
+    }
+    else if(status == LED_STATUS_ERR)
+    {
+        led_ctrl(POWER_LED_BAT_GREEN, MODULE_POWER_OFF);
+        led_ctrl(POWER_LED_BAT_RED, MODULE_POWER_ON);
+    }
+    else if(status == LED_STATUS_WARN)
+    {
+        led_ctrl(POWER_LED_BAT_GREEN | POWER_LED_BAT_RED, MODULE_POWER_ON);
+    }
+#endif
 }
 
 
 void led_ctrl_trans_status(uint8_t status)
 {
+#if HW_V == HW_V_0_3
     if(status == LED_STATUS_OFF)
     {
         led_ctrl(POWER_LED_5 | POWER_LED_6, MODULE_POWER_OFF);
@@ -733,6 +861,26 @@ void led_ctrl_trans_status(uint8_t status)
     {
         led_ctrl(POWER_LED_5 | POWER_LED_6, MODULE_POWER_ON);
     }
+#elif HW_V == HW_V_0_2
+    if(status == LED_STATUS_OFF)
+    {
+        led_ctrl(POWER_LED_TRANS_RED | POWER_LED_TRANS_GREEN, MODULE_POWER_OFF);
+    }
+    else if(status == LED_STATUS_OK)
+    {
+        led_ctrl(POWER_LED_TRANS_RED, MODULE_POWER_OFF);
+        led_ctrl(POWER_LED_TRANS_GREEN, MODULE_POWER_ON);
+    }
+    else if(status == LED_STATUS_ERR)
+    {
+        led_ctrl(POWER_LED_TRANS_GREEN, MODULE_POWER_OFF);
+        led_ctrl(POWER_LED_TRANS_RED, MODULE_POWER_ON);
+    }
+    else if(status == LED_STATUS_WARN)
+    {
+        led_ctrl(POWER_LED_TRANS_GREEN | POWER_LED_TRANS_RED, MODULE_POWER_ON);
+    }
+#endif
 }
 
 
