@@ -340,6 +340,7 @@ static void head_camera_led_init(void)
     GPIO_ResetBits(GPIOG, GPIO_Pin_2);
 }
 
+#if HW_V == HW_V_0_3
 static void device_id_gpio_init(void)
 {
     GPIO_InitTypeDef  GPIO_InitStructure;
@@ -349,7 +350,7 @@ static void device_id_gpio_init(void)
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
     GPIO_Init(GPIOF, &GPIO_InitStructure);
 }
-
+#endif
 
 uint16_t get_device_gpio_status(void)
 {
@@ -369,7 +370,9 @@ static void platform_gpio_init(void)
     charge_gpio_init();
     event_button_init();
     status_led_init();
+#if HW_V == HW_V_0_3
     device_id_gpio_init();
+#endif
 }
 
 

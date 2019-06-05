@@ -75,7 +75,8 @@ void power_on_off_task(void *pdata)
         if(err == OS_ERR_TIMEOUT)
         {
             release_power();
-            delay_ms(30 * 1000);
+            delay_ms(500);//等待硬件掉电
+            mcu_restart();//这句话可能无法执行
         }
         else if(err == OS_ERR_NONE)
         {
