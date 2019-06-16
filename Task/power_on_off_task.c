@@ -64,6 +64,7 @@ void post_power_on_off_signal(void)
     OSSemPost(powerkey_long_press_sem);
 }
 
+extern OS_EVENT *start_POST_sem;
 void power_on_off_task(void *pdata)
 {
     uint8_t err = 0;
@@ -92,6 +93,7 @@ void power_on_off_task(void *pdata)
             beeper_off();
             OSSemPost(x86_power_on_sem);
             OSSemPost(rk_power_on_sem);
+            OSSemPost(start_POST_sem);
             delay_ms(BOOTING_UP_TIME);
             sys_status->sys_status &= 0xfff0;
             sys_status->sys_status |= STATE_POWER_ON;

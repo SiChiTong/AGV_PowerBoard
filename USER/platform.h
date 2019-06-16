@@ -3,6 +3,11 @@
 #include "stm32f10x.h"
 #include "ucos_ii.h"
 
+
+#define HW_V_0_2                2
+#define HW_V_0_3                3
+#define HW_V                    HW_V_0_3
+
 #define SERIAL_LED_RGB          1
 #define SERIAL_LED_ONE_WIRE     2
 #define SERIAL_LED_TYPE         SERIAL_LED_RGB

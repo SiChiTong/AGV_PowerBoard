@@ -89,7 +89,12 @@ const platform_gpio_t platform_gpio_pins[] =
     [PLATFORM_GPIO_SERIAL_LED_BACK_LEFT] = {GPIOA, GPIO_Pin_6},
     [PLATFORM_GPIO_SERIAL_LED_EYES]     = {GPIOA, GPIO_Pin_5},
 
+
+#if HW_V == HW_V_0_3
+    [PLATFORM_GPIO_EVENT_BUTTON]        = {GPIOC, GPIO_Pin_0},
+#elif HW_V == HW_V_0_2
     [PLATFORM_GPIO_EVENT_BUTTON]        = {GPIOD, GPIO_Pin_6},
+#endif
 
     [PLATFORM_GPIO_LED_CTRL_1]          = {GPIOG, GPIO_Pin_8},
     [PLATFORM_GPIO_LED_CTRL_2]          = {GPIOG, GPIO_Pin_7},
@@ -257,11 +262,17 @@ static void init_set_gpio(void)
 static void event_button_init(void)
 {
     GPIO_InitTypeDef  GPIO_InitStructure;
-
+#if HW_V == HW_V_0_3
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_Init(GPIOC, &GPIO_InitStructure);
+#elif HW_V == HW_V_0_2
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
     GPIO_Init(GPIOD, &GPIO_InitStructure);
+#endif
 }
 
 static void status_led_init(void)
@@ -352,7 +363,7 @@ uint8_t get_switch_state(void)
 
 uint8_t get_event_buttton_state(void)
 {
-    return GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_6);
+    return GPIO_ReadInputDataBit(platform_gpio_pins[PLATFORM_GPIO_EVENT_BUTTON].GPIOx, platform_gpio_pins[PLATFORM_GPIO_EVENT_BUTTON].GPIO_Pin);
 }
 
 void hold_on_power(void)

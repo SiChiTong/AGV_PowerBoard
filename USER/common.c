@@ -17,6 +17,7 @@ static void task_create(void)
     OSTaskCreate(charge_task,               (void *)0,  (OS_STK*)&charge_task_stk[CHARGE_TASK_STK_SIZE - 1],                                CHARGE_TASK_PRIO);
     OSTaskCreate(can_send_task,             (void *)0,  (OS_STK*)&can_send_task_stk[CAN_SEND_TASK_STK_SIZE - 1],                            CAN_SEND_TASK_PRIO);
     OSTaskCreate(serial_led_task,           (void *)0,  (OS_STK*)&serial_led_task_stk[SERIAL_LED_TASK_STK_SIZE - 1],                        SERIAL_LED_TASK_PRIO);
+    OSTaskCreate(POST_task,                 (void *)0,  (OS_STK*)&POST_task_stk[POWER_ON_SELF_TEST_STK_SIZE - 1],                           POWER_ON_SELF_TEST_TASK_PRIO);
 
 }
 
@@ -29,6 +30,7 @@ static void sem_create(void)
     rk_power_off_sem = OSSemCreate(0);
     power_on_sem = OSSemCreate(0);
     power_off_sem = OSSemCreate(0);
+    start_POST_sem = OSSemCreate(0);
 }
 
 static int mailbox_create(void)
