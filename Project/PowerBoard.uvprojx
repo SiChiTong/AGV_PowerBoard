@@ -444,6 +444,11 @@
               <FileType>1</FileType>
               <FilePath>..\Task\serial_led_task.c</FilePath>
             </File>
+            <File>
+              <FileName>power_on_self_test_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Task\power_on_self_test_task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
