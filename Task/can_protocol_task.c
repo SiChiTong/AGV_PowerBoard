@@ -289,7 +289,7 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
                     {
                         *(uint16_t*)&data_out[1] = battery_pack.pack_voltage;
                         data_out[3] = battery_pack.percentage;
-                        *(uint16_t*)&data_out[4] = battery_pack.pack_current;
+                        *(int16_t*)&data_out[4] = battery_pack.pack_current;
                         *(uint16_t*)&data_out[6] = battery_pack.pack_current_soc;
                         *(uint16_t*)&data_out[8] = battery_pack.pack_totoal_soc;
                         *(uint16_t*)&data_out[10] = battery_pack.pack_recharge_cycle;
@@ -320,10 +320,12 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
                     if(data_in[0] == 0)
                     {
                         light_mode_t mode;
-                        uint8_t period = data_in[5];
-                        color_t *color;
+                        uint8_t period = data_in[8];
+                        color_t color[2];
                         mode =  (light_mode_t)data_in[1];
-                        color = (color_t*)&data_in[2];
+//                        color = (color_t*)&data_in[2];
+                        memcpy(&color[0], &data_in[2], sizeof(color_t));
+                        memcpy(&color[1], &data_in[5], sizeof(color_t));
 #if SERIAL_LED_TYPE == SERIAL_LED_ONE_WIRE
                         set_serial_leds_effect(mode, color, period);
 #elif SERIAL_LED_TYPE == SERIAL_LED_RGB
@@ -332,9 +334,10 @@ uint16_t CmdProcessing(can_id_union *id, uint8_t *data_in, uint16_t data_len, ui
                         data_out[0] = 0;
                         data_out[1] = 0;
                         data_out[2] = mode;
-                        *(color_t *)&data_out[3] = *color;
-                        data_out[6] = period;
-                        return 7;
+                        *(color_t *)&data_out[3] = *(&(color[0]));
+                        *(color_t *)&data_out[6] = *(&(color[1]));
+                        data_out[9] = period;
+                        return 10;
                     }
                     return 0;
 
@@ -591,7 +594,17 @@ void can_protocol_task(void *pdata)
                                 /**********************/
                                 //process the data here//
 
-                                Can1_TX(id.canx_id, can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf, can_long_frame_buf->can_rcv_buf[buf_index].used_len);  // test :send the data back;
+//                                Can1_TX(id.canx_id, can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf, can_long_frame_buf->can_rcv_buf[buf_index].used_len);  // test :send the data back;
+                                tx_len = CmdProcessing(&id, can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf, can_long_frame_buf->can_rcv_buf[buf_index].used_len, CanTxdataBuff);
+                                //process the data here//
+                                if((tx_len > 0) && (tx_len < CAN_BUF_INSIDE_DATA_SIZE))
+                                {
+                                    //Can1_TX(id.canx_id, CanTxdataBuff, tx_len);
+                                    can_buf.data_len = tx_len;
+                                    can_buf.id = id.canx_id;
+                                    memcpy(can_buf.data, CanTxdataBuff, tx_len);
+                                    send_can_msg(&can_buf);
+                                }
                                 can_long_frame_buf->free_buf(buf_index);
                             }
                         }
@@ -605,10 +618,12 @@ void can_protocol_task(void *pdata)
             deinit_can1();
             init_can1();
         }
+        exit:
+        ;//nothing todo for now
     }
 
-exit:
-    return;
+//exit:
+//    return;
 }
 
 int send_can_msg(can_buf_t *can_msg)

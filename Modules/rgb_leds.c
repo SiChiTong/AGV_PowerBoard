@@ -42,7 +42,7 @@ void set_rgb_color(const color_t color)
 void set_rgb_leds_effect(const light_mode_t light_mode, color_t  *cur_color, const uint8_t period)
 {
     static  light_mode_t pre_mode = LIGHTS_MODE_NONE;
-    static  color_t      pre_color;
+    static  color_t      pre_color[2];
     static  uint8_t      pre_period;
     if((light_mode == pre_mode) && (light_mode != LIGHTS_MODE_SETTING))
     {
@@ -51,17 +51,21 @@ void set_rgb_leds_effect(const light_mode_t light_mode, color_t  *cur_color, con
 
     if(light_mode == LIGHTS_MODE_SETTING)
     {
-        if( (pre_color.b == cur_color->b) && (pre_color.g == cur_color->g) && (pre_color.r == cur_color->r))
+        if((pre_color[0].b == cur_color[0].b) && (pre_color[0].g == cur_color[0].g) && (pre_color[0].r == cur_color[0].r))
         {
-            if(pre_period == period)
+            if((pre_color[1].b == cur_color[1].b) && (pre_color[1].g == cur_color[1].g) && (pre_color[1].r == cur_color[1].r))
             {
-                return;
+                if(pre_period == period)
+                {
+                    return;
+                }
             }
         }
     }
 
     pre_mode = light_mode;
-    memcpy(&pre_color, cur_color, sizeof(color_t));
+    memcpy(&pre_color[0], &cur_color[0], sizeof(color_t) * 2);
+//    memcpy(&pre_color[1], &cur_color[1], sizeof(color_t));
     pre_period = period;
 
     switch(light_mode)
@@ -143,13 +147,16 @@ void set_rgb_leds_effect(const light_mode_t light_mode, color_t  *cur_color, con
 
             break;
         case LIGHTS_MODE_SETTING:
-            cur_rgb_leds_effect.color[0] = *cur_color;
-            cur_rgb_leds_effect.color[1] = rgb_color[SERIAL_LED_COLOR_NONE_C];
-            cur_rgb_leds_effect.color_number = 2;
-            cur_rgb_leds_effect.period = period * 10 * OS_TICKS_PER_SEC / 1000;
-            cur_rgb_leds_effect.tick = 0;
-
+            if(cur_color)
+            {
+                cur_rgb_leds_effect.color[0] = cur_color[0];
+                cur_rgb_leds_effect.color[1] = cur_color[1];
+                cur_rgb_leds_effect.color_number = 2;
+                cur_rgb_leds_effect.period = period * 10 * OS_TICKS_PER_SEC / 1000;
+                cur_rgb_leds_effect.tick = 0;
+            }
             break;
+
         default :
             break;
     }

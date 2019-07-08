@@ -84,7 +84,7 @@ typedef uint8_t (*get_one_free_buf_fn)(void);
 typedef uint8_t (*get_the_buf_by_id_fn)(uint32_t);
 typedef void (*free_buf_fn)(uint8_t);
 
-#define CAN_LONG_BUF_NUM    2   // value can not be 0 ! !
+#define CAN_LONG_BUF_NUM    5   // value can not be 0 ! !
 typedef struct
 {
     can_rcv_buf_t can_rcv_buf[CAN_LONG_BUF_NUM];
