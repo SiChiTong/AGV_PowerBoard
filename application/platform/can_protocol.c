@@ -411,6 +411,7 @@ uint16_t process_can_protocol(can_id_union *id, const uint8_t *data_in, const ui
                     }
 
                 case CAN_SOURCE_ID_SET_LED_EFFECT:
+#if 0
                     if(data_in[0] == 0)
                     {
                         light_mode_t mode;
@@ -422,6 +423,30 @@ uint16_t process_can_protocol(can_id_union *id, const uint8_t *data_in, const ui
                         return 0;
                     }
                     return 0;
+#else
+                    if(data_in[0] == 0)
+                    {
+                        light_mode_t mode;
+                        uint8_t period = data_in[8];
+                        color_t color[2];
+                        mode =  (light_mode_t)data_in[1];
+//                        color = (color_t*)&data_in[2];
+                        memcpy(&color[0], &data_in[2], sizeof(color_t));
+                        memcpy(&color[1], &data_in[5], sizeof(color_t));
+
+                        set_serial_leds_effect(mode, color, period);
+
+                        data_out[0] = 0;
+                        data_out[1] = 0;
+                        data_out[2] = mode;
+                        *(color_t *)&data_out[3] = *(&(color[0]));
+                        *(color_t *)&data_out[6] = *(&(color[1]));
+                        data_out[9] = period;
+                        return 10;
+                    }
+                    return 0;
+#endif
+
                     break;
 
 
@@ -667,8 +692,14 @@ void can_protocol_period(void)
                         //process the data here//
                         /**********************/
                         //process the data here//
+                        tx_len = process_can_protocol(&id, can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf, can_long_frame_buf->can_rcv_buf[buf_index].used_len, CanTxdataBuff);
+                        //process the data here//
+                        if(tx_len > 0)
+                        {
+                            CanTX(MICO_CAN1, id.canx_id, CanTxdataBuff, tx_len);
+                        }
 
-                        CanTX(MICO_CAN1, id.canx_id, can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf, can_long_frame_buf->can_rcv_buf[buf_index].used_len);  // test :send the data back;
+                        //CanTX(MICO_CAN1, id.canx_id, can_long_frame_buf->can_rcv_buf[buf_index].rcv_buf, can_long_frame_buf->can_rcv_buf[buf_index].used_len);  // test :send the data back;
                         can_long_frame_buf->free_buf(buf_index);
                     }
                 }
